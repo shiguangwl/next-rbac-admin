@@ -1,10 +1,10 @@
 /**
  * Hono RPC Client
  * @description 配置 Hono RPC 客户端，支持 SSR/CSR 区分和自动注入 Authorization
- * @requirements 11.2
  */
 
-import type { AppType } from '@/server/route-defs'
+import { env } from '@/env'
+import type { AppType } from '@/server/types'
 import { type ClientResponse, hc } from 'hono/client'
 
 /**
@@ -23,7 +23,7 @@ export type HonoClient = any
 function getBaseUrl(): string {
   // 服务端渲染时使用完整 URL
   if (typeof window === 'undefined') {
-    return process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+    return env.NEXT_PUBLIC_APP_URL
   }
   // 客户端使用相对路径
   return ''

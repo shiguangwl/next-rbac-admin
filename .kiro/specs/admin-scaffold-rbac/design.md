@@ -92,7 +92,7 @@ src/
 │   │   ├── layout.tsx                # 后台布局
 │   │   ├── page.tsx                  # 仪表盘首页
 │   │   └── system/
-│   │       ├── admin/page.tsx        # 管理员管理
+│   │       ├── admin/page.tsx        # 用户管理
 │   │       ├── role/page.tsx         # 角色管理
 │   │       └── menu/page.tsx         # 菜单管理
 │   ├── providers.tsx
@@ -341,7 +341,7 @@ import { env } from '@/env'
 
 export const jwtAuth = createMiddleware<Env>(async (c, next) => {
   const authHeader = c.req.header('Authorization')
-  
+
   if (!authHeader?.startsWith('Bearer ')) {
     c.set('admin', null)
     c.set('permissions', null)
@@ -349,7 +349,7 @@ export const jwtAuth = createMiddleware<Env>(async (c, next) => {
   }
 
   const token = authHeader.slice(7)
-  
+
   try {
     const payload = verify(token, env.JWT_SECRET) as AdminPayload
     c.set('admin', payload)
@@ -357,7 +357,7 @@ export const jwtAuth = createMiddleware<Env>(async (c, next) => {
     c.set('admin', null)
     c.set('permissions', null)
   }
-  
+
   return next()
 })
 
@@ -390,13 +390,13 @@ async function getCachedPermissions(adminId: number): Promise<string[]> {
   if (cached && cached.expireAt > Date.now()) {
     return cached.permissions
   }
-  
+
   const permissions = await getAdminPermissions(adminId)
   permissionCache.set(adminId, {
     permissions,
     expireAt: Date.now() + CACHE_TTL,
   })
-  
+
   return permissions
 }
 
@@ -412,7 +412,7 @@ export function invalidateAllPermissionCache() {
 
 export const loadPermissions = createMiddleware<Env>(async (c, next) => {
   const admin = c.get('admin')
-  
+
   if (!admin) {
     c.set('permissions', null)
     return next()
@@ -427,7 +427,7 @@ export const loadPermissions = createMiddleware<Env>(async (c, next) => {
   // 使用缓存获取权限
   const permissions = await getCachedPermissions(admin.adminId)
   c.set('permissions', permissions)
-  
+
   return next()
 })
 
@@ -439,7 +439,7 @@ export function requirePermission(permission: string) {
     }
 
     const permissions = c.get('permissions')
-    
+
     // 超级管理员直接放行
     if (permissions?.includes('*')) {
       return next()
@@ -623,7 +623,7 @@ export async function createAdmin(input: CreateAdminInput): Promise<AdminDto> {
   return await db.transaction(async (tx) => {
     // 1. 加密密码
     const hashedPassword = await bcrypt.hash(input.password, 10)
-    
+
     // 2. 插入管理员
     const [admin] = await tx.insert(sysAdmin).values({
       username: input.username,
@@ -632,14 +632,14 @@ export async function createAdmin(input: CreateAdminInput): Promise<AdminDto> {
       status: input.status ?? 1,
       remark: input.remark,
     }).returning()
-    
+
     // 3. 插入角色关联
     if (input.roleIds?.length) {
       await tx.insert(sysAdminRole).values(
         input.roleIds.map(roleId => ({ adminId: admin.id, roleId }))
       )
     }
-    
+
     return toAdminDto(admin)
   })
 }
@@ -1150,11 +1150,11 @@ export const env = createEnv({
     DATABASE_MAX_CONNECTIONS: z.coerce.number().int().positive().optional(),
     DATABASE_IDLE_TIMEOUT: z.coerce.number().int().positive().optional(),
     DATABASE_CONNECT_TIMEOUT: z.coerce.number().int().positive().optional(),
-    
+
     // JWT 配置
     JWT_SECRET: z.string().min(32, 'JWT_SECRET must be at least 32 characters'),
     JWT_EXPIRES_IN: z.string().default('7d'),
-    
+
     // 运行环境
     NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   },
@@ -1284,9 +1284,9 @@ app.use('*', async (c, next) => {
 app.use('*', async (c, next) => {
   const requestId = c.get('requestId')
   const start = Date.now()
-  
+
   await next()
-  
+
   const duration = Date.now() - start
   logger.info('Request completed', {
     requestId,
@@ -1407,7 +1407,7 @@ src/app/
 │   ├── page.tsx                     # 仪表盘首页
 │   └── system/
 │       ├── admin/
-│       │   └── page.tsx             # 管理员管理
+│       │   └── page.tsx             # 用户管理
 │       ├── role/
 │       │   └── page.tsx             # 角色管理
 │       ├── menu/
@@ -1605,7 +1605,7 @@ interface AuthState {
   menus: MenuTreeNode[]
   isAuthenticated: boolean
   isLoading: boolean
-  
+
   login: (username: string, password: string) => Promise<void>
   logout: () => Promise<void>
   refreshAuth: () => Promise<void>
@@ -1626,7 +1626,7 @@ export const useAuth = create<AuthState>()(
           json: { username, password },
         })
         if (!res.ok) throw new Error('登录失败')
-        
+
         const data = await res.json()
         set({
           token: data.token,
@@ -1653,7 +1653,7 @@ export const useAuth = create<AuthState>()(
         try {
           const res = await client.api.auth.info.$get()
           if (!res.ok) throw new Error()
-          
+
           const data = await res.json()
           set({
             admin: data.admin,
@@ -1738,7 +1738,7 @@ export function useAdmins(params?: { page?: number; pageSize?: number }) {
 
 export function useCreateAdmin() {
   const queryClient = useQueryClient()
-  
+
   return useMutation({
     mutationFn: async (data: CreateAdminInput) => {
       const res = await client.api.admins.$post({ json: data })
@@ -1753,7 +1753,7 @@ export function useCreateAdmin() {
 
 export function useUpdateAdmin() {
   const queryClient = useQueryClient()
-  
+
   return useMutation({
     mutationFn: async ({ id, data }: { id: number; data: UpdateAdminInput }) => {
       const res = await client.api.admins[':id'].$put({
@@ -1771,7 +1771,7 @@ export function useUpdateAdmin() {
 
 export function useDeleteAdmin() {
   const queryClient = useQueryClient()
-  
+
   return useMutation({
     mutationFn: async (id: number) => {
       const res = await client.api.admins[':id'].$delete({
@@ -1806,7 +1806,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  
+
   const { login } = useAuth()
   const router = useRouter()
 
@@ -1862,7 +1862,7 @@ export default function LoginPage() {
 }
 ```
 
-#### 管理员管理页
+#### 用户管理页
 
 ```typescript
 // src/app/(dashboard)/system/admin/page.tsx
@@ -1885,7 +1885,7 @@ export default function AdminPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">管理员管理</h1>
+        <h1 className="text-2xl font-bold">用户管理</h1>
         <PermissionGuard permission="system:admin:add">
           <AdminFormDialog mode="create">
             <Button>新增管理员</Button>
@@ -2003,11 +2003,11 @@ export function Icon({ name, ...props }: IconProps) {
     // 将 kebab-case 转换为 PascalCase
     name.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join('')
   ]
-  
+
   if (!IconComponent) {
     return null
   }
-  
+
   return <IconComponent {...props} />
 }
 ```
@@ -2110,11 +2110,11 @@ import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
-  
+
   // 公开路由
   const publicPaths = ['/login', '/api']
   const isPublicPath = publicPaths.some(path => pathname.startsWith(path))
-  
+
   if (isPublicPath) {
     return NextResponse.next()
   }
@@ -2122,7 +2122,7 @@ export function middleware(request: NextRequest) {
   // 检查 token（从 cookie 或 header 获取）
   // 注意：这里只做简单的存在性检查，实际验证在 API 层进行
   const token = request.cookies.get('auth-token')?.value
-  
+
   // 如果没有 token 且访问受保护页面，重定向到登录页
   if (!token && pathname !== '/login') {
     const loginUrl = new URL('/login', request.url)
@@ -2190,7 +2190,7 @@ export function Header() {
       <div className="flex items-center gap-4">
         {/* 面包屑或其他导航元素 */}
       </div>
-      
+
       <div className="flex items-center gap-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -2255,7 +2255,7 @@ export function AdminFormDialog({ mode, admin, children }: AdminFormDialogProps)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (mode === 'create') {
       await createAdmin.mutateAsync({
         username: formData.username,
@@ -2273,7 +2273,7 @@ export function AdminFormDialog({ mode, admin, children }: AdminFormDialogProps)
         },
       })
     }
-    
+
     setOpen(false)
   }
 
@@ -2384,8 +2384,8 @@ async function seed() {
   const menus = [
     // 系统管理目录
     { id: 1, parentId: 0, menuType: 'D' as const, menuName: '系统管理', path: '/system', icon: 'setting', sort: 1 },
-    // 管理员管理
-    { id: 10, parentId: 1, menuType: 'M' as const, menuName: '管理员管理', permission: 'system:admin:list', path: '/system/admin', component: 'system/admin/index', icon: 'user', sort: 1 },
+    // 用户管理
+    { id: 10, parentId: 1, menuType: 'M' as const, menuName: '用户管理', permission: 'system:admin:list', path: '/system/admin', component: 'system/admin/index', icon: 'user', sort: 1 },
     { id: 11, parentId: 10, menuType: 'B' as const, menuName: '管理员查询', permission: 'system:admin:query', sort: 1 },
     { id: 12, parentId: 10, menuType: 'B' as const, menuName: '管理员新增', permission: 'system:admin:add', sort: 2 },
     { id: 13, parentId: 10, menuType: 'B' as const, menuName: '管理员修改', permission: 'system:admin:edit', sort: 3 },

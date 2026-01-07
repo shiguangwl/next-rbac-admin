@@ -6,9 +6,7 @@ import mysql from 'mysql2/promise'
  * 全局单例模式（防止 HMR 时重复创建连接和 drizzle 实例）
  */
 declare global {
-  // eslint-disable-next-line no-var
   var __dbPool: mysql.Pool | undefined
-  // eslint-disable-next-line no-var
   var __db: ReturnType<typeof drizzle> | undefined
 }
 

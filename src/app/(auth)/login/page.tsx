@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 /**
  * 登录页面
@@ -6,38 +6,38 @@
  * @requirements 2.1
  */
 
-import { LoadingIcon } from '@/components/ui/icon'
-import { useAuth } from '@/hooks/use-auth'
-import { useRouter } from 'next/navigation'
-import { type FormEvent, useState } from 'react'
+import { LoadingIcon } from "@/components/ui/icon";
+import { useAuth } from "@/hooks/use-auth";
+import { useRouter } from "next/navigation";
+import { type FormEvent, useState } from "react";
 
 export default function LoginPage() {
-  const router = useRouter()
-  const { login, loading } = useAuth()
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
+  const router = useRouter();
+  const { login, loading } = useAuth();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault()
-    setError('')
+    e.preventDefault();
+    setError("");
 
     if (!username.trim()) {
-      setError('请输入用户名')
-      return
+      setError("请输入用户名");
+      return;
     }
     if (!password) {
-      setError('请输入密码')
-      return
+      setError("请输入密码");
+      return;
     }
 
     try {
-      await login(username, password)
-      router.replace('/')
+      await login(username, password);
+      router.replace("/dashboard");
     } catch (err) {
-      setError(err instanceof Error ? err.message : '登录失败')
+      setError(err instanceof Error ? err.message : "登录失败");
     }
-  }
+  };
 
   return (
     <div className="w-full max-w-md">
@@ -66,11 +66,18 @@ export default function LoginPage() {
         {/* 表单 */}
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* 错误提示 */}
-          {error && <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600">{error}</div>}
+          {error && (
+            <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600">
+              {error}
+            </div>
+          )}
 
           {/* 用户名 */}
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="username"
+              className="block text-sm font-medium text-gray-700"
+            >
               用户名
             </label>
             <input
@@ -87,7 +94,10 @@ export default function LoginPage() {
 
           {/* 密码 */}
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
               密码
             </label>
             <input
@@ -109,10 +119,10 @@ export default function LoginPage() {
             className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-500 px-4 py-3 font-medium text-white transition-colors hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {loading && <LoadingIcon size="sm" />}
-            {loading ? '登录中...' : '登录'}
+            {loading ? "登录中..." : "登录"}
           </button>
         </form>
       </div>
     </div>
-  )
+  );
 }

@@ -1,9 +1,9 @@
 /**
  * 日志工具
  * @description 提供结构化日志输出，支持 requestId 上下文
- * @requirements 8.2
  */
 
+import { env } from '@/env'
 import { getRequestContext } from './request-context'
 
 /** 日志级别 */
@@ -66,7 +66,7 @@ export const logger = {
    * 调试日志
    */
   debug(message: string, meta?: LogMeta): void {
-    if (process.env.NODE_ENV === 'production') return
+    if (env.NODE_ENV === 'production') return
     const entry = createLogEntry('debug', message, meta)
     console.debug(formatLog(entry))
   },

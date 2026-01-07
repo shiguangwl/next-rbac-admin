@@ -125,12 +125,10 @@ export const LoginResultSchema = z
       .string()
       .openapi({ description: 'JWT Token', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' }),
     admin: AdminInfoSchema.openapi({ description: '管理员信息' }),
-    permissions: z
-      .array(z.string())
-      .openapi({
-        description: '权限标识列表',
-        example: ['system:admin:list', 'system:admin:create'],
-      }),
+    permissions: z.array(z.string()).openapi({
+      description: '权限标识列表',
+      example: ['system:admin:list', 'system:admin:create'],
+    }),
     menus: z.array(MenuTreeNodeSchema).openapi({ description: '菜单树' }),
   })
   .openapi('LoginResult')

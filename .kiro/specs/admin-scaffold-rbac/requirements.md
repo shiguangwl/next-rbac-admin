@@ -45,7 +45,7 @@
 6. THE System SHALL 使用 bcrypt 验证密码
 7. THE System SHALL 在 JWT payload 中包含 admin_id 和 username
 
-### Requirement 3: 管理员管理
+### Requirement 3: 用户管理
 
 **User Story:** As a 超级管理员, I want 管理系统管理员账号, so that 我可以控制谁能访问后台系统。
 
@@ -178,6 +178,6 @@
 
 1. THE System SHALL 提供 seed 脚本初始化超级管理员账号（admin/admin123）
 2. THE System SHALL 提供 seed 脚本初始化基础角色（超级管理员、管理员、运营）
-3. THE System SHALL 提供 seed 脚本初始化系统管理菜单（管理员管理、角色管理、菜单管理、操作日志）
+3. THE System SHALL 提供 seed 脚本初始化系统管理菜单（用户管理、角色管理、菜单管理、操作日志）
 4. THE System SHALL 提供 seed 脚本初始化角色菜单关联
 5. THE System SHALL 提供 seed 脚本初始化管理员角色关联

@@ -92,7 +92,7 @@ src/
 │   └── (dashboard)/              # 后台管理页面
 │       ├── page.tsx              # 仪表盘首页
 │       └── system/               # 系统管理
-│           ├── admin/            # 管理员管理
+│           ├── admin/            # 用户管理
 │           ├── role/             # 角色管理
 │           ├── menu/             # 菜单管理
 │           └── log/              # 操作日志
@@ -124,7 +124,7 @@ src/
 
 ## 🔑 功能模块
 
-### 管理员管理
+### 用户管理
 
 - 管理员列表（分页查询）
 - 创建/编辑/删除管理员
@@ -258,7 +258,7 @@ import { PermissionGuard } from '@/components/permission-guard'
 // Hook 方式
 function MyComponent() {
   const { hasPermission } = usePermission()
-  
+
   if (hasPermission('system:admin:create')) {
     // 显示创建按钮
   }

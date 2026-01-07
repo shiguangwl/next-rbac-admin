@@ -4,21 +4,25 @@
  * @requirements 11.2
  */
 
-import { getApiClient } from '@/lib/client'
-import type { CreateMenuInput, MenuQuery, UpdateMenuInput } from '@/server/routes/menus/dtos'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { getApiClient } from "@/lib/client";
+import type {
+  CreateMenuInput,
+  MenuQuery,
+  UpdateMenuInput,
+} from "@/server/routes/menus/dtos";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 /**
  * 查询键
  */
 export const menuKeys = {
-  all: ['menus'] as const,
-  lists: () => [...menuKeys.all, 'list'] as const,
+  all: ["menus"] as const,
+  lists: () => [...menuKeys.all, "list"] as const,
   list: (params?: MenuQuery) => [...menuKeys.lists(), params] as const,
-  tree: () => [...menuKeys.all, 'tree'] as const,
-  details: () => [...menuKeys.all, 'detail'] as const,
+  tree: () => [...menuKeys.all, "tree"] as const,
+  details: () => [...menuKeys.all, "detail"] as const,
   detail: (id: number) => [...menuKeys.details(), id] as const,
-}
+};
 
 /**
  * 获取菜单列表
@@ -30,16 +34,21 @@ export function useMenus(params?: MenuQuery) {
       const response = await getApiClient().menus.$get({
         query: {
           ...(params?.menuType && { menuType: params.menuType }),
-          ...(params?.status !== undefined && { status: String(params.status) }),
+          ...(params?.status !== undefined && {
+            status: String(params.status),
+          }),
         },
-      })
+      });
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error((error as { message?: string }).message || '获取菜单列表失败')
+        const error = await response.json();
+        throw new Error(
+          (error as { message?: string }).message || "获取菜单列表失败"
+        );
       }
-      return response.json()
+      const result = await response.json();
+      return (result as { data: unknown }).data;
     },
-  })
+  });
 }
 
 /**
@@ -49,14 +58,17 @@ export function useMenuTree() {
   return useQuery({
     queryKey: menuKeys.tree(),
     queryFn: async () => {
-      const response = await getApiClient().menus.tree.$get()
+      const response = await getApiClient().menus.tree.$get();
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error((error as { message?: string }).message || '获取菜单树失败')
+        const error = await response.json();
+        throw new Error(
+          (error as { message?: string }).message || "获取菜单树失败"
+        );
       }
-      return response.json()
+      const result = await response.json();
+      return (result as { data: unknown }).data;
     },
-  })
+  });
 }
 
 /**
@@ -66,86 +78,104 @@ export function useMenu(id: number) {
   return useQuery({
     queryKey: menuKeys.detail(id),
     queryFn: async () => {
-      const response = await getApiClient().menus[':id'].$get({
+      const response = await getApiClient().menus[":id"].$get({
         param: { id: String(id) },
-      })
+      });
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error((error as { message?: string }).message || '获取菜单详情失败')
+        const error = await response.json();
+        throw new Error(
+          (error as { message?: string }).message || "获取菜单树失败"
+        );
       }
-      return response.json()
+      const result = await response.json();
+      return (result as { data: unknown }).data;
     },
     enabled: id > 0,
-  })
+  });
 }
 
 /**
  * 创建菜单
  */
 export function useCreateMenu() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (input: CreateMenuInput) => {
       const response = await getApiClient().menus.$post({
         json: input,
-      })
+      });
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error((error as { message?: string }).message || '创建菜单失败')
+        const error = await response.json();
+        throw new Error(
+          (error as { message?: string }).message || "创建菜单失败"
+        );
       }
-      return response.json()
+      const result = await response.json();
+      return (result as { data: unknown }).data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: menuKeys.all })
+      queryClient.invalidateQueries({ queryKey: menuKeys.all });
     },
-  })
+  });
 }
 
 /**
  * 更新菜单
  */
 export function useUpdateMenu() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, input }: { id: number; input: UpdateMenuInput }) => {
-      const response = await getApiClient().menus[':id'].$put({
+    mutationFn: async ({
+      id,
+      input,
+    }: {
+      id: number;
+      input: UpdateMenuInput;
+    }) => {
+      const response = await getApiClient().menus[":id"].$put({
         param: { id: String(id) },
         json: input,
-      })
+      });
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error((error as { message?: string }).message || '更新菜单失败')
+        const error = await response.json();
+        throw new Error(
+          (error as { message?: string }).message || "更新菜单失败"
+        );
       }
-      return response.json()
+      const result = await response.json();
+      return (result as { data: unknown }).data;
     },
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: menuKeys.all })
-      queryClient.invalidateQueries({ queryKey: menuKeys.detail(id) })
+      queryClient.invalidateQueries({ queryKey: menuKeys.all });
+      queryClient.invalidateQueries({ queryKey: menuKeys.detail(id) });
     },
-  })
+  });
 }
 
 /**
  * 删除菜单
  */
 export function useDeleteMenu() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (id: number) => {
-      const response = await getApiClient().menus[':id'].$delete({
+      const response = await getApiClient().menus[":id"].$delete({
         param: { id: String(id) },
-      })
+      });
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error((error as { message?: string }).message || '删除菜单失败')
+        const error = await response.json();
+        throw new Error(
+          (error as { message?: string }).message || "删除菜单失败"
+        );
       }
-      return response.json()
+      const result = await response.json();
+      return (result as { data: unknown }).data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: menuKeys.all })
+      queryClient.invalidateQueries({ queryKey: menuKeys.all });
     },
-  })
+  });
 }

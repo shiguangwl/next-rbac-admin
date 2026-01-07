@@ -5,7 +5,7 @@
  */
 
 import { createRoute } from '@hono/zod-openapi'
-import { ErrorSchema } from '../../common/dtos'
+import { ErrorSchema, createDataResponseSchema } from '../../common/dtos'
 import { CreateMenuInputSchema, MenuSchema } from '../dtos'
 
 /**
@@ -34,7 +34,7 @@ export const createMenuRoute = createRoute({
       description: '创建成功',
       content: {
         'application/json': {
-          schema: MenuSchema,
+          schema: createDataResponseSchema(MenuSchema, 'CreateMenuResponse'),
         },
       },
     },

@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 /**
  * 仪表盘首页
@@ -6,16 +6,19 @@
  * @requirements 11.5
  */
 
-import { useAuth } from '@/hooks/use-auth'
+import { useAuth } from "@/hooks/use-auth";
+import Link from "next/link";
 
 export default function DashboardPage() {
-  const { admin } = useAuth()
+  const { admin } = useAuth();
 
   return (
     <div className="space-y-6">
       {/* 欢迎卡片 */}
       <div className="rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 p-6 text-white shadow-lg">
-        <h1 className="text-2xl font-bold">欢迎回来，{admin?.nickname || admin?.username}！</h1>
+        <h1 className="text-2xl font-bold">
+          欢迎回来,{admin?.nickname || admin?.username}!
+        </h1>
         <p className="mt-2 text-blue-100">这是您的后台管理系统控制台</p>
       </div>
 
@@ -25,7 +28,12 @@ export default function DashboardPage() {
           title="管理员"
           value="-"
           icon={
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -40,7 +48,12 @@ export default function DashboardPage() {
           title="角色"
           value="-"
           icon={
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -55,7 +68,12 @@ export default function DashboardPage() {
           title="菜单"
           value="-"
           icon={
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -70,7 +88,12 @@ export default function DashboardPage() {
           title="操作日志"
           value="-"
           icon={
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -87,29 +110,45 @@ export default function DashboardPage() {
       <div className="rounded-xl bg-white p-6 shadow">
         <h2 className="mb-4 text-lg font-semibold text-gray-900">快捷入口</h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <QuickLink href="/system/admin" title="管理员管理" description="管理系统管理员账号" />
-          <QuickLink href="/system/role" title="角色管理" description="配置角色和权限" />
-          <QuickLink href="/system/menu" title="菜单管理" description="管理系统菜单结构" />
-          <QuickLink href="/system/log" title="操作日志" description="查看系统操作记录" />
+          <QuickLink
+            href="/system/admin"
+            title="用户管理"
+            description="管理系统管理员账号"
+          />
+          <QuickLink
+            href="/system/role"
+            title="角色管理"
+            description="配置角色和权限"
+          />
+          <QuickLink
+            href="/system/menu"
+            title="菜单管理"
+            description="管理系统菜单结构"
+          />
+          <QuickLink
+            href="/system/log"
+            title="操作日志"
+            description="查看系统操作记录"
+          />
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 interface StatCardProps {
-  title: string
-  value: string | number
-  icon: React.ReactNode
-  color: 'blue' | 'green' | 'purple' | 'orange'
+  title: string;
+  value: string | number;
+  icon: React.ReactNode;
+  color: "blue" | "green" | "purple" | "orange";
 }
 
 const colorMap = {
-  blue: 'bg-blue-50 text-blue-600',
-  green: 'bg-green-50 text-green-600',
-  purple: 'bg-purple-50 text-purple-600',
-  orange: 'bg-orange-50 text-orange-600',
-}
+  blue: "bg-blue-50 text-blue-600",
+  green: "bg-green-50 text-green-600",
+  purple: "bg-purple-50 text-purple-600",
+  orange: "bg-orange-50 text-orange-600",
+};
 
 function StatCard({ title, value, icon, color }: StatCardProps) {
   return (
@@ -122,23 +161,23 @@ function StatCard({ title, value, icon, color }: StatCardProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 interface QuickLinkProps {
-  href: string
-  title: string
-  description: string
+  href: string;
+  title: string;
+  description: string;
 }
 
 function QuickLink({ href, title, description }: QuickLinkProps) {
   return (
-    <a
+    <Link
       href={href}
       className="block rounded-lg border border-gray-200 p-4 transition-colors hover:border-blue-500 hover:bg-blue-50"
     >
       <h3 className="font-medium text-gray-900">{title}</h3>
       <p className="mt-1 text-sm text-gray-500">{description}</p>
-    </a>
-  )
+    </Link>
+  );
 }

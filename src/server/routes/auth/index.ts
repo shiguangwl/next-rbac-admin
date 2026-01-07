@@ -18,12 +18,10 @@ const auth = new OpenAPIHono<Env>()
  * POST /api/auth/login - 管理员登录
  */
 auth.openapi(loginRoute, async (c) => {
-  // 应用登录速率限制
   await loginRateLimit(c, async () => {})
 
   const body = c.req.valid('json')
 
-  // 获取客户端 IP
   const ip =
     c.req.header('x-forwarded-for')?.split(',')[0]?.trim() || c.req.header('x-real-ip') || undefined
 
@@ -33,16 +31,28 @@ auth.openapi(loginRoute, async (c) => {
     ip,
   })
 
-  return c.json(result, 200)
+  return c.json(
+    {
+      code: 'OK',
+      message: '登录成功',
+      data: result,
+    },
+    200
+  )
 })
 
 /**
  * POST /api/auth/logout - 管理员登出
  */
 auth.openapi(logoutRoute, async (c) => {
-  // JWT 是无状态的，登出只需客户端清除 Token
-  // 服务端可以选择将 Token 加入黑名单（本项目暂不实现）
-  return c.json({ success: true as const, message: '登出成功' }, 200)
+  return c.json(
+    {
+      code: 'OK',
+      message: '登出成功',
+      data: null,
+    },
+    200
+  )
 })
 
 /**
@@ -52,20 +62,18 @@ auth.use('/info', requireAuth)
 auth.openapi(getAuthInfoRoute, async (c) => {
   const adminPayload = c.get('admin')!
 
-  // 获取管理员详情
   const admin = await getAdminById(adminPayload.adminId)
-
-  // 获取权限列表
   const permissions = await getAdminPermissions(adminPayload.adminId)
-
-  // 获取菜单树
   const menus = await getAdminMenuTree(adminPayload.adminId)
 
   return c.json(
     {
-      admin,
-      permissions,
-      menus,
+      code: 'OK',
+      data: {
+        admin,
+        permissions,
+        menus,
+      },
     },
     200
   )

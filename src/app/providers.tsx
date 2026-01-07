@@ -3,12 +3,11 @@
 /**
  * 全局 Providers
  * @description 配置 React Query 和认证初始化
- * @requirements 11.2
  */
 
 import { useAuthStore } from '@/hooks/use-auth'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { type ReactNode, useEffect, useState } from 'react'
+import { type ReactNode, useEffect } from 'react'
 
 /**
  * 认证初始化组件

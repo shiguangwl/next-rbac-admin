@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 /**
  * 菜单表单字段组件
@@ -6,34 +6,46 @@
  * @requirements 5.2, 5.4
  */
 
+import { DynamicIcon } from "@/components/dynamic-icon";
+import { IconPicker } from "@/components/icon-picker";
+import { useState } from "react";
+
 export type MenuFormData = {
-  parentId: number
-  menuType: 'D' | 'M' | 'B'
-  menuName: string
-  permission: string
-  path: string
-  component: string
-  icon: string
-  sort: number
-  visible: number
-  status: number
-  isExternal: number
-  isCache: number
-  remark: string
-}
+  parentId: number;
+  menuType: "D" | "M" | "B";
+  menuName: string;
+  permission: string;
+  path: string;
+  component: string;
+  icon: string;
+  sort: number;
+  visible: number;
+  status: number;
+  isExternal: number;
+  isCache: number;
+  remark: string;
+};
 
 interface FormFieldProps {
-  formData: MenuFormData
-  onChange: (data: MenuFormData) => void
-  parentMenuName: string
+  formData: MenuFormData;
+  onChange: (data: MenuFormData) => void;
+  parentMenuName: string;
 }
 
-export function MenuFormFields({ formData, onChange, parentMenuName }: FormFieldProps) {
+export function MenuFormFields({
+  formData,
+  onChange,
+  parentMenuName,
+}: FormFieldProps) {
+  const [showIconPicker, setShowIconPicker] = useState(false);
+
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       {/* 上级菜单 */}
       <div className="sm:col-span-2">
-        <label className="mb-1 block text-sm font-medium text-gray-700">上级菜单</label>
+        <label className="mb-1 block text-sm font-medium text-gray-700">
+          上级菜单
+        </label>
         <input
           type="text"
           value={parentMenuName}
@@ -49,7 +61,12 @@ export function MenuFormFields({ formData, onChange, parentMenuName }: FormField
         </label>
         <select
           value={formData.menuType}
-          onChange={(e) => onChange({ ...formData, menuType: e.target.value as 'D' | 'M' | 'B' })}
+          onChange={(e) =>
+            onChange({
+              ...formData,
+              menuType: e.target.value as "D" | "M" | "B",
+            })
+          }
           className="w-full rounded-lg border px-4 py-2 focus:border-blue-500 focus:outline-none"
         >
           <option value="D">目录</option>
@@ -74,11 +91,15 @@ export function MenuFormFields({ formData, onChange, parentMenuName }: FormField
 
       {/* 权限标识 */}
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">权限标识</label>
+        <label className="mb-1 block text-sm font-medium text-gray-700">
+          权限标识
+        </label>
         <input
           type="text"
           value={formData.permission}
-          onChange={(e) => onChange({ ...formData, permission: e.target.value })}
+          onChange={(e) =>
+            onChange({ ...formData, permission: e.target.value })
+          }
           className="w-full rounded-lg border px-4 py-2 focus:border-blue-500 focus:outline-none"
           placeholder="如：system:admin:list"
         />
@@ -86,19 +107,25 @@ export function MenuFormFields({ formData, onChange, parentMenuName }: FormField
 
       {/* 排序 */}
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">排序</label>
+        <label className="mb-1 block text-sm font-medium text-gray-700">
+          排序
+        </label>
         <input
           type="number"
           value={formData.sort}
-          onChange={(e) => onChange({ ...formData, sort: Number(e.target.value) })}
+          onChange={(e) =>
+            onChange({ ...formData, sort: Number(e.target.value) })
+          }
           className="w-full rounded-lg border px-4 py-2 focus:border-blue-500 focus:outline-none"
         />
       </div>
 
       {/* 路由路径 - 仅目录和菜单显示 */}
-      {formData.menuType !== 'B' && (
+      {formData.menuType !== "B" && (
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">路由路径</label>
+          <label className="mb-1 block text-sm font-medium text-gray-700">
+            路由路径
+          </label>
           <input
             type="text"
             value={formData.path}
@@ -110,13 +137,17 @@ export function MenuFormFields({ formData, onChange, parentMenuName }: FormField
       )}
 
       {/* 组件路径 - 仅菜单显示 */}
-      {formData.menuType === 'M' && (
+      {formData.menuType === "M" && (
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">组件路径</label>
+          <label className="mb-1 block text-sm font-medium text-gray-700">
+            组件路径
+          </label>
           <input
             type="text"
             value={formData.component}
-            onChange={(e) => onChange({ ...formData, component: e.target.value })}
+            onChange={(e) =>
+              onChange({ ...formData, component: e.target.value })
+            }
             className="w-full rounded-lg border px-4 py-2 focus:border-blue-500 focus:outline-none"
             placeholder="如：system/admin/index"
           />
@@ -124,25 +155,42 @@ export function MenuFormFields({ formData, onChange, parentMenuName }: FormField
       )}
 
       {/* 图标 - 仅目录和菜单显示 */}
-      {formData.menuType !== 'B' && (
+      {formData.menuType !== "B" && (
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">图标</label>
-          <input
-            type="text"
-            value={formData.icon}
-            onChange={(e) => onChange({ ...formData, icon: e.target.value })}
-            className="w-full rounded-lg border px-4 py-2 focus:border-blue-500 focus:outline-none"
-            placeholder="如：user"
-          />
+          <label className="mb-1 block text-sm font-medium text-gray-700">
+            图标
+          </label>
+          <div className="flex gap-2">
+            <div className="flex flex-1 items-center gap-2 rounded-lg border px-4 py-2">
+              <DynamicIcon
+                name={formData.icon}
+                className="h-5 w-5 text-gray-600"
+              />
+              <span className="text-sm text-gray-600">
+                {formData.icon || "未选择"}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowIconPicker(true)}
+              className="rounded-lg border px-4 py-2 text-sm hover:bg-gray-50"
+            >
+              选择
+            </button>
+          </div>
         </div>
       )}
 
       {/* 状态 */}
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">状态</label>
+        <label className="mb-1 block text-sm font-medium text-gray-700">
+          状态
+        </label>
         <select
           value={formData.status}
-          onChange={(e) => onChange({ ...formData, status: Number(e.target.value) })}
+          onChange={(e) =>
+            onChange({ ...formData, status: Number(e.target.value) })
+          }
           className="w-full rounded-lg border px-4 py-2 focus:border-blue-500 focus:outline-none"
         >
           <option value={1}>正常</option>
@@ -151,12 +199,16 @@ export function MenuFormFields({ formData, onChange, parentMenuName }: FormField
       </div>
 
       {/* 显示状态 - 仅目录和菜单显示 */}
-      {formData.menuType !== 'B' && (
+      {formData.menuType !== "B" && (
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">显示状态</label>
+          <label className="mb-1 block text-sm font-medium text-gray-700">
+            显示状态
+          </label>
           <select
             value={formData.visible}
-            onChange={(e) => onChange({ ...formData, visible: Number(e.target.value) })}
+            onChange={(e) =>
+              onChange({ ...formData, visible: Number(e.target.value) })
+            }
             className="w-full rounded-lg border px-4 py-2 focus:border-blue-500 focus:outline-none"
           >
             <option value={1}>显示</option>
@@ -166,12 +218,16 @@ export function MenuFormFields({ formData, onChange, parentMenuName }: FormField
       )}
 
       {/* 是否外链 - 仅菜单显示 */}
-      {formData.menuType === 'M' && (
+      {formData.menuType === "M" && (
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">是否外链</label>
+          <label className="mb-1 block text-sm font-medium text-gray-700">
+            是否外链
+          </label>
           <select
             value={formData.isExternal}
-            onChange={(e) => onChange({ ...formData, isExternal: Number(e.target.value) })}
+            onChange={(e) =>
+              onChange({ ...formData, isExternal: Number(e.target.value) })
+            }
             className="w-full rounded-lg border px-4 py-2 focus:border-blue-500 focus:outline-none"
           >
             <option value={0}>否</option>
@@ -181,12 +237,16 @@ export function MenuFormFields({ formData, onChange, parentMenuName }: FormField
       )}
 
       {/* 是否缓存 - 仅菜单显示 */}
-      {formData.menuType === 'M' && (
+      {formData.menuType === "M" && (
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">是否缓存</label>
+          <label className="mb-1 block text-sm font-medium text-gray-700">
+            是否缓存
+          </label>
           <select
             value={formData.isCache}
-            onChange={(e) => onChange({ ...formData, isCache: Number(e.target.value) })}
+            onChange={(e) =>
+              onChange({ ...formData, isCache: Number(e.target.value) })
+            }
             className="w-full rounded-lg border px-4 py-2 focus:border-blue-500 focus:outline-none"
           >
             <option value={1}>是</option>
@@ -197,7 +257,9 @@ export function MenuFormFields({ formData, onChange, parentMenuName }: FormField
 
       {/* 备注 */}
       <div className="sm:col-span-2">
-        <label className="mb-1 block text-sm font-medium text-gray-700">备注</label>
+        <label className="mb-1 block text-sm font-medium text-gray-700">
+          备注
+        </label>
         <textarea
           value={formData.remark}
           onChange={(e) => onChange({ ...formData, remark: e.target.value })}
@@ -206,6 +268,15 @@ export function MenuFormFields({ formData, onChange, parentMenuName }: FormField
           placeholder="请输入备注"
         />
       </div>
+
+      {/* 图标选择器弹窗 */}
+      {showIconPicker && (
+        <IconPicker
+          value={formData.icon}
+          onChange={(icon) => onChange({ ...formData, icon })}
+          onClose={() => setShowIconPicker(false)}
+        />
+      )}
     </div>
-  )
+  );
 }

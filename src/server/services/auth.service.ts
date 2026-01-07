@@ -1,9 +1,4 @@
-/**
- * 认证服务
- * @description 管理员认证相关业务逻辑
- * @requirements 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 11.1
- */
-
+import { SUPER_ADMIN_ID } from '@/lib/constants'
 import { db } from '@/db'
 import { sysAdmin, sysAdminRole, sysMenu, sysRoleMenu } from '@/db/schema'
 import { BusinessError, UnauthorizedError } from '@/lib/errors'
@@ -102,6 +97,22 @@ export async function getAdminRoleIds(adminId: number): Promise<number[]> {
  * @description 查询管理员所有角色关联的菜单权限标识（去重）
  */
 export async function getAdminPermissions(adminId: number): Promise<string[]> {
+  if (adminId === SUPER_ADMIN_ID) {
+    const menus = await db
+      .select({ permission: sysMenu.permission })
+      .from(sysMenu)
+      .where(and(isNotNull(sysMenu.permission), eq(sysMenu.status, 1)))
+
+    const permissions = new Set<string>()
+    for (const menu of menus) {
+      if (menu.permission) {
+        permissions.add(menu.permission)
+      }
+    }
+
+    return ['*', ...Array.from(permissions)]
+  }
+
   // 1. 获取管理员的角色 ID
   const roleIds = await getAdminRoleIds(adminId)
 
@@ -144,6 +155,22 @@ export async function getAdminPermissions(adminId: number): Promise<string[]> {
  * 只返回 menuType 为 D 或 M 的菜单（不包含按钮）
  */
 export async function getAdminMenuTree(adminId: number): Promise<MenuTreeNode[]> {
+  if (adminId === SUPER_ADMIN_ID) {
+    const menus = await db
+      .select()
+      .from(sysMenu)
+      .where(
+        and(
+          inArray(sysMenu.menuType, ['D', 'M']),
+          eq(sysMenu.status, 1),
+          eq(sysMenu.visible, 1)
+        )
+      )
+
+    const menuNodes = menus.map(toMenuTreeNode)
+    return buildMenuTree(menuNodes)
+  }
+
   // 1. 获取管理员的角色 ID
   const roleIds = await getAdminRoleIds(adminId)
 

@@ -340,7 +340,7 @@
     - 创建 `src/app/(dashboard)/page.tsx`（仪表盘首页）
     - _Requirements: 11.5_
 
-  - [x] 14.4 创建管理员管理页面
+  - [x] 14.4 创建用户管理页面
     - 创建 `src/app/(dashboard)/system/admin/page.tsx`
     - 创建 `src/app/(dashboard)/system/admin/admin-form-dialog.tsx`
     - _Requirements: 3.1, 3.2, 3.4, 3.6_
@@ -396,7 +396,7 @@
   - 启动开发服务器验证完整流程
   - 使用 admin/admin123 登录测试
   - 验证所有功能正常工作
-  
+
 - [x] 18.编写readme.md文件
 
 ## Notes

@@ -1,27 +1,19 @@
-/**
- * RBAC 权限中间件
- * @description 基于角色的访问控制，实现权限验证和缓存
- * @requirements 7.1, 7.2, 7.3, 7.6, 7.7
- */
-
-import type { Env } from '@/server/context'
-import { createMiddleware } from 'hono/factory'
-import { HTTPException } from 'hono/http-exception'
-
-/** 超级管理员角色 ID */
-const SUPER_ADMIN_ROLE_ID = 1
+import { SUPER_ADMIN_ID } from "@/lib/constants";
+import type { Env } from "@/server/context";
+import { createMiddleware } from "hono/factory";
+import { HTTPException } from "hono/http-exception";
 
 /** 权限缓存 TTL（5 分钟） */
-const CACHE_TTL = 5 * 60 * 1000
+const CACHE_TTL = 5 * 60 * 1000;
 
 /** 权限缓存条目 */
 interface PermissionCacheEntry {
-  permissions: string[]
-  expireAt: number
+  permissions: string[];
+  expireAt: number;
 }
 
 /** 权限缓存（简单内存缓存，生产环境建议使用 Redis） */
-const permissionCache = new Map<number, PermissionCacheEntry>()
+const permissionCache = new Map<number, PermissionCacheEntry>();
 
 /**
  * 获取管理员权限（带缓存）
@@ -32,20 +24,20 @@ async function getCachedPermissions(
   adminId: number,
   fetchPermissions: (adminId: number) => Promise<string[]>
 ): Promise<string[]> {
-  const cached = permissionCache.get(adminId)
+  const cached = permissionCache.get(adminId);
 
   if (cached && cached.expireAt > Date.now()) {
-    return cached.permissions
+    return cached.permissions;
   }
 
-  const permissions = await fetchPermissions(adminId)
+  const permissions = await fetchPermissions(adminId);
 
   permissionCache.set(adminId, {
     permissions,
     expireAt: Date.now() + CACHE_TTL,
-  })
+  });
 
-  return permissions
+  return permissions;
 }
 
 /**
@@ -54,7 +46,7 @@ async function getCachedPermissions(
  * @param adminId - 管理员 ID
  */
 export function invalidatePermissionCache(adminId: number): void {
-  permissionCache.delete(adminId)
+  permissionCache.delete(adminId);
 }
 
 /**
@@ -62,14 +54,14 @@ export function invalidatePermissionCache(adminId: number): void {
  * @description 在角色权限变更时调用
  */
 export function invalidateAllPermissionCache(): void {
-  permissionCache.clear()
+  permissionCache.clear();
 }
 
 /**
  * 获取权限缓存大小（用于测试）
  */
 export function getPermissionCacheSize(): number {
-  return permissionCache.size
+  return permissionCache.size;
 }
 
 /**
@@ -77,38 +69,46 @@ export function getPermissionCacheSize(): number {
  * @param fetchPermissions - 获取权限的函数（依赖注入）
  * @description 加载当前管理员的权限列表到上下文
  */
-export function createLoadPermissions(fetchPermissions: (adminId: number) => Promise<string[]>) {
+export function createLoadPermissions(
+  fetchPermissions: (adminId: number) => Promise<string[]>
+) {
   return createMiddleware<Env>(async (c, next) => {
-    const admin = c.get('admin')
+    const admin = c.get("admin");
 
     if (!admin) {
-      c.set('permissions', null)
-      return next()
+      c.set("permissions", null);
+      return next();
     }
 
-    // 超级管理员拥有所有权限，无需查询
-    if (admin.roleIds.includes(SUPER_ADMIN_ROLE_ID)) {
-      c.set('permissions', ['*'])
-      return next()
+    if (admin.adminId === SUPER_ADMIN_ID) {
+      c.set("permissions", ["*"]);
+      return next();
     }
 
     // 使用缓存获取权限
-    const permissions = await getCachedPermissions(admin.adminId, fetchPermissions)
-    c.set('permissions', permissions)
+    const permissions = await getCachedPermissions(
+      admin.adminId,
+      fetchPermissions
+    );
+    c.set("permissions", permissions);
 
-    return next()
-  })
+    return next();
+  });
 }
 
 /**
  * 加载权限中间件（默认实现）
  * @description 使用 auth.service 的权限获取函数
  */
-export const loadPermissions = createLoadPermissions(async (adminId: number) => {
-  // 动态导入避免循环依赖
-  const { getAdminPermissions } = await import('@/server/services/auth.service')
-  return await getAdminPermissions(adminId)
-})
+export const loadPermissions = createLoadPermissions(
+  async (adminId: number) => {
+    // 动态导入避免循环依赖
+    const { getAdminPermissions } = await import(
+      "@/server/services/auth.service"
+    );
+    return await getAdminPermissions(adminId);
+  }
+);
 
 /**
  * 权限验证中间件工厂
@@ -117,26 +117,26 @@ export const loadPermissions = createLoadPermissions(async (adminId: number) => 
  */
 export function requirePermission(permission: string) {
   return createMiddleware<Env>(async (c, next) => {
-    const admin = c.get('admin')
+    const admin = c.get("admin");
 
     if (!admin) {
-      throw new HTTPException(401, { message: '未登录或登录已过期' })
+      throw new HTTPException(401, { message: "未登录或登录已过期" });
     }
 
-    const permissions = c.get('permissions')
+    const permissions = c.get("permissions");
 
     // 超级管理员直接放行
-    if (permissions?.includes('*')) {
-      return next()
+    if (permissions?.includes("*")) {
+      return next();
     }
 
     // 检查是否拥有所需权限
     if (!permissions?.includes(permission)) {
-      throw new HTTPException(403, { message: '无权限访问' })
+      throw new HTTPException(403, { message: "无权限访问" });
     }
 
-    return next()
-  })
+    return next();
+  });
 }
 
 /**
@@ -146,28 +146,30 @@ export function requirePermission(permission: string) {
  */
 export function requireAnyPermission(permissions: string[]) {
   return createMiddleware<Env>(async (c, next) => {
-    const admin = c.get('admin')
+    const admin = c.get("admin");
 
     if (!admin) {
-      throw new HTTPException(401, { message: '未登录或登录已过期' })
+      throw new HTTPException(401, { message: "未登录或登录已过期" });
     }
 
-    const adminPermissions = c.get('permissions')
+    const adminPermissions = c.get("permissions");
 
     // 超级管理员直接放行
-    if (adminPermissions?.includes('*')) {
-      return next()
+    if (adminPermissions?.includes("*")) {
+      return next();
     }
 
     // 检查是否拥有任一所需权限
-    const hasPermission = permissions.some((p) => adminPermissions?.includes(p))
+    const hasPermission = permissions.some((p) =>
+      adminPermissions?.includes(p)
+    );
 
     if (!hasPermission) {
-      throw new HTTPException(403, { message: '无权限访问' })
+      throw new HTTPException(403, { message: "无权限访问" });
     }
 
-    return next()
-  })
+    return next();
+  });
 }
 
 /**
@@ -177,26 +179,28 @@ export function requireAnyPermission(permissions: string[]) {
  */
 export function requireAllPermissions(permissions: string[]) {
   return createMiddleware<Env>(async (c, next) => {
-    const admin = c.get('admin')
+    const admin = c.get("admin");
 
     if (!admin) {
-      throw new HTTPException(401, { message: '未登录或登录已过期' })
+      throw new HTTPException(401, { message: "未登录或登录已过期" });
     }
 
-    const adminPermissions = c.get('permissions')
+    const adminPermissions = c.get("permissions");
 
     // 超级管理员直接放行
-    if (adminPermissions?.includes('*')) {
-      return next()
+    if (adminPermissions?.includes("*")) {
+      return next();
     }
 
     // 检查是否拥有全部所需权限
-    const hasAllPermissions = permissions.every((p) => adminPermissions?.includes(p))
+    const hasAllPermissions = permissions.every((p) =>
+      adminPermissions?.includes(p)
+    );
 
     if (!hasAllPermissions) {
-      throw new HTTPException(403, { message: '无权限访问' })
+      throw new HTTPException(403, { message: "无权限访问" });
     }
 
-    return next()
-  })
+    return next();
+  });
 }
