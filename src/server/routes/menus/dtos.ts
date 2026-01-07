@@ -243,6 +243,7 @@ export const UpdateMenuInputSchema = z
 // ========== 类型导出 ==========
 
 export type Menu = z.infer<typeof MenuSchema>
+export type MenuTreeNodeDto = z.infer<typeof MenuTreeNodeSchema>
 export type MenuQuery = z.infer<typeof MenuQuerySchema>
 export type CreateMenuInput = z.infer<typeof CreateMenuInputSchema>
 export type UpdateMenuInput = z.infer<typeof UpdateMenuInputSchema>

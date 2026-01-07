@@ -4,6 +4,7 @@
  * @requirements 7.3, 7.4
  */
 
+import { env } from '@/env'
 import {
   AppError,
   ConflictError,
@@ -24,6 +25,8 @@ export interface ErrorResponse {
  * 将错误映射为 HTTP 响应
  */
 export function mapErrorToResponse(err: unknown): ErrorResponse {
+  const shouldExposeDetails = env.NODE_ENV !== 'production'
+
   // 未授权错误 -> 401
   if (err instanceof UnauthorizedError) {
     return {
@@ -66,7 +69,7 @@ export function mapErrorToResponse(err: unknown): ErrorResponse {
       status: 400,
       code: err.code,
       message: err.message,
-      details: err.details,
+      details: shouldExposeDetails ? err.details : undefined,
     }
   }
 
@@ -76,12 +79,17 @@ export function mapErrorToResponse(err: unknown): ErrorResponse {
       status: 400,
       code: err.code,
       message: err.message,
-      details: err.details,
+      details: shouldExposeDetails ? err.details : undefined,
     }
   }
 
   // 未知错误 -> 500
-  const message = err instanceof Error ? err.message : 'Internal Server Error'
+  const message =
+    env.NODE_ENV === 'production'
+      ? 'Internal Server Error'
+      : err instanceof Error
+        ? err.message
+        : 'Internal Server Error'
   return {
     status: 500,
     code: 'INTERNAL_ERROR',

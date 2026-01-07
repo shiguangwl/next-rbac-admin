@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 /**
  * 顶部导航栏组件
@@ -6,44 +6,41 @@
  * @requirements 11.5
  */
 
-import { useAuth } from "@/hooks/use-auth";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useAuth } from '@/hooks/use-auth'
+import { cn } from '@/lib/utils'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useEffect, useRef, useState } from 'react'
 
 interface HeaderProps {
   /** 自定义类名 */
-  className?: string;
+  className?: string
 }
 
 /**
  * 用户下拉菜单
  */
 function UserDropdown() {
-  const router = useRouter();
-  const { admin, logout } = useAuth();
-  const [open, setOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const router = useRouter()
+  const { admin, logout } = useAuth()
+  const [open, setOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
   // 点击外部关闭下拉菜单
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setOpen(false);
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setOpen(false)
       }
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   const handleLogout = () => {
-    logout();
-    router.replace("/login");
-  };
+    logout()
+    router.replace('/login')
+  }
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -54,7 +51,7 @@ function UserDropdown() {
       >
         {/* 头像 */}
         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-500 text-sm font-medium text-white">
-          {admin?.nickname?.charAt(0) || admin?.username?.charAt(0) || "A"}
+          {admin?.nickname?.charAt(0) || admin?.username?.charAt(0) || 'A'}
         </div>
         {/* 用户名 */}
         <span className="hidden text-sm font-medium sm:block">
@@ -62,17 +59,13 @@ function UserDropdown() {
         </span>
         {/* 下拉箭头 */}
         <svg
-          className={cn("h-4 w-4 transition-transform", open && "rotate-180")}
+          className={cn('h-4 w-4 transition-transform', open && 'rotate-180')}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 9l-7 7-7-7"
-          />
+          <title>用户菜单</title>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
 
@@ -80,9 +73,7 @@ function UserDropdown() {
       {open && (
         <div className="absolute right-0 top-full z-50 mt-2 w-48 rounded-lg border bg-white py-1 shadow-lg">
           <div className="border-b px-4 py-2">
-            <p className="text-sm font-medium">
-              {admin?.nickname || admin?.username}
-            </p>
+            <p className="text-sm font-medium">{admin?.nickname || admin?.username}</p>
             <p className="text-xs text-gray-500">{admin?.username}</p>
           </div>
           <Link
@@ -90,12 +81,8 @@ function UserDropdown() {
             className="flex w-full items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50"
             onClick={() => setOpen(false)}
           >
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <title>返回首页</title>
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -110,12 +97,8 @@ function UserDropdown() {
             className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-50"
             onClick={handleLogout}
           >
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <title>退出登录</title>
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -128,7 +111,7 @@ function UserDropdown() {
         </div>
       )}
     </div>
-  );
+  )
 }
 
 /**
@@ -137,29 +120,17 @@ function UserDropdown() {
 export function Header({ className }: HeaderProps) {
   return (
     <header
-      className={cn(
-        "flex h-16 items-center justify-between border-b bg-white px-4",
-        className
-      )}
+      className={cn('flex h-16 items-center justify-between border-b bg-white px-4', className)}
     >
       {/* 左侧区域 */}
-      <div className="flex items-center gap-4">
-        {/* 面包屑或其他内容可以放这里 */}
-      </div>
+      <div className="flex items-center gap-4">{/* 面包屑或其他内容可以放这里 */}</div>
 
       {/* 右侧区域 */}
       <div className="flex items-center gap-2">
         {/* 通知图标 */}
-        <button
-          type="button"
-          className="relative rounded-lg p-2 hover:bg-gray-100"
-        >
-          <svg
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
+        <button type="button" className="relative rounded-lg p-2 hover:bg-gray-100">
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <title>通知</title>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -173,5 +144,5 @@ export function Header({ className }: HeaderProps) {
         <UserDropdown />
       </div>
     </header>
-  );
+  )
 }

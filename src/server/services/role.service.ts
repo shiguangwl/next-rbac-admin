@@ -7,7 +7,7 @@
 import { db } from '@/db'
 import { sysAdminRole, sysRole, sysRoleMenu } from '@/db/schema'
 import { BusinessError, ConflictError, NotFoundError } from '@/lib/errors'
-import { invalidateAllPermissionCache } from '@/server/middleware/rbac'
+import { invalidateAllPermissionCache } from '@/server/security/permission-cache'
 import { and, asc, count, eq, ne } from 'drizzle-orm'
 import type {
   CreateRoleInput,

@@ -6,7 +6,7 @@
  */
 
 import * as LucideIcons from 'lucide-react'
-import { useState, useMemo } from 'react'
+import { useMemo, useState } from 'react'
 
 // 常用图标列表（用于菜单系统）
 const COMMON_ICONS = [
@@ -81,10 +81,13 @@ export function IconPicker({ value, onChange, onClose }: IconPickerProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      onMouseDown={onClose}
+    >
       <div
         className="w-full max-w-2xl rounded-lg bg-white p-6 shadow-xl"
-        onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-lg font-semibold">选择图标</h3>
@@ -107,7 +110,6 @@ export function IconPicker({ value, onChange, onClose }: IconPickerProps) {
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="搜索图标..."
               className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 focus:border-blue-500 focus:outline-none"
-              autoFocus
             />
           </div>
         </div>
@@ -116,7 +118,9 @@ export function IconPicker({ value, onChange, onClose }: IconPickerProps) {
         <div className="max-h-96 overflow-y-auto">
           <div className="grid grid-cols-8 gap-2">
             {filteredIcons.map((iconName) => {
-              const IconComponent = LucideIcons[iconName as keyof typeof LucideIcons] as React.ComponentType<{ className?: string }>
+              const IconComponent = LucideIcons[
+                iconName as keyof typeof LucideIcons
+              ] as React.ComponentType<{ className?: string }>
               const isSelected = value === iconName
 
               return (
@@ -130,7 +134,9 @@ export function IconPicker({ value, onChange, onClose }: IconPickerProps) {
                   title={iconName}
                 >
                   <IconComponent className="h-6 w-6" />
-                  <span className="text-xs text-gray-600 truncate w-full text-center">{iconName}</span>
+                  <span className="text-xs text-gray-600 truncate w-full text-center">
+                    {iconName}
+                  </span>
                 </button>
               )
             })}
@@ -144,4 +150,3 @@ export function IconPicker({ value, onChange, onClose }: IconPickerProps) {
     </div>
   )
 }
-

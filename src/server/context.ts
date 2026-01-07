@@ -4,15 +4,7 @@
  * @requirements 2.7
  */
 
-/**
- * 管理员 JWT Payload 类型
- * @description 存储在 JWT Token 中的管理员信息
- */
-export interface AdminPayload {
-  adminId: number
-  username: string
-  roleIds: number[]
-}
+import type { AdminPayload } from '@/lib/jwt'
 
 /**
  * Hono Bindings 类型

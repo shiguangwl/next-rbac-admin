@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 /**
  * 菜单管理页面
@@ -6,63 +6,61 @@
  * @requirements 5.1, 5.2, 5.4, 5.6
  */
 
-import { PermissionGuard } from "@/components/permission-guard";
-import { PlusIcon, RefreshIcon } from "@/components/ui/icon";
-import { useDeleteMenu, useMenuTree } from "@/hooks/queries/use-menus";
-import { useMemo, useState } from "react";
-import { MenuFormDialog } from "./menu-form-dialog";
-import { type MenuTreeNode, MenuTreeRow } from "./menu-tree-row";
+import { PermissionGuard } from '@/components/permission-guard'
+import { PlusIcon, RefreshIcon } from '@/components/ui/icon'
+import { useDeleteMenu, useMenuTree } from '@/hooks/queries/use-menus'
+import { useMemo, useState } from 'react'
+import { MenuFormDialog } from './menu-form-dialog'
+import { type MenuTreeNode, MenuTreeRow } from './menu-tree-row'
 
 export default function MenuPage() {
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingMenu, setEditingMenu] = useState<MenuTreeNode | null>(null);
-  const [parentMenu, setParentMenu] = useState<MenuTreeNode | null>(null);
-  const [expandedIds, setExpandedIds] = useState<number[]>([]);
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [editingMenu, setEditingMenu] = useState<MenuTreeNode | null>(null)
+  const [parentMenu, setParentMenu] = useState<MenuTreeNode | null>(null)
+  const [expandedIds, setExpandedIds] = useState<number[]>([])
 
-  const { data: menuTree, isLoading, refetch } = useMenuTree();
-  const deleteMenu = useDeleteMenu();
+  const { data: menuTree, isLoading, refetch } = useMenuTree()
+  const deleteMenu = useDeleteMenu()
 
   const allMenuIds = useMemo(() => {
-    const ids: number[] = [];
+    const ids: number[] = []
     const collect = (nodes: MenuTreeNode[]) => {
       for (const node of nodes) {
-        ids.push(node.id);
-        if (node.children) collect(node.children);
+        ids.push(node.id)
+        if (node.children) collect(node.children)
       }
-    };
-    if (menuTree) collect(menuTree);
-    return ids;
-  }, [menuTree]);
+    }
+    if (menuTree) collect(menuTree)
+    return ids
+  }, [menuTree])
 
   const handleCreate = (parent?: MenuTreeNode) => {
-    setEditingMenu(null);
-    setParentMenu(parent || null);
-    setDialogOpen(true);
-  };
+    setEditingMenu(null)
+    setParentMenu(parent || null)
+    setDialogOpen(true)
+  }
 
   const handleEdit = (menu: MenuTreeNode) => {
-    setEditingMenu(menu);
-    setParentMenu(null);
-    setDialogOpen(true);
-  };
+    setEditingMenu(menu)
+    setParentMenu(null)
+    setDialogOpen(true)
+  }
 
   const handleDelete = async (menu: MenuTreeNode) => {
-    if (!confirm(`确定要删除菜单 "${menu.menuName}" 吗？`)) return;
+    if (!confirm(`确定要删除菜单 "${menu.menuName}" 吗？`)) return
     try {
-      await deleteMenu.mutateAsync(menu.id);
+      await deleteMenu.mutateAsync(menu.id)
     } catch (err) {
-      alert(err instanceof Error ? err.message : "删除失败");
+      alert(err instanceof Error ? err.message : '删除失败')
     }
-  };
+  }
 
   const toggleExpand = (id: number) => {
-    setExpandedIds((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    );
-  };
+    setExpandedIds((prev) => (prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]))
+  }
 
-  const expandAll = () => setExpandedIds(allMenuIds);
-  const collapseAll = () => setExpandedIds([]);
+  const expandAll = () => setExpandedIds(allMenuIds)
+  const collapseAll = () => setExpandedIds([])
 
   return (
     <div className="space-y-6">
@@ -111,48 +109,26 @@ export default function MenuPage() {
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                  菜单名称
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                  类型
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                  图标
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                  权限标识
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                  路径
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                  排序
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                  状态
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                  操作
-                </th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">菜单名称</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">类型</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">图标</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">权限标识</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">路径</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">排序</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">状态</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">操作</th>
               </tr>
             </thead>
             <tbody className="divide-y">
               {isLoading ? (
                 <tr>
-                  <td
-                    colSpan={8}
-                    className="px-4 py-8 text-center text-gray-500"
-                  >
+                  <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
                     加载中...
                   </td>
                 </tr>
               ) : !menuTree?.length ? (
                 <tr>
-                  <td
-                    colSpan={8}
-                    className="px-4 py-8 text-center text-gray-500"
-                  >
+                  <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
                     暂无数据
                   </td>
                 </tr>
@@ -182,10 +158,10 @@ export default function MenuPage() {
         parentMenu={parentMenu}
         onClose={() => setDialogOpen(false)}
         onSuccess={() => {
-          setDialogOpen(false);
-          refetch();
+          setDialogOpen(false)
+          refetch()
         }}
       />
     </div>
-  );
+  )
 }

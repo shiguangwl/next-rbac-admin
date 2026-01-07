@@ -13,7 +13,6 @@ import jwt from 'jsonwebtoken'
 export interface AdminPayload {
   adminId: number
   username: string
-  roleIds: number[]
 }
 
 /**

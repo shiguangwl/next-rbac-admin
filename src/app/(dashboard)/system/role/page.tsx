@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 /**
  * 角色管理页面
@@ -6,69 +6,63 @@
  * @requirements 4.1, 4.2, 4.3, 4.4, 4.6
  */
 
-import { PermissionGuard } from "@/components/permission-guard";
-import {
-  EditIcon,
-  PlusIcon,
-  RefreshIcon,
-  SearchIcon,
-  TrashIcon,
-} from "@/components/ui/icon";
-import { Pagination } from "@/components/ui/pagination";
-import { useDeleteRole, useRoles } from "@/hooks/queries/use-roles";
-import { useState } from "react";
-import { RoleFormDialog } from "./role-form-dialog";
-import { RoleMenuDialog } from "./role-menu-dialog";
+import { PermissionGuard } from '@/components/permission-guard'
+import { EditIcon, PlusIcon, RefreshIcon, SearchIcon, TrashIcon } from '@/components/ui/icon'
+import { Pagination } from '@/components/ui/pagination'
+import { useDeleteRole, useRoles } from '@/hooks/queries/use-roles'
+import { useState } from 'react'
+import { RoleFormDialog } from './role-form-dialog'
+import { RoleMenuDialog } from './role-menu-dialog'
 
 type Role = {
-  id: number;
-  roleName: string;
-  sort: number;
-  status: number;
-  remark: string | null;
-  createdAt: string;
-  updatedAt: string;
-};
+  id: number
+  roleName: string
+  sort: number
+  status: number
+  remark: string | null
+  createdAt: string
+  updatedAt: string
+}
 
 export default function RolePage() {
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
-  const [keyword, setKeyword] = useState("");
-  const [searchKeyword, setSearchKeyword] = useState("");
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingRole, setEditingRole] = useState<Role | null>(null);
-  const [menuDialogRole, setMenuDialogRole] = useState<Role | null>(null);
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(20)
+  const [keyword, setKeyword] = useState('')
+  const [searchKeyword, setSearchKeyword] = useState('')
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [editingRole, setEditingRole] = useState<Role | null>(null)
+  const [menuDialogRole, setMenuDialogRole] = useState<Role | null>(null)
 
   const { data, isLoading, refetch } = useRoles({
     page,
     pageSize,
     keyword: searchKeyword,
-  });
-  const deleteRole = useDeleteRole();
+  })
+  const deleteRole = useDeleteRole()
 
   const handleSearch = () => {
-    setSearchKeyword(keyword);
-    setPage(1);
-  };
+    setSearchKeyword(keyword)
+    setPage(1)
+  }
 
   const handleCreate = () => {
-    setEditingRole(null);
-    setDialogOpen(true);
-  };
+    setEditingRole(null)
+    setDialogOpen(true)
+  }
 
   const handleEdit = (role: Role) => {
-    setEditingRole(role);
-    setDialogOpen(true);
-  };
+    setEditingRole(role)
+    setDialogOpen(true)
+  }
 
   const handleDelete = async (role: Role) => {
-    if (!confirm(`确定要删除角色 "${role.roleName}" 吗？`)) return;
+    if (!confirm(`确定要删除角色 "${role.roleName}" 吗？`)) return
     try {
-      await deleteRole.mutateAsync(role.id);
+      await deleteRole.mutateAsync(role.id)
     } catch (err) {
-      alert(err instanceof Error ? err.message : "删除失败");
+      alert(err instanceof Error ? err.message : '删除失败')
     }
-  };
+  }
 
   return (
     <div className="space-y-6">
@@ -94,7 +88,7 @@ export default function RolePage() {
             type="text"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             placeholder="搜索角色名称"
             className="flex-1 rounded-lg border px-4 py-2 focus:border-blue-500 focus:outline-none"
           />
@@ -123,45 +117,25 @@ export default function RolePage() {
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                  ID
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                  角色名称
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                  排序
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                  状态
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                  备注
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                  创建时间
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                  操作
-                </th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">ID</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">角色名称</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">排序</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">状态</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">备注</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">创建时间</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">操作</th>
               </tr>
             </thead>
             <tbody className="divide-y">
               {isLoading ? (
                 <tr>
-                  <td
-                    colSpan={7}
-                    className="px-4 py-8 text-center text-gray-500"
-                  >
+                  <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
                     加载中...
                   </td>
                 </tr>
               ) : !data?.items?.length ? (
                 <tr>
-                  <td
-                    colSpan={7}
-                    className="px-4 py-8 text-center text-gray-500"
-                  >
+                  <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
                     暂无数据
                   </td>
                 </tr>
@@ -169,24 +143,20 @@ export default function RolePage() {
                 data.items.map((role: Role) => (
                   <tr key={role.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3 text-sm">{role.id}</td>
-                    <td className="px-4 py-3 text-sm font-medium">
-                      {role.roleName}
-                    </td>
+                    <td className="px-4 py-3 text-sm font-medium">{role.roleName}</td>
                     <td className="px-4 py-3 text-sm">{role.sort}</td>
                     <td className="px-4 py-3 text-sm">
                       <span
                         className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${
                           role.status === 1
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700"
+                            ? 'bg-green-100 text-green-700'
+                            : 'bg-red-100 text-red-700'
                         }`}
                       >
-                        {role.status === 1 ? "正常" : "禁用"}
+                        {role.status === 1 ? '正常' : '禁用'}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-500">
-                      {role.remark || "-"}
-                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-500">{role.remark || '-'}</td>
                     <td className="px-4 py-3 text-sm text-gray-500">
                       {new Date(role.createdAt).toLocaleString()}
                     </td>
@@ -215,6 +185,7 @@ export default function RolePage() {
                               viewBox="0 0 24 24"
                               stroke="currentColor"
                             >
+                              <title>分配权限</title>
                               <path
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
@@ -252,8 +223,8 @@ export default function RolePage() {
               total={data.total}
               onPageChange={setPage}
               onPageSizeChange={(size) => {
-                setPageSize(size);
-                setPage(1);
+                setPageSize(size)
+                setPage(1)
               }}
             />
           </div>
@@ -266,8 +237,8 @@ export default function RolePage() {
         role={editingRole}
         onClose={() => setDialogOpen(false)}
         onSuccess={() => {
-          setDialogOpen(false);
-          refetch();
+          setDialogOpen(false)
+          refetch()
         }}
       />
 
@@ -279,5 +250,5 @@ export default function RolePage() {
         onSuccess={() => setMenuDialogRole(null)}
       />
     </div>
-  );
+  )
 }

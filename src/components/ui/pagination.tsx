@@ -144,11 +144,11 @@ export function Pagination({
         {/* 页码 */}
         {pageNumbers.map((pageNum, index) => {
           if (pageNum === 'ellipsis') {
+            const prev = pageNumbers[index - 1]
+            const next = pageNumbers[index + 1]
+            const key = `ellipsis-${String(prev ?? 'start')}-${String(next ?? 'end')}`
             return (
-              <span
-                key={`ellipsis-${index}`}
-                className="flex h-8 w-8 items-center justify-center text-gray-400"
-              >
+              <span key={key} className="flex h-8 w-8 items-center justify-center text-gray-400">
                 ...
               </span>
             )

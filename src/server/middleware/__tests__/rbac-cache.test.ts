@@ -1,4 +1,5 @@
-import type { AdminPayload, Env } from '@/server/context'
+import type { AdminPayload } from '@/lib/jwt'
+import type { Env } from '@/server/context'
 import { Hono } from 'hono'
 /**
  * RBAC 权限缓存测试
@@ -27,7 +28,7 @@ describe('RBAC 权限缓存', () => {
       return ['test:permission:read']
     }
 
-    const admin: AdminPayload = { adminId: 1, username: 'test', roleIds: [2] }
+    const admin: AdminPayload = { adminId: 2, username: 'test' }
 
     const app = new Hono<Env>()
     app.use('*', async (c, next) => {
@@ -58,7 +59,7 @@ describe('RBAC 权限缓存', () => {
       return ['test:permission:read']
     }
 
-    const admin: AdminPayload = { adminId: 100, username: 'test', roleIds: [2] }
+    const admin: AdminPayload = { adminId: 100, username: 'test' }
 
     const app = new Hono<Env>()
     app.use('*', async (c, next) => {

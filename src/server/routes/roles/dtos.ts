@@ -116,6 +116,7 @@ export const PaginatedRoleSchema = createPaginatedSchema(RoleSchema, 'PaginatedR
 // ========== 类型导出 ==========
 
 export type Role = z.infer<typeof RoleSchema>
+export type PaginatedRole = z.infer<typeof PaginatedRoleSchema>
 export type RoleQuery = z.infer<typeof RoleQuerySchema>
 export type CreateRoleInput = z.infer<typeof CreateRoleInputSchema>
 export type UpdateRoleInput = z.infer<typeof UpdateRoleInputSchema>

@@ -7,13 +7,45 @@ import { env } from '@/env'
 import type { AppType } from '@/server/types'
 import { type ClientResponse, hc } from 'hono/client'
 
-/**
- * Hono Client 类型
- * 由于 TypeScript 类型推断限制，这里使用 any 类型
- * 实际使用时会有正确的类型提示
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type HonoClient = any
+const hcApp = hc<AppType>
+
+export type HonoClient = ReturnType<typeof hcApp>
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null
+}
+
+export type ApiErrorResponse = {
+  code: string
+  message: string
+  details?: unknown
+}
+
+export type ApiSuccessResponse<T> = {
+  code: string
+  message?: string
+  data: T
+}
+
+export async function unwrapApiData<T>(
+  response: Pick<ClientResponse<unknown>, 'ok' | 'json'>,
+  fallbackMessage: string
+): Promise<T> {
+  const payload = await response.json().catch(() => null)
+
+  if (!response.ok) {
+    if (isRecord(payload) && typeof payload.message === 'string' && payload.message.trim()) {
+      throw new Error(payload.message)
+    }
+    throw new Error(fallbackMessage)
+  }
+
+  if (!isRecord(payload) || !('data' in payload)) {
+    throw new Error(fallbackMessage)
+  }
+
+  return (payload as ApiSuccessResponse<T>).data
+}
 
 /**
  * 获取 API 基础 URL
@@ -68,10 +100,9 @@ function createHeaders(token: string | null): Record<string, string> {
  */
 export function createClient(customToken?: string): HonoClient {
   const baseUrl = getBaseUrl()
-  const token = customToken || getStoredToken()
 
-  return hc<AppType>(`${baseUrl}/api`, {
-    headers: () => createHeaders(token),
+  return hcApp(`${baseUrl}/api`, {
+    headers: () => createHeaders(customToken ?? getStoredToken()),
   })
 }
 

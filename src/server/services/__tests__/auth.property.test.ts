@@ -48,12 +48,10 @@ describe('Property 3: 登录凭据验证', () => {
         vi.mocked(db.select).mockReturnValue({
           from: vi.fn().mockReturnValue({
             where: vi.fn().mockReturnValue({
-              limit: vi.fn().mockReturnValue({
-                then: vi.fn().mockImplementation((cb) => cb([])),
-              }),
+              limit: vi.fn().mockResolvedValue([]),
             }),
           }),
-        } as any)
+        } as unknown as ReturnType<typeof db.select>)
 
         await expect(login({ username, password })).rejects.toThrow(UnauthorizedError)
         await expect(login({ username, password })).rejects.toThrow('用户名或密码错误')
@@ -86,27 +84,23 @@ describe('Property 3: 登录凭据验证', () => {
           vi.mocked(db.select).mockReturnValue({
             from: vi.fn().mockReturnValue({
               where: vi.fn().mockReturnValue({
-                limit: vi.fn().mockReturnValue({
-                  then: vi.fn().mockImplementation((cb) =>
-                    cb([
-                      {
-                        id: 1,
-                        username,
-                        password: hashedPassword,
-                        nickname: 'Test',
-                        status: 1,
-                        loginIp: null,
-                        loginTime: null,
-                        remark: null,
-                        createdAt: new Date(),
-                        updatedAt: new Date(),
-                      },
-                    ])
-                  ),
-                }),
+                limit: vi.fn().mockResolvedValue([
+                  {
+                    id: 1,
+                    username,
+                    password: hashedPassword,
+                    nickname: 'Test',
+                    status: 1,
+                    loginIp: null,
+                    loginTime: null,
+                    remark: null,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                  },
+                ]),
               }),
             }),
-          } as any)
+          } as unknown as ReturnType<typeof db.select>)
 
           await expect(login({ username, password: wrongPassword })).rejects.toThrow(
             UnauthorizedError
@@ -137,27 +131,23 @@ describe('Property 3: 登录凭据验证', () => {
         vi.mocked(db.select).mockReturnValue({
           from: vi.fn().mockReturnValue({
             where: vi.fn().mockReturnValue({
-              limit: vi.fn().mockReturnValue({
-                then: vi.fn().mockImplementation((cb) =>
-                  cb([
-                    {
-                      id: 1,
-                      username,
-                      password: hashedPassword,
-                      nickname: 'Test',
-                      status: 0, // 禁用状态
-                      loginIp: null,
-                      loginTime: null,
-                      remark: null,
-                      createdAt: new Date(),
-                      updatedAt: new Date(),
-                    },
-                  ])
-                ),
-              }),
+              limit: vi.fn().mockResolvedValue([
+                {
+                  id: 1,
+                  username,
+                  password: hashedPassword,
+                  nickname: 'Test',
+                  status: 0, // 禁用状态
+                  loginIp: null,
+                  loginTime: null,
+                  remark: null,
+                  createdAt: new Date(),
+                  updatedAt: new Date(),
+                },
+              ]),
             }),
           }),
-        } as any)
+        } as unknown as ReturnType<typeof db.select>)
 
         await expect(login({ username, password })).rejects.toThrow(BusinessError)
         await expect(login({ username, password })).rejects.toThrow('账号已禁用')

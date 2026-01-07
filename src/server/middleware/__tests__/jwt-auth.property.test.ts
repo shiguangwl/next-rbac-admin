@@ -21,20 +21,11 @@ const adminIdArbitrary = fc.integer({ min: 1, max: 2147483647 })
 const usernameArbitrary = fc.stringMatching(/^[a-zA-Z][a-zA-Z0-9_]{0,49}$/)
 
 /**
- * 生成有效的 roleIds 数组（1-10 个正整数）
- */
-const roleIdsArbitrary = fc.array(fc.integer({ min: 1, max: 2147483647 }), {
-  minLength: 1,
-  maxLength: 10,
-})
-
-/**
  * 生成有效的 AdminPayload
  */
 const adminPayloadArbitrary = fc.record({
   adminId: adminIdArbitrary,
   username: usernameArbitrary,
-  roleIds: roleIdsArbitrary,
 })
 
 describe('Property 2: JWT Token 结构完整性', () => {
@@ -65,9 +56,6 @@ describe('Property 2: JWT Token 结构完整性', () => {
 
         // username 应一致
         expect(decoded!.username).toBe(payload.username)
-
-        // roleIds 应一致
-        expect(decoded!.roleIds).toEqual(payload.roleIds)
       }),
       { numRuns: 100 }
     )
@@ -95,7 +83,6 @@ describe('Property 2: JWT Token 结构完整性', () => {
         // 两个 Token 解码后的 payload 数据应一致
         expect(decoded1!.adminId).toBe(decoded2!.adminId)
         expect(decoded1!.username).toBe(decoded2!.username)
-        expect(decoded1!.roleIds).toEqual(decoded2!.roleIds)
       }),
       { numRuns: 100 }
     )

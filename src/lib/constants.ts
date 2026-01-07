@@ -8,4 +8,3 @@
  * @description 系统内置的超级管理员账号 ID，该账号不可删除、不可修改角色
  */
 export const SUPER_ADMIN_ID = 1
-

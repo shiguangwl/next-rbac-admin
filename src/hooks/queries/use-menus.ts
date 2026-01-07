@@ -4,178 +4,158 @@
  * @requirements 11.2
  */
 
-import { getApiClient } from "@/lib/client";
+import { type ClientResponse, getApiClient, unwrapApiData } from '@/lib/client'
 import type {
   CreateMenuInput,
+  Menu,
   MenuQuery,
+  MenuTreeNodeDto,
   UpdateMenuInput,
-} from "@/server/routes/menus/dtos";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+} from '@/server/routes/menus/dtos'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+
+type MenusClient = {
+  $get: (args: { query: Record<string, string> }) => Promise<ClientResponse<unknown>>
+  $post: (args: { json: CreateMenuInput }) => Promise<ClientResponse<unknown>>
+  tree: {
+    $get: (args: { query: Record<string, string> }) => Promise<ClientResponse<unknown>>
+  }
+  ':id': {
+    $get: (args: { param: { id: string } }) => Promise<ClientResponse<unknown>>
+    $put: (args: { param: { id: string }; json: UpdateMenuInput }) => Promise<
+      ClientResponse<unknown>
+    >
+    $delete: (args: { param: { id: string } }) => Promise<ClientResponse<unknown>>
+  }
+}
+
+function menusClient(): MenusClient {
+  const client = getApiClient() as unknown as { menus: MenusClient }
+  return client.menus
+}
 
 /**
  * 查询键
  */
 export const menuKeys = {
-  all: ["menus"] as const,
-  lists: () => [...menuKeys.all, "list"] as const,
+  all: ['menus'] as const,
+  lists: () => [...menuKeys.all, 'list'] as const,
   list: (params?: MenuQuery) => [...menuKeys.lists(), params] as const,
-  tree: () => [...menuKeys.all, "tree"] as const,
-  details: () => [...menuKeys.all, "detail"] as const,
+  tree: () => [...menuKeys.all, 'tree'] as const,
+  details: () => [...menuKeys.all, 'detail'] as const,
   detail: (id: number) => [...menuKeys.details(), id] as const,
-};
+}
 
 /**
  * 获取菜单列表
  */
 export function useMenus(params?: MenuQuery) {
-  return useQuery({
+  return useQuery<Menu[], Error>({
     queryKey: menuKeys.list(params),
     queryFn: async () => {
-      const response = await getApiClient().menus.$get({
+      const response = await menusClient().$get({
         query: {
           ...(params?.menuType && { menuType: params.menuType }),
           ...(params?.status !== undefined && {
             status: String(params.status),
           }),
         },
-      });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(
-          (error as { message?: string }).message || "获取菜单列表失败"
-        );
-      }
-      const result = await response.json();
-      return (result as { data: unknown }).data;
+      })
+      return unwrapApiData<Menu[]>(response, '获取菜单列表失败')
     },
-  });
+  })
 }
 
 /**
  * 获取菜单树
  */
 export function useMenuTree() {
-  return useQuery({
+  return useQuery<MenuTreeNodeDto[], Error>({
     queryKey: menuKeys.tree(),
     queryFn: async () => {
-      const response = await getApiClient().menus.tree.$get();
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(
-          (error as { message?: string }).message || "获取菜单树失败"
-        );
-      }
-      const result = await response.json();
-      return (result as { data: unknown }).data;
+      const response = await menusClient().tree.$get({ query: {} })
+      return unwrapApiData<MenuTreeNodeDto[]>(response, '获取菜单树失败')
     },
-  });
+  })
 }
 
 /**
  * 获取菜单详情
  */
 export function useMenu(id: number) {
-  return useQuery({
+  return useQuery<Menu, Error>({
     queryKey: menuKeys.detail(id),
     queryFn: async () => {
-      const response = await getApiClient().menus[":id"].$get({
+      const response = await menusClient()[':id'].$get({
         param: { id: String(id) },
-      });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(
-          (error as { message?: string }).message || "获取菜单树失败"
-        );
-      }
-      const result = await response.json();
-      return (result as { data: unknown }).data;
+      })
+      return unwrapApiData<Menu>(response, '获取菜单详情失败')
     },
     enabled: id > 0,
-  });
+  })
 }
 
 /**
  * 创建菜单
  */
 export function useCreateMenu() {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async (input: CreateMenuInput) => {
-      const response = await getApiClient().menus.$post({
+      const response = await menusClient().$post({
         json: input,
-      });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(
-          (error as { message?: string }).message || "创建菜单失败"
-        );
-      }
-      const result = await response.json();
-      return (result as { data: unknown }).data;
+      })
+      return unwrapApiData<Menu>(response, '创建菜单失败')
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: menuKeys.all });
+      queryClient.invalidateQueries({ queryKey: menuKeys.all })
     },
-  });
+  })
 }
 
 /**
  * 更新菜单
  */
 export function useUpdateMenu() {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async ({
       id,
       input,
     }: {
-      id: number;
-      input: UpdateMenuInput;
+      id: number
+      input: UpdateMenuInput
     }) => {
-      const response = await getApiClient().menus[":id"].$put({
+      const response = await menusClient()[':id'].$put({
         param: { id: String(id) },
         json: input,
-      });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(
-          (error as { message?: string }).message || "更新菜单失败"
-        );
-      }
-      const result = await response.json();
-      return (result as { data: unknown }).data;
+      })
+      return unwrapApiData<Menu>(response, '更新菜单失败')
     },
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: menuKeys.all });
-      queryClient.invalidateQueries({ queryKey: menuKeys.detail(id) });
+      queryClient.invalidateQueries({ queryKey: menuKeys.all })
+      queryClient.invalidateQueries({ queryKey: menuKeys.detail(id) })
     },
-  });
+  })
 }
 
 /**
  * 删除菜单
  */
 export function useDeleteMenu() {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async (id: number) => {
-      const response = await getApiClient().menus[":id"].$delete({
+      const response = await menusClient()[':id'].$delete({
         param: { id: String(id) },
-      });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(
-          (error as { message?: string }).message || "删除菜单失败"
-        );
-      }
-      const result = await response.json();
-      return (result as { data: unknown }).data;
+      })
+      return unwrapApiData<null>(response, '删除菜单失败')
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: menuKeys.all });
+      queryClient.invalidateQueries({ queryKey: menuKeys.all })
     },
-  });
+  })
 }

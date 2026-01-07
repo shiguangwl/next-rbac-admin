@@ -86,8 +86,11 @@ export default function LogPage() {
       <div className="rounded-lg bg-white p-4 shadow">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div>
-            <label className="mb-1 block text-sm text-gray-600">管理员</label>
+            <label htmlFor="log-filter-adminName" className="mb-1 block text-sm text-gray-600">
+              管理员
+            </label>
             <input
+              id="log-filter-adminName"
               type="text"
               value={filters.adminName}
               onChange={(e) => setFilters({ ...filters, adminName: e.target.value })}
@@ -96,8 +99,11 @@ export default function LogPage() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm text-gray-600">模块</label>
+            <label htmlFor="log-filter-module" className="mb-1 block text-sm text-gray-600">
+              模块
+            </label>
             <input
+              id="log-filter-module"
               type="text"
               value={filters.module}
               onChange={(e) => setFilters({ ...filters, module: e.target.value })}
@@ -106,8 +112,11 @@ export default function LogPage() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm text-gray-600">操作类型</label>
+            <label htmlFor="log-filter-operation" className="mb-1 block text-sm text-gray-600">
+              操作类型
+            </label>
             <input
+              id="log-filter-operation"
               type="text"
               value={filters.operation}
               onChange={(e) => setFilters({ ...filters, operation: e.target.value })}
@@ -116,8 +125,11 @@ export default function LogPage() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm text-gray-600">状态</label>
+            <label htmlFor="log-filter-status" className="mb-1 block text-sm text-gray-600">
+              状态
+            </label>
             <select
+              id="log-filter-status"
               value={filters.status}
               onChange={(e) => setFilters({ ...filters, status: e.target.value as '' | '0' | '1' })}
               className="w-full rounded-lg border px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
@@ -128,8 +140,11 @@ export default function LogPage() {
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-sm text-gray-600">开始时间</label>
+            <label htmlFor="log-filter-startTime" className="mb-1 block text-sm text-gray-600">
+              开始时间
+            </label>
             <input
+              id="log-filter-startTime"
               type="datetime-local"
               value={filters.startTime}
               onChange={(e) => setFilters({ ...filters, startTime: e.target.value })}
@@ -137,8 +152,11 @@ export default function LogPage() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm text-gray-600">结束时间</label>
+            <label htmlFor="log-filter-endTime" className="mb-1 block text-sm text-gray-600">
+              结束时间
+            </label>
             <input
+              id="log-filter-endTime"
               type="datetime-local"
               value={filters.endTime}
               onChange={(e) => setFilters({ ...filters, endTime: e.target.value })}

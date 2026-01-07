@@ -147,6 +147,7 @@ export const PaginatedAdminSchema = createPaginatedSchema(AdminSchema, 'Paginate
 // ========== 类型导出 ==========
 
 export type Admin = z.infer<typeof AdminSchema>
+export type PaginatedAdmin = z.infer<typeof PaginatedAdminSchema>
 export type AdminQuery = z.infer<typeof AdminQuerySchema>
 export type CreateAdminInput = z.infer<typeof CreateAdminInputSchema>
 export type UpdateAdminInput = z.infer<typeof UpdateAdminInputSchema>

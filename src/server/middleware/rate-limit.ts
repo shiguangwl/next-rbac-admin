@@ -139,7 +139,7 @@ export const apiRateLimit = rateLimit({
  */
 export const loginRateLimit = rateLimit({
   windowMs: 60 * 1000, // 1 分钟
-  max: 20000,
+  max: 5,
   message: "登录尝试过于频繁，请稍后再试",
 });
 

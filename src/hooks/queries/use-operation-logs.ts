@@ -4,27 +4,47 @@
  * @requirements 11.2
  */
 
-import { getApiClient } from "@/lib/client";
-import type { LogQuery } from "@/server/routes/operation-logs/dtos";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { type ClientResponse, getApiClient, unwrapApiData } from '@/lib/client'
+import type { LogQuery, OperationLog } from '@/server/routes/operation-logs/dtos'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 /**
  * 查询键
  */
 export const operationLogKeys = {
-  all: ["operation-logs"] as const,
-  lists: () => [...operationLogKeys.all, "list"] as const,
+  all: ['operation-logs'] as const,
+  lists: () => [...operationLogKeys.all, 'list'] as const,
   list: (params: LogQuery) => [...operationLogKeys.lists(), params] as const,
-};
+}
+
+type OperationLogPage = {
+  items: OperationLog[]
+  total: number
+  page: number
+  pageSize: number
+  totalPages: number
+}
+
+type OperationLogsClient = {
+  $get: (args: { query: Record<string, string> }) => Promise<ClientResponse<unknown>>
+  ':id': {
+    $delete: (args: { param: { id: string } }) => Promise<ClientResponse<unknown>>
+  }
+}
+
+function operationLogsClient(): OperationLogsClient {
+  const client = getApiClient() as unknown as { 'operation-logs': OperationLogsClient }
+  return client['operation-logs']
+}
 
 /**
  * 获取操作日志列表
  */
 export function useOperationLogs(params: LogQuery = { page: 1, pageSize: 20 }) {
-  return useQuery({
+  return useQuery<OperationLogPage, Error>({
     queryKey: operationLogKeys.list(params),
     queryFn: async () => {
-      const response = await getApiClient()["operation-logs"].$get({
+      const response = await operationLogsClient().$get({
         query: {
           page: String(params.page || 1),
           pageSize: String(params.pageSize || 20),
@@ -36,41 +56,27 @@ export function useOperationLogs(params: LogQuery = { page: 1, pageSize: 20 }) {
           ...(params.startTime && { startTime: params.startTime }),
           ...(params.endTime && { endTime: params.endTime }),
         },
-      });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(
-          (error as { message?: string }).message || "获取操作日志列表失败"
-        );
-      }
-      const result = await response.json();
-      return (result as { data: unknown }).data;
+      })
+      return unwrapApiData<OperationLogPage>(response, '获取操作日志列表失败')
     },
-  });
+  })
 }
 
 /**
  * 删除操作日志
  */
 export function useDeleteOperationLog() {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async (id: number) => {
-      const response = await getApiClient()["operation-logs"][":id"].$delete({
+      const response = await operationLogsClient()[':id'].$delete({
         param: { id: String(id) },
-      });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(
-          (error as { message?: string }).message || "删除操作日志失败"
-        );
-      }
-      const result = await response.json();
-      return (result as { data: unknown }).data;
+      })
+      return unwrapApiData<null>(response, '删除操作日志失败')
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: operationLogKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: operationLogKeys.lists() })
     },
-  });
+  })
 }

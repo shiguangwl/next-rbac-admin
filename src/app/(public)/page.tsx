@@ -33,12 +33,8 @@ export default function HomePage() {
       <main className="container mx-auto px-4 py-16">
         <div className="mx-auto max-w-4xl text-center">
           {/* Hero Section */}
-          <h1 className="mb-6 text-5xl font-bold text-gray-900">
-            ETF 数据分析平台
-          </h1>
-          <p className="mb-8 text-xl text-gray-600">
-            专业的 ETF 数据管理与分析系统
-          </p>
+          <h1 className="mb-6 text-5xl font-bold text-gray-900">ETF 数据分析平台</h1>
+          <p className="mb-8 text-xl text-gray-600">专业的 ETF 数据管理与分析系统</p>
 
           {/* 功能特性 */}
           <div className="mt-16 grid gap-8 md:grid-cols-3">
@@ -52,11 +48,7 @@ export default function HomePage() {
               title="安全可靠"
               description="企业级安全防护，RBAC 权限管理系统"
             />
-            <FeatureCard
-              icon="⚡"
-              title="高效便捷"
-              description="现代化界面设计，流畅的用户体验"
-            />
+            <FeatureCard icon="⚡" title="高效便捷" description="现代化界面设计，流畅的用户体验" />
           </div>
 
           {/* CTA */}
@@ -99,4 +91,3 @@ function FeatureCard({ icon, title, description }: FeatureCardProps) {
     </div>
   )
 }
-

@@ -1,6 +1,6 @@
-import { SUPER_ADMIN_ID } from '@/lib/constants'
 import { db } from '@/db'
 import { sysAdmin, sysAdminRole, sysMenu, sysRoleMenu } from '@/db/schema'
+import { SUPER_ADMIN_ID } from '@/lib/constants'
 import { BusinessError, UnauthorizedError } from '@/lib/errors'
 import { type AdminPayload, signToken } from '@/lib/jwt'
 import { verifyPassword } from '@/lib/password'
@@ -40,9 +40,6 @@ export async function login(input: LoginInput): Promise<LoginResult> {
     throw new BusinessError('账号已禁用', 'ACCOUNT_DISABLED')
   }
 
-  // 4. 获取角色 ID 列表
-  const roleIds = await getAdminRoleIds(admin.id)
-
   // 5. 更新登录信息
   await db
     .update(sysAdmin)
@@ -56,7 +53,6 @@ export async function login(input: LoginInput): Promise<LoginResult> {
   const payload: AdminPayload = {
     adminId: admin.id,
     username: admin.username,
-    roleIds,
   }
   const token = signToken(payload)
 
@@ -160,11 +156,7 @@ export async function getAdminMenuTree(adminId: number): Promise<MenuTreeNode[]>
       .select()
       .from(sysMenu)
       .where(
-        and(
-          inArray(sysMenu.menuType, ['D', 'M']),
-          eq(sysMenu.status, 1),
-          eq(sysMenu.visible, 1)
-        )
+        and(inArray(sysMenu.menuType, ['D', 'M']), eq(sysMenu.status, 1), eq(sysMenu.visible, 1))
       )
 
     const menuNodes = menus.map(toMenuTreeNode)

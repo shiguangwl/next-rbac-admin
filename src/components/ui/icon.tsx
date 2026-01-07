@@ -10,6 +10,7 @@ import type { SVGProps } from 'react'
 type IconProps = SVGProps<SVGSVGElement> & {
   /** 图标大小 */
   size?: 'sm' | 'md' | 'lg' | 'xl'
+  title?: string
 }
 
 const sizeMap = {
@@ -22,7 +23,12 @@ const sizeMap = {
 /**
  * 基础图标组件
  */
-function BaseIcon({ size = 'md', className, children, ...props }: IconProps) {
+function BaseIcon({ size = 'md', className, title, children, ...props }: IconProps) {
+  const titleText =
+    (typeof title === 'string' && title.trim()) ||
+    (typeof props['aria-label'] === 'string' && props['aria-label'].trim()) ||
+    '图标'
+
   return (
     <svg
       className={cn(sizeMap[size], className)}
@@ -32,6 +38,7 @@ function BaseIcon({ size = 'md', className, children, ...props }: IconProps) {
       strokeWidth={2}
       {...props}
     >
+      <title>{titleText}</title>
       {children}
     </svg>
   )
