@@ -40,7 +40,7 @@ describe('Property 3: 登录凭据验证', () => {
    */
   it('should return 401 when username does not exist', async () => {
     const { db } = await import('@/db')
-    const { login } = await import('../auth.service')
+    const { login } = await import('@/server/services/auth.service')
 
     await fc.assert(
       fc.asyncProperty(validUsername, validPassword, async (username, password) => {
@@ -67,7 +67,7 @@ describe('Property 3: 登录凭据验证', () => {
    */
   it('should return 401 when password does not match', async () => {
     const { db } = await import('@/db')
-    const { login } = await import('../auth.service')
+    const { login } = await import('@/server/services/auth.service')
 
     await fc.assert(
       fc.asyncProperty(
@@ -121,7 +121,7 @@ describe('Property 3: 登录凭据验证', () => {
    */
   it('should return disabled error when account status is 0', async () => {
     const { db } = await import('@/db')
-    const { login } = await import('../auth.service')
+    const { login } = await import('@/server/services/auth.service')
 
     await fc.assert(
       fc.asyncProperty(validUsername, validPassword, async (username, password) => {

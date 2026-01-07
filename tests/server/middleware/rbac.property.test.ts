@@ -9,7 +9,7 @@ import {
   invalidateAllPermissionCache,
   invalidatePermissionCache,
   requirePermission,
-} from '../rbac'
+} from '@/server/middleware/rbac'
 
 /** 生成有效的 adminId（正整数，排除超级管理员 ID） */
 const adminIdArbitrary = fc.integer({ min: 2, max: 2147483647 })

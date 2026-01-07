@@ -7,7 +7,7 @@
 import { BusinessError } from '@/lib/errors'
 import * as fc from 'fast-check'
 import { describe, expect, it } from 'vitest'
-import { type MenuDto, type MenuTreeNode, buildMenuTree } from '../menu.service'
+import { type MenuDto, type MenuTreeNode, buildMenuTree } from '@/server/services/menu.service'
 
 // ========== 纯函数测试 ==========
 

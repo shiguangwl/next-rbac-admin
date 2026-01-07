@@ -11,7 +11,7 @@ import {
   getPermissionCacheSize,
   invalidateAllPermissionCache,
   invalidatePermissionCache,
-} from '../rbac'
+} from '@/server/middleware/rbac'
 
 describe('RBAC 权限缓存', () => {
   beforeEach(() => {
