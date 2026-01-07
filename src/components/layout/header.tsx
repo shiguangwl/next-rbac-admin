@@ -1,0 +1,128 @@
+'use client'
+
+/**
+ * 顶部导航栏组件
+ * @description 后台管理系统顶部导航栏，显示用户信息和操作
+ * @requirements 11.5
+ */
+
+import { useAuth } from '@/hooks/use-auth'
+import { cn } from '@/lib/utils'
+import { useRouter } from 'next/navigation'
+import { useEffect, useRef, useState } from 'react'
+
+interface HeaderProps {
+  /** 自定义类名 */
+  className?: string
+}
+
+/**
+ * 用户下拉菜单
+ */
+function UserDropdown() {
+  const router = useRouter()
+  const { admin, logout } = useAuth()
+  const [open, setOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  // 点击外部关闭下拉菜单
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const handleLogout = () => {
+    logout()
+    router.replace('/login')
+  }
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <button
+        type="button"
+        className="flex items-center gap-2 rounded-lg px-3 py-2 hover:bg-gray-100"
+        onClick={() => setOpen(!open)}
+      >
+        {/* 头像 */}
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-500 text-sm font-medium text-white">
+          {admin?.nickname?.charAt(0) || admin?.username?.charAt(0) || 'A'}
+        </div>
+        {/* 用户名 */}
+        <span className="hidden text-sm font-medium sm:block">
+          {admin?.nickname || admin?.username}
+        </span>
+        {/* 下拉箭头 */}
+        <svg
+          className={cn('h-4 w-4 transition-transform', open && 'rotate-180')}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {/* 下拉菜单 */}
+      {open && (
+        <div className="absolute right-0 top-full z-50 mt-2 w-48 rounded-lg border bg-white py-1 shadow-lg">
+          <div className="border-b px-4 py-2">
+            <p className="text-sm font-medium">{admin?.nickname || admin?.username}</p>
+            <p className="text-xs text-gray-500">{admin?.username}</p>
+          </div>
+          <button
+            type="button"
+            className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-50"
+            onClick={handleLogout}
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+              />
+            </svg>
+            退出登录
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+/**
+ * 顶部导航栏组件
+ */
+export function Header({ className }: HeaderProps) {
+  return (
+    <header
+      className={cn('flex h-16 items-center justify-between border-b bg-white px-4', className)}
+    >
+      {/* 左侧区域 */}
+      <div className="flex items-center gap-4">{/* 面包屑或其他内容可以放这里 */}</div>
+
+      {/* 右侧区域 */}
+      <div className="flex items-center gap-2">
+        {/* 通知图标 */}
+        <button type="button" className="relative rounded-lg p-2 hover:bg-gray-100">
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+            />
+          </svg>
+        </button>
+
+        {/* 用户下拉菜单 */}
+        <UserDropdown />
+      </div>
+    </header>
+  )
+}

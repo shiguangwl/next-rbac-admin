@@ -1,0 +1,142 @@
+/**
+ * Hono 应用实例
+ * @description 创建和配置 Hono 应用，注册中间件和路由
+ * @requirements 10.12
+ */
+
+import { mapErrorToResponse } from '@/lib/error-handler'
+import { swaggerUI } from '@hono/swagger-ui'
+import { OpenAPIHono } from '@hono/zod-openapi'
+import { HTTPException } from 'hono/http-exception'
+import { logger } from 'hono/logger'
+import { requestId } from 'hono/request-id'
+import type { Env } from './context'
+import { setLogRecorder } from './middleware/audit-log'
+import { corsMiddleware } from './middleware/cors'
+import { csrfMiddleware } from './middleware/csrf'
+import { jwtAuth } from './middleware/jwt-auth'
+import { apiRateLimit } from './middleware/rate-limit'
+import { loadPermissions } from './middleware/rbac'
+import { routes } from './route-defs'
+import { createOperationLog } from './services/audit.service'
+
+/**
+ * 创建 Hono 应用实例
+ */
+const app = new OpenAPIHono<Env>()
+
+// ========== 配置审计日志记录器 ==========
+
+setLogRecorder(async (data) => {
+  await createOperationLog({
+    adminId: data.adminId,
+    adminName: data.adminName,
+    module: data.module,
+    operation: data.operation,
+    description: data.description,
+    method: data.method,
+    requestMethod: data.requestMethod,
+    requestUrl: data.requestUrl,
+    requestParams: data.requestParams,
+    ip: data.ip,
+    userAgent: data.userAgent,
+    executionTime: data.executionTime,
+    status: data.status,
+    errorMsg: data.errorMsg,
+  })
+})
+
+// ========== 注册中间件（按顺序） ==========
+
+// 1. CORS 中间件
+app.use('*', corsMiddleware)
+
+// 2. 请求 ID 中间件
+app.use('*', requestId())
+
+// 3. 日志中间件
+app.use('*', logger())
+
+// 4. CSRF 中间件
+app.use('*', csrfMiddleware)
+
+// 5. 速率限制中间件
+app.use('/api/*', apiRateLimit)
+
+// 6. JWT 认证中间件
+app.use('/api/*', jwtAuth)
+
+// 7. 加载权限中间件
+app.use('/api/*', loadPermissions)
+
+// ========== 挂载 API 路由 ==========
+
+app.route('/api', routes)
+
+// ========== 配置 OpenAPI 文档 ==========
+
+app.doc('/api/doc', {
+  openapi: '3.0.0',
+  info: {
+    title: 'Admin Scaffold RBAC API',
+    version: '1.0.0',
+    description: '后台管理系统 RBAC 权限管理 API 文档',
+  },
+  servers: [
+    {
+      url: '/api',
+      description: 'API Server',
+    },
+  ],
+  tags: [
+    { name: '认证', description: '管理员认证相关接口' },
+    { name: '管理员管理', description: '管理员 CRUD 接口' },
+    { name: '角色管理', description: '角色 CRUD 接口' },
+    { name: '菜单管理', description: '菜单权限 CRUD 接口' },
+    { name: '操作日志', description: '操作日志查询接口' },
+  ],
+})
+
+// 配置 Swagger UI
+app.get('/api/swagger', swaggerUI({ url: '/api/doc' }))
+
+// ========== 全局错误处理 ==========
+
+app.onError((err, c) => {
+  // 处理 HTTPException
+  if (err instanceof HTTPException) {
+    return c.json(
+      {
+        code: 'HTTP_ERROR',
+        message: err.message,
+      },
+      err.status
+    )
+  }
+
+  // 处理业务错误
+  const errorResponse = mapErrorToResponse(err)
+
+  return c.json(
+    {
+      code: errorResponse.code,
+      message: errorResponse.message,
+      details: errorResponse.details,
+    },
+    errorResponse.status as 400 | 401 | 403 | 404 | 409 | 500
+  )
+})
+
+// ========== 404 处理 ==========
+
+app.notFound((c) => {
+  return c.json(
+    {
+      code: 'NOT_FOUND',
+      message: `Route ${c.req.method} ${c.req.path} not found`,
+    },
+    404
+  )
+})
+
+export { app }
