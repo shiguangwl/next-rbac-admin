@@ -9,7 +9,7 @@
 import { CloseIcon, LoadingIcon } from '@/components/ui/icon'
 import { useMenuTree } from '@/hooks/queries/use-menus'
 import { useRole, useUpdateRoleMenus } from '@/hooks/queries/use-roles'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { MenuTreeItem, type MenuTreeNode } from './menu-tree-item'
 
 type Role = {
@@ -28,6 +28,7 @@ export function RoleMenuDialog({ open, role, onClose, onSuccess }: RoleMenuDialo
   const [checkedIds, setCheckedIds] = useState<number[]>([])
   const [expandedIds, setExpandedIds] = useState<number[]>([])
   const [error, setError] = useState('')
+  const expandedInitializedRef = useRef(false)
 
   const { data: menuTree, isLoading: menuLoading } = useMenuTree()
   const { data: roleDetail, isLoading: roleLoading } = useRole(role?.id || 0)
@@ -72,10 +73,15 @@ export function RoleMenuDialog({ open, role, onClose, onSuccess }: RoleMenuDialo
   }, [open, roleDetail])
 
   useEffect(() => {
-    if (menuTree) {
-      setExpandedIds(allMenuIds)
+    if (!open) {
+      expandedInitializedRef.current = false
+      return
     }
-  }, [menuTree, allMenuIds])
+    if (menuTree && !expandedInitializedRef.current) {
+      setExpandedIds(allMenuIds)
+      expandedInitializedRef.current = true
+    }
+  }, [open, menuTree, allMenuIds])
 
   const handleSubmit = async () => {
     if (!role) return

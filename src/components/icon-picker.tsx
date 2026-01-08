@@ -118,10 +118,15 @@ export function IconPicker({ value, onChange, onClose }: IconPickerProps) {
         <div className="max-h-96 overflow-y-auto">
           <div className="grid grid-cols-8 gap-2">
             {filteredIcons.map((iconName) => {
-              const IconComponent = LucideIcons[
-                iconName as keyof typeof LucideIcons
-              ] as React.ComponentType<{ className?: string }>
+              const IconComponent = LucideIcons[iconName as keyof typeof LucideIcons]
               const isSelected = value === iconName
+
+              // 检查是否为有效的函数组件
+              if (typeof IconComponent !== 'function') {
+                return null
+              }
+
+              const Icon = IconComponent as React.ComponentType<{ className?: string }>
 
               return (
                 <button
@@ -133,7 +138,7 @@ export function IconPicker({ value, onChange, onClose }: IconPickerProps) {
                   }`}
                   title={iconName}
                 >
-                  <IconComponent className="h-6 w-6" />
+                  <Icon className="h-6 w-6" />
                   <span className="text-xs text-gray-600 truncate w-full text-center">
                     {iconName}
                   </span>

@@ -4,6 +4,7 @@
  * @requirements 8.1, 8.2, 8.3, 8.4, 8.5, 8.6
  */
 
+import { logger } from '@/lib/logger'
 import type { Env } from '@/server/context'
 import { createMiddleware } from 'hono/factory'
 
@@ -45,12 +46,10 @@ export interface OperationLogData {
 export type LogRecorder = (data: OperationLogData) => Promise<void>
 
 /**
- * 默认日志记录函数（控制台输出，生产环境应替换为数据库写入）
+ * 默认日志记录函数（开发环境调试用，生产环境应替换为数据库写入）
  */
 const defaultLogRecorder: LogRecorder = async (data) => {
-  // TODO: 在 audit.service 实现后，替换为实际的数据库写入逻辑
-  // await createOperationLog(data)
-  console.log('[AuditLog]', JSON.stringify(data))
+  logger.debug('Audit log recorded', { auditData: data })
 }
 
 /** 当前使用的日志记录函数 */
@@ -169,7 +168,7 @@ export function auditLog(options: AuditOptions) {
       // 异步记录日志，不阻塞响应
       setImmediate(() => {
         currentLogRecorder(logData).catch((err) => {
-          console.error('[AuditLog] Failed to record log:', err)
+          logger.error('Failed to record audit log', { err })
         })
       })
     }
@@ -220,7 +219,7 @@ export function createAuditLog(options: AuditOptions, recorder: LogRecorder) {
 
       setImmediate(() => {
         recorder(logData).catch((err) => {
-          console.error('[AuditLog] Failed to record log:', err)
+          logger.error('Failed to record audit log', { err })
         })
       })
     }

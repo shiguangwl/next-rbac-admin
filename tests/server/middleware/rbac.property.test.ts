@@ -1,15 +1,15 @@
 import { SUPER_ADMIN_ID } from '@/lib/constants'
 import type { AdminPayload } from '@/lib/jwt'
 import type { Env } from '@/server/context'
-import * as fc from 'fast-check'
-import { Hono } from 'hono'
-import { beforeEach, describe, expect, it } from 'vitest'
 import {
   createLoadPermissions,
   invalidateAllPermissionCache,
   invalidatePermissionCache,
   requirePermission,
 } from '@/server/middleware/rbac'
+import * as fc from 'fast-check'
+import { Hono } from 'hono'
+import { beforeEach, describe, expect, it } from 'vitest'
 
 /** 生成有效的 adminId（正整数，排除超级管理员 ID） */
 const adminIdArbitrary = fc.integer({ min: 2, max: 2147483647 })

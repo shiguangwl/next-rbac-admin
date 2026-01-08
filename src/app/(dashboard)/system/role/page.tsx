@@ -11,6 +11,7 @@ import { EditIcon, PlusIcon, RefreshIcon, SearchIcon, TrashIcon } from '@/compon
 import { Pagination } from '@/components/ui/pagination'
 import { useDeleteRole, useRoles } from '@/hooks/queries/use-roles'
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { RoleFormDialog } from './role-form-dialog'
 import { RoleMenuDialog } from './role-menu-dialog'
 
@@ -60,7 +61,7 @@ export default function RolePage() {
     try {
       await deleteRole.mutateAsync(role.id)
     } catch (err) {
-      alert(err instanceof Error ? err.message : '删除失败')
+      toast.error(err instanceof Error ? err.message : '删除失败')
     }
   }
 

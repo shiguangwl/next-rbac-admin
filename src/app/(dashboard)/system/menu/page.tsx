@@ -10,6 +10,7 @@ import { PermissionGuard } from '@/components/permission-guard'
 import { PlusIcon, RefreshIcon } from '@/components/ui/icon'
 import { useDeleteMenu, useMenuTree } from '@/hooks/queries/use-menus'
 import { useMemo, useState } from 'react'
+import { toast } from 'sonner'
 import { MenuFormDialog } from './menu-form-dialog'
 import { type MenuTreeNode, MenuTreeRow } from './menu-tree-row'
 
@@ -51,7 +52,7 @@ export default function MenuPage() {
     try {
       await deleteMenu.mutateAsync(menu.id)
     } catch (err) {
-      alert(err instanceof Error ? err.message : '删除失败')
+      toast.error(err instanceof Error ? err.message : '删除失败')
     }
   }
 

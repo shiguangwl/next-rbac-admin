@@ -12,6 +12,7 @@ import { Pagination } from '@/components/ui/pagination'
 import { useAdmins, useDeleteAdmin, useResetPassword } from '@/hooks/queries/use-admins'
 import { SUPER_ADMIN_ID } from '@/lib/constants'
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { AdminFormDialog } from './admin-form-dialog'
 
 type Admin = {
@@ -65,7 +66,7 @@ export default function AdminPage() {
     try {
       await deleteAdmin.mutateAsync(admin.id)
     } catch (err) {
-      alert(err instanceof Error ? err.message : '删除失败')
+      toast.error(err instanceof Error ? err.message : '删除失败')
     }
   }
 
@@ -78,9 +79,9 @@ export default function AdminPage() {
       })
       setResetPasswordId(null)
       setNewPassword('')
-      alert('密码重置成功')
+      toast.success('密码重置成功')
     } catch (err) {
-      alert(err instanceof Error ? err.message : '重置密码失败')
+      toast.error(err instanceof Error ? err.message : '重置密码失败')
     }
   }
 

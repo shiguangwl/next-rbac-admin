@@ -1,49 +1,96 @@
-import { env } from '@/env'
-import { drizzle } from 'drizzle-orm/mysql2'
-import mysql from 'mysql2/promise'
+import { env } from "@/env";
+import { logger } from "@/lib/logger";
+import { drizzle } from "drizzle-orm/mysql2";
+import mysql from "mysql2/promise";
+import { runSeed } from "./seed-runner";
 
 /**
- * 全局单例模式（防止 HMR 时重复创建连接和 drizzle 实例）
+ * 全局单例（防止 HMR 时重复创建连接）
  */
 declare global {
-  var __dbPool: mysql.Pool | undefined
-  var __db: ReturnType<typeof drizzle> | undefined
+  var __dbPool: mysql.Pool | undefined;
+  var __db: ReturnType<typeof drizzle> | undefined;
+  var __dbInitialized: boolean | undefined;
 }
 
-/**
- * 创建 MySQL 连接池
- */
 function createPool(): mysql.Pool {
   return mysql.createPool({
     uri: env.DATABASE_URL,
     waitForConnections: true,
     connectionLimit: env.DATABASE_MAX_CONNECTIONS,
-    idleTimeout: env.DATABASE_IDLE_TIMEOUT * 1000, // 转换为毫秒
-    connectTimeout: env.DATABASE_CONNECT_TIMEOUT * 1000, // 转换为毫秒
+    idleTimeout: env.DATABASE_IDLE_TIMEOUT * 1000,
+    connectTimeout: env.DATABASE_CONNECT_TIMEOUT * 1000,
     enableKeepAlive: true,
     keepAliveInitialDelay: 10000,
-  })
+  });
+}
+
+export const pool = globalThis.__dbPool ?? createPool();
+export const db = globalThis.__db ?? drizzle(pool, { mode: "default" });
+
+if (env.NODE_ENV !== "production") {
+  globalThis.__dbPool = pool;
+  globalThis.__db = db;
 }
 
 /**
- * 获取数据库连接池（单例）
+ * 执行数据库迁移
  */
-const pool = globalThis.__dbPool ?? createPool()
-
-if (env.NODE_ENV !== 'production') {
-  globalThis.__dbPool = pool
+async function runMigration(): Promise<void> {
+  const { migrate } = await import("drizzle-orm/mysql2/migrator");
+  await migrate(db, { migrationsFolder: "drizzle" });
 }
 
 /**
- * Drizzle ORM 实例
+ * 确保数据库已初始化
  */
-export const db = globalThis.__db ?? drizzle(pool, { mode: 'default' })
+export async function ensureDatabaseInitialized(): Promise<void> {
+  if (!env.AUTO_DB_MIGRATE && !env.AUTO_DB_SEED) return;
+  if (globalThis.__dbInitialized) return;
 
-if (env.NODE_ENV !== 'production') {
-  globalThis.__db = db
+  logger.info("[DB] Starting database initialization...");
+  const startTime = performance.now();
+
+  if (env.AUTO_DB_MIGRATE) {
+    logger.info("[DB] Running migrations...");
+    const migrateStart = performance.now();
+    await runMigration();
+    const ms = Math.round(performance.now() - migrateStart);
+    if (env.NODE_ENV !== "production") {
+      logger.info(`[DB] Migrations completed (${ms}ms)`);
+    } else {
+      logger.info("[DB] Migrations completed", { durationMs: ms });
+    }
+  }
+
+  if (env.AUTO_DB_SEED) {
+    const username = env.SEED_ADMIN_USERNAME.trim();
+    const password = env.SEED_ADMIN_PASSWORD;
+    if (!username || !password) {
+      throw new Error(
+        "SEED_ADMIN_USERNAME and SEED_ADMIN_PASSWORD are required when AUTO_DB_SEED is enabled"
+      );
+    }
+    logger.info("[DB] Running seed...");
+    const seedStart = performance.now();
+    await runSeed(db, {
+      username,
+      password,
+      nickname: env.SEED_ADMIN_NICKNAME,
+    });
+    const ms = Math.round(performance.now() - seedStart);
+    if (env.NODE_ENV !== "production") {
+      logger.info(`[DB] Seed completed (${ms}ms)`);
+    } else {
+      logger.info("[DB] Seed completed", { durationMs: ms });
+    }
+  }
+
+  globalThis.__dbInitialized = true;
+  const ms = Math.round(performance.now() - startTime);
+  if (env.NODE_ENV !== "production") {
+    logger.info(`[DB] Database initialization completed (${ms}ms)`);
+  } else {
+    logger.info("[DB] Database initialization completed", { durationMs: ms });
+  }
 }
-
-/**
- * 导出连接池（用于需要直接操作连接的场景）
- */
-export { pool }

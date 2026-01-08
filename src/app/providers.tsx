@@ -8,6 +8,7 @@
 import { useAuthStore } from '@/hooks/use-auth'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { type ReactNode, useEffect } from 'react'
+import { Toaster } from 'sonner'
 
 /**
  * 认证初始化组件
@@ -76,6 +77,7 @@ export function Providers({ children }: ProvidersProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthInitializer>{children}</AuthInitializer>
+      <Toaster position="top-center" richColors closeButton />
     </QueryClientProvider>
   )
 }

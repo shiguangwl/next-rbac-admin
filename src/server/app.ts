@@ -5,6 +5,7 @@
 
 import { env } from '@/env'
 import { mapErrorToResponse } from '@/lib/error-handler'
+import { logger } from '@/lib/logger'
 import { createRequestContext, runWithRequestContext } from '@/lib/request-context'
 import { swaggerUI } from '@hono/swagger-ui'
 import { OpenAPIHono } from '@hono/zod-openapi'
@@ -63,21 +64,47 @@ app.use('*', async (c, next) => {
 
 // 3. 请求日志中间件
 app.use('*', async (c, next) => {
-  const requestId = c.get('requestId')
   const start = Date.now()
 
   await next()
 
   const duration = Date.now() - start
-  console.log(
-    JSON.stringify({
-      requestId,
-      method: c.req.method,
-      path: c.req.path,
-      status: c.res.status,
-      duration: `${duration}ms`,
-    })
-  )
+  const status = c.res.status
+
+  const rid = c.get('requestId')
+  const line = `[HTTP] ${c.req.method} ${c.req.path} ${status} ${duration}ms rid=${rid}`
+  if (env.NODE_ENV !== 'production') {
+    if (status >= 500) {
+      logger.error(line)
+    } else if (status >= 400) {
+      logger.warn(line)
+    } else {
+      logger.info(line)
+    }
+  } else {
+    if (status >= 500) {
+      logger.error('Request completed', {
+        method: c.req.method,
+        path: c.req.path,
+        status,
+        durationMs: duration,
+      })
+    } else if (status >= 400) {
+      logger.warn('Request completed', {
+        method: c.req.method,
+        path: c.req.path,
+        status,
+        durationMs: duration,
+      })
+    } else {
+      logger.info('Request completed', {
+        method: c.req.method,
+        path: c.req.path,
+        status,
+        durationMs: duration,
+      })
+    }
+  }
 })
 
 // 4. CSRF 中间件
@@ -126,10 +153,24 @@ app.get('/api/swagger', swaggerUI({ url: '/api/doc' }))
 // ========== 全局错误处理 ==========
 
 app.onError((err, c) => {
+  const requestId = c.get('requestId')
+
   // 处理 HTTPException
   if (err instanceof HTTPException) {
     const message =
       env.NODE_ENV === 'production' && err.status >= 500 ? 'Internal Server Error' : err.message
+
+    // 记录 5xx 错误
+    if (err.status >= 500) {
+      logger.error('HTTP Exception', {
+        requestId,
+        status: err.status,
+        method: c.req.method,
+        path: c.req.path,
+        err,
+      })
+    }
+
     return c.json(
       {
         code: 'HTTP_ERROR',
@@ -141,6 +182,17 @@ app.onError((err, c) => {
 
   // 处理业务错误
   const errorResponse = mapErrorToResponse(err)
+
+  // 记录 5xx 错误详情（包含堆栈）
+  if (errorResponse.status >= 500) {
+    logger.error('Unhandled error', {
+      requestId,
+      code: errorResponse.code,
+      method: c.req.method,
+      path: c.req.path,
+      err,
+    })
+  }
 
   return c.json(
     {

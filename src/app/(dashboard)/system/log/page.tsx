@@ -10,6 +10,7 @@ import { RefreshIcon, SearchIcon } from '@/components/ui/icon'
 import { Pagination } from '@/components/ui/pagination'
 import { useDeleteOperationLog, useOperationLogs } from '@/hooks/queries/use-operation-logs'
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { LogDetailDialog, type OperationLog } from './log-detail-dialog'
 import { LogTableRow } from './log-table-row'
 
@@ -63,7 +64,7 @@ export default function LogPage() {
     try {
       await deleteLog.mutateAsync(log.id)
     } catch (err) {
-      alert(err instanceof Error ? err.message : '删除失败')
+      toast.error(err instanceof Error ? err.message : '删除失败')
     }
   }
 

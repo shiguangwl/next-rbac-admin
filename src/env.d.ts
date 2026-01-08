@@ -10,6 +10,11 @@ type EnvConfig = ReturnType<
       DATABASE_MAX_CONNECTIONS: number
       DATABASE_IDLE_TIMEOUT: number
       DATABASE_CONNECT_TIMEOUT: number
+      AUTO_DB_MIGRATE: boolean
+      AUTO_DB_SEED: boolean
+      SEED_ADMIN_USERNAME: string
+      SEED_ADMIN_PASSWORD: string | undefined
+      SEED_ADMIN_NICKNAME: string
       JWT_SECRET: string
       JWT_EXPIRES_IN: string
       NODE_ENV: 'development' | 'production' | 'test'

@@ -7,9 +7,6 @@
 import { app } from '@/server/app'
 import { handle } from 'hono/vercel'
 
-/**
- * 导出 HTTP 方法处理函数
- */
 export const GET = handle(app)
 export const POST = handle(app)
 export const PUT = handle(app)

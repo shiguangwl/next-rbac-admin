@@ -1,17 +1,17 @@
 import type { AdminPayload } from '@/lib/jwt'
 import type { Env } from '@/server/context'
-import { Hono } from 'hono'
-/**
- * RBAC 权限缓存测试
- * 测试权限缓存功能
- */
-import { beforeEach, describe, expect, it } from 'vitest'
 import {
   createLoadPermissions,
   getPermissionCacheSize,
   invalidateAllPermissionCache,
   invalidatePermissionCache,
 } from '@/server/middleware/rbac'
+import { Hono } from 'hono'
+/**
+ * RBAC 权限缓存测试
+ * 测试权限缓存功能
+ */
+import { beforeEach, describe, expect, it } from 'vitest'
 
 describe('RBAC 权限缓存', () => {
   beforeEach(() => {
