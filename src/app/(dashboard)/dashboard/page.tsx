@@ -15,7 +15,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       {/* 欢迎卡片 */}
-      <div className="rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 p-6 text-white shadow-lg">
+      <div className="rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 p-6 text-white shadow-lg">
         <h1 className="text-2xl font-bold">欢迎回来,{admin?.nickname || admin?.username}!</h1>
         <p className="mt-2 text-blue-100">这是您的后台管理系统控制台</p>
       </div>

@@ -7,12 +7,12 @@ import Link from 'next/link'
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100">
       {/* 顶部导航 */}
       <header className="border-b bg-white/80 backdrop-blur-sm">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-linear-to-br from-blue-500 to-indigo-600">
               <span className="text-xl font-bold text-white">E</span>
             </div>
             <span className="text-xl font-semibold text-gray-900">ETF Panel</span>
@@ -55,7 +55,7 @@ export default function HomePage() {
           <div className="mt-16">
             <Link
               href="/login"
-              className="inline-flex rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-3 text-lg font-semibold text-white shadow-lg transition-transform hover:scale-105"
+              className="inline-flex rounded-lg bg-linear-to-r from-blue-600 to-indigo-600 px-8 py-3 text-lg font-semibold text-white shadow-lg transition-transform hover:scale-105"
             >
               立即开始
             </Link>
