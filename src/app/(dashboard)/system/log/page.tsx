@@ -3,7 +3,6 @@
 /**
  * 操作日志页面
  * @description 操作日志列表、多条件筛选
- * @requirements 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 9.7
  */
 
 import { RefreshIcon, SearchIcon } from "@/components/ui/icon";

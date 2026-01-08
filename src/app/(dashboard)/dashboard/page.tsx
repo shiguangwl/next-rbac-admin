@@ -3,7 +3,6 @@
 /**
  * 仪表盘首页
  * @description 后台管理系统首页，显示欢迎信息和统计数据
- * @requirements 11.5
  */
 
 import { useAuth } from "@/hooks/use-auth";

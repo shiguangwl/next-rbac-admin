@@ -3,7 +3,6 @@
 /**
  * 角色管理页面
  * @description 角色列表、创建、编辑、删除、权限分配
- * @requirements 4.1, 4.2, 4.3, 4.4, 4.6
  */
 
 import { PermissionGuard } from "@/components/permission-guard";

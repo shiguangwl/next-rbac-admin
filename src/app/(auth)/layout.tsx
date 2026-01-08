@@ -1,16 +1,15 @@
-'use client'
+"use client";
 
 /**
  * 认证布局
  * @description 登录等认证页面的布局，已登录用户会被重定向到仪表盘首页
- * @requirements 2.1
  */
 
-import type { ReactNode } from 'react'
-import { GuestGuard } from '@/components/auth-guard'
+import { GuestGuard } from "@/components/auth-guard";
+import type { ReactNode } from "react";
 
 interface AuthLayoutProps {
-  children: ReactNode
+  children: ReactNode;
 }
 
 export default function AuthLayout({ children }: AuthLayoutProps) {
@@ -20,5 +19,5 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
         {children}
       </div>
     </GuestGuard>
-  )
+  );
 }

@@ -3,7 +3,6 @@
 /**
  * 登录页面
  * @description 管理员登录页面
- * @requirements 2.1
  */
 
 import { LoadingIcon } from "@/components/ui/icon";

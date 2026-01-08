@@ -3,7 +3,6 @@
 /**
  * 日志详情对话框
  * @description 显示操作日志的详细信息
- * @requirements 9.1
  */
 
 type OperationLog = {

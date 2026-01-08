@@ -1,29 +1,35 @@
 /**
  * 审计日志服务
  * @description 操作日志记录和查询业务逻辑
- * @requirements 8.1, 8.2, 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 9.7
  */
 
-import { and, count, desc, eq, gte, like, lte, sql } from 'drizzle-orm'
-import { db } from '@/db'
-import { sysOperationLog } from '@/db/schema'
-import { NotFoundError } from '@/lib/errors'
+import { db } from "@/db";
+import { sysOperationLog } from "@/db/schema";
+import { NotFoundError } from "@/lib/errors";
+import { and, count, desc, eq, gte, like, lte, sql } from "drizzle-orm";
 import type {
   CreateOperationLogInput,
   OperationLogDto,
   OperationLogQueryOptions,
   PaginatedResult,
-} from './types'
-import { toOperationLogDto } from './utils'
+} from "./types";
+import { toOperationLogDto } from "./utils";
 
 // 重新导出类型供外部使用
-export type { OperationLogDto, CreateOperationLogInput, OperationLogQueryOptions, PaginatedResult }
+export type {
+  CreateOperationLogInput,
+  OperationLogDto,
+  OperationLogQueryOptions,
+  PaginatedResult,
+};
 
 /**
  * 创建操作日志
  * @description 异步记录操作日志，不阻塞主业务流程
  */
-export async function createOperationLog(input: CreateOperationLogInput): Promise<void> {
+export async function createOperationLog(
+  input: CreateOperationLogInput
+): Promise<void> {
   await db.insert(sysOperationLog).values({
     adminId: input.adminId,
     adminName: input.adminName,
@@ -41,7 +47,7 @@ export async function createOperationLog(input: CreateOperationLogInput): Promis
     executionTime: input.executionTime,
     status: input.status,
     errorMsg: input.errorMsg,
-  })
+  });
 }
 
 /**
@@ -60,36 +66,39 @@ export async function getOperationLogList(
     status,
     startTime,
     endTime,
-  } = options
-  const offset = (page - 1) * pageSize
+  } = options;
+  const offset = (page - 1) * pageSize;
 
-  const conditions = []
+  const conditions = [];
 
   if (adminId !== undefined) {
-    conditions.push(eq(sysOperationLog.adminId, adminId))
+    conditions.push(eq(sysOperationLog.adminId, adminId));
   }
   if (adminName) {
-    conditions.push(like(sysOperationLog.adminName, `%${adminName}%`))
+    conditions.push(like(sysOperationLog.adminName, `%${adminName}%`));
   }
   if (module) {
-    conditions.push(eq(sysOperationLog.module, module))
+    conditions.push(eq(sysOperationLog.module, module));
   }
   if (operation) {
-    conditions.push(eq(sysOperationLog.operation, operation))
+    conditions.push(eq(sysOperationLog.operation, operation));
   }
   if (status !== undefined) {
-    conditions.push(eq(sysOperationLog.status, status))
+    conditions.push(eq(sysOperationLog.status, status));
   }
   if (startTime) {
-    conditions.push(gte(sysOperationLog.createdAt, new Date(startTime)))
+    conditions.push(gte(sysOperationLog.createdAt, new Date(startTime)));
   }
   if (endTime) {
-    conditions.push(lte(sysOperationLog.createdAt, new Date(endTime)))
+    conditions.push(lte(sysOperationLog.createdAt, new Date(endTime)));
   }
 
-  const whereClause = conditions.length > 0 ? and(...conditions) : undefined
+  const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
-  const [{ total }] = await db.select({ total: count() }).from(sysOperationLog).where(whereClause)
+  const [{ total }] = await db
+    .select({ total: count() })
+    .from(sysOperationLog)
+    .where(whereClause);
 
   const logs = await db
     .select()
@@ -97,7 +106,7 @@ export async function getOperationLogList(
     .where(whereClause)
     .orderBy(desc(sysOperationLog.createdAt))
     .limit(pageSize)
-    .offset(offset)
+    .offset(offset);
 
   return {
     items: logs.map(toOperationLogDto),
@@ -105,25 +114,27 @@ export async function getOperationLogList(
     page,
     pageSize,
     totalPages: total === 0 ? 0 : Math.ceil(total / pageSize),
-  }
+  };
 }
 
 /**
  * 获取操作日志详情
  */
-export async function getOperationLogById(id: number): Promise<OperationLogDto> {
+export async function getOperationLogById(
+  id: number
+): Promise<OperationLogDto> {
   const log = await db
     .select()
     .from(sysOperationLog)
     .where(eq(sysOperationLog.id, id))
     .limit(1)
-    .then((rows) => rows[0])
+    .then((rows) => rows[0]);
 
   if (!log) {
-    throw new NotFoundError('OperationLog', id)
+    throw new NotFoundError("OperationLog", id);
   }
 
-  return toOperationLogDto(log)
+  return toOperationLogDto(log);
 }
 
 /**
@@ -135,27 +146,27 @@ export async function deleteOperationLog(id: number): Promise<void> {
     .from(sysOperationLog)
     .where(eq(sysOperationLog.id, id))
     .limit(1)
-    .then((rows) => rows[0])
+    .then((rows) => rows[0]);
 
   if (!existing) {
-    throw new NotFoundError('OperationLog', id)
+    throw new NotFoundError("OperationLog", id);
   }
 
-  await db.delete(sysOperationLog).where(eq(sysOperationLog.id, id))
+  await db.delete(sysOperationLog).where(eq(sysOperationLog.id, id));
 }
 
 /**
  * 批量删除操作日志
  */
 export async function batchDeleteOperationLogs(ids: number[]): Promise<void> {
-  if (ids.length === 0) return
+  if (ids.length === 0) return;
 
   await db.delete(sysOperationLog).where(
     sql`${sysOperationLog.id} IN (${sql.join(
       ids.map((id) => sql`${id}`),
       sql`, `
     )})`
-  )
+  );
 }
 
 /**
@@ -163,21 +174,23 @@ export async function batchDeleteOperationLogs(ids: number[]): Promise<void> {
  * @param days 保留天数
  */
 export async function cleanExpiredLogs(days: number): Promise<number> {
-  const expireDate = new Date()
-  expireDate.setDate(expireDate.getDate() - days)
+  const expireDate = new Date();
+  expireDate.setDate(expireDate.getDate() - days);
 
-  const result = await db.delete(sysOperationLog).where(lte(sysOperationLog.createdAt, expireDate))
+  const result = await db
+    .delete(sysOperationLog)
+    .where(lte(sysOperationLog.createdAt, expireDate));
 
-  return result[0]?.affectedRows ?? 0
+  return result[0]?.affectedRows ?? 0;
 }
 
 /**
  * 获取日志统计信息
  */
 export async function getLogStatistics(): Promise<{
-  total: number
-  successCount: number
-  failCount: number
+  total: number;
+  successCount: number;
+  failCount: number;
 }> {
   const [stats] = await db
     .select({
@@ -185,11 +198,11 @@ export async function getLogStatistics(): Promise<{
       successCount: sql<number>`SUM(CASE WHEN ${sysOperationLog.status} = 1 THEN 1 ELSE 0 END)`,
       failCount: sql<number>`SUM(CASE WHEN ${sysOperationLog.status} = 0 THEN 1 ELSE 0 END)`,
     })
-    .from(sysOperationLog)
+    .from(sysOperationLog);
 
   return {
     total: stats.total,
     successCount: Number(stats.successCount) || 0,
     failCount: Number(stats.failCount) || 0,
-  }
+  };
 }

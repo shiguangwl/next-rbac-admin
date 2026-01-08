@@ -3,7 +3,6 @@
 /**
  * 菜单表单字段组件
  * @description 菜单表单的各个字段组件
- * @requirements 5.2, 5.4
  */
 
 import { DynamicIcon } from "@/components/dynamic-icon";

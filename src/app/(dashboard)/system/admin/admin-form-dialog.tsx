@@ -3,7 +3,6 @@
 /**
  * 管理员表单对话框
  * @description 创建和编辑管理员的表单对话框
- * @requirements 3.2, 3.4
  */
 
 import { CloseIcon, LoadingIcon } from "@/components/ui/icon";

@@ -3,7 +3,6 @@
 /**
  * 菜单管理页面
  * @description 菜单列表、创建、编辑、删除
- * @requirements 5.1, 5.2, 5.4, 5.6
  */
 
 import { PermissionGuard } from "@/components/permission-guard";

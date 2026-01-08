@@ -3,7 +3,6 @@
 /**
  * 用户管理页面
  * @description 管理员列表、创建、编辑、删除
- * @requirements 3.1, 3.2, 3.4, 3.6
  */
 
 import { PermissionGuard } from "@/components/permission-guard";

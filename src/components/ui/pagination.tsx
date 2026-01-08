@@ -3,7 +3,6 @@
 /**
  * 分页组件
  * @description 通用分页组件，支持页码跳转和每页数量选择
- * @requirements 11.5
  */
 
 import { cn } from "@/lib/utils";

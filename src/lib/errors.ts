@@ -1,7 +1,6 @@
 /**
  * 自定义错误类
  * @description 定义系统中使用的各类错误类型
- * @requirements 7.3, 7.4
  */
 
 /**
@@ -13,10 +12,10 @@ export class AppError extends Error {
     public readonly code: string,
     public readonly details?: unknown
   ) {
-    super(message)
-    this.name = this.constructor.name
+    super(message);
+    this.name = this.constructor.name;
     // 确保原型链正确
-    Object.setPrototypeOf(this, new.target.prototype)
+    Object.setPrototypeOf(this, new.target.prototype);
   }
 }
 
@@ -25,7 +24,7 @@ export class AppError extends Error {
  */
 export class NotFoundError extends AppError {
   constructor(resource: string, id: string | number) {
-    super(`${resource} with id ${id} not found`, 'NOT_FOUND')
+    super(`${resource} with id ${id} not found`, "NOT_FOUND");
   }
 }
 
@@ -35,7 +34,7 @@ export class NotFoundError extends AppError {
  */
 export class ConflictError extends AppError {
   constructor(message: string) {
-    super(message, 'CONFLICT')
+    super(message, "CONFLICT");
   }
 }
 
@@ -44,8 +43,8 @@ export class ConflictError extends AppError {
  * @description 用于权限不足的场景
  */
 export class ForbiddenError extends AppError {
-  constructor(message = '无权限访问') {
-    super(message, 'FORBIDDEN')
+  constructor(message = "无权限访问") {
+    super(message, "FORBIDDEN");
   }
 }
 
@@ -54,8 +53,8 @@ export class ForbiddenError extends AppError {
  * @description 用于未登录或 Token 无效的场景
  */
 export class UnauthorizedError extends AppError {
-  constructor(message = '未登录或登录已过期') {
-    super(message, 'UNAUTHORIZED')
+  constructor(message = "未登录或登录已过期") {
+    super(message, "UNAUTHORIZED");
   }
 }
 
@@ -65,7 +64,7 @@ export class UnauthorizedError extends AppError {
  */
 export class ValidationError extends AppError {
   constructor(message: string, details?: unknown) {
-    super(message, 'VALIDATION_ERROR', details)
+    super(message, "VALIDATION_ERROR", details);
   }
 }
 
@@ -74,7 +73,7 @@ export class ValidationError extends AppError {
  * @description 用于业务逻辑错误的场景
  */
 export class BusinessError extends AppError {
-  constructor(message: string, code = 'BUSINESS_ERROR') {
-    super(message, code)
+  constructor(message: string, code = "BUSINESS_ERROR") {
+    super(message, code);
   }
 }

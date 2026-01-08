@@ -3,7 +3,6 @@
 /**
  * 侧边栏组件
  * @description 后台管理系统侧边栏，显示菜单导航
- * @requirements 11.5
  */
 
 import { DynamicIcon } from "@/components/dynamic-icon";
@@ -74,7 +73,7 @@ function MenuItem({
 
   const content = (
     <>
-      <span className="flex-shrink-0">
+      <span className="shrink-0">
         <DynamicIcon name={menu.icon} className="h-5 w-5" />
       </span>
       {!collapsed && (

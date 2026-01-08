@@ -3,7 +3,6 @@
 /**
  * 菜单表单对话框
  * @description 创建和编辑菜单的表单对话框
- * @requirements 5.2, 5.4
  */
 
 import { CloseIcon, LoadingIcon } from "@/components/ui/icon";

@@ -3,7 +3,6 @@
 /**
  * 角色表单对话框
  * @description 创建和编辑角色的表单对话框，集成权限分配功能
- * @requirements 4.2, 4.3, 4.6
  */
 
 import { CloseIcon, LoadingIcon } from "@/components/ui/icon";

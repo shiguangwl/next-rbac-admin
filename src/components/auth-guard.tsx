@@ -3,7 +3,6 @@
 /**
  * 认证守卫组件
  * @description 保护需要登录才能访问的内容
- * @requirements 11.4
  */
 
 import { useAuth } from "@/hooks/use-auth";

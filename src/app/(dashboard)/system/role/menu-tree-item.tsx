@@ -3,7 +3,6 @@
 /**
  * 菜单树节点组件
  * @description 用于角色权限分配的菜单树节点
- * @requirements 4.6
  */
 
 export type MenuTreeNode = {

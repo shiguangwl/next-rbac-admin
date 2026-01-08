@@ -1,25 +1,30 @@
 /**
  * 角色服务
  * @description 角色 CRUD 及菜单权限分配业务逻辑
- * @requirements 4.1, 4.2, 4.3, 4.4, 4.5, 4.6
  */
 
-import { and, asc, count, eq, ne } from 'drizzle-orm'
-import { db } from '@/db'
-import { sysAdminRole, sysRole, sysRoleMenu } from '@/db/schema'
-import { BusinessError, ConflictError, NotFoundError } from '@/lib/errors'
-import { invalidateAllPermissionCache } from '@/server/security/permission-cache'
+import { db } from "@/db";
+import { sysAdminRole, sysRole, sysRoleMenu } from "@/db/schema";
+import { BusinessError, ConflictError, NotFoundError } from "@/lib/errors";
+import { invalidateAllPermissionCache } from "@/server/security/permission-cache";
+import { and, asc, count, eq, ne } from "drizzle-orm";
 import type {
   CreateRoleInput,
   PaginatedResult,
   PaginationOptions,
   RoleDto,
   UpdateRoleInput,
-} from './types'
-import { toRoleDto } from './utils'
+} from "./types";
+import { toRoleDto } from "./utils";
 
 // 重新导出类型供外部使用
-export type { PaginationOptions, PaginatedResult, RoleDto, CreateRoleInput, UpdateRoleInput }
+export type {
+  CreateRoleInput,
+  PaginatedResult,
+  PaginationOptions,
+  RoleDto,
+  UpdateRoleInput,
+};
 
 /**
  * 获取角色列表（分页，按 sort 排序）
@@ -27,20 +32,23 @@ export type { PaginationOptions, PaginatedResult, RoleDto, CreateRoleInput, Upda
 export async function getRoleList(
   options: PaginationOptions = {}
 ): Promise<PaginatedResult<RoleDto>> {
-  const { page = 1, pageSize = 20, keyword, status } = options
-  const offset = (page - 1) * pageSize
+  const { page = 1, pageSize = 20, keyword, status } = options;
+  const offset = (page - 1) * pageSize;
 
-  const conditions = []
+  const conditions = [];
   if (keyword) {
-    conditions.push(eq(sysRole.roleName, keyword))
+    conditions.push(eq(sysRole.roleName, keyword));
   }
   if (status !== undefined) {
-    conditions.push(eq(sysRole.status, status))
+    conditions.push(eq(sysRole.status, status));
   }
 
-  const whereClause = conditions.length > 0 ? and(...conditions) : undefined
+  const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
-  const [{ total }] = await db.select({ total: count() }).from(sysRole).where(whereClause)
+  const [{ total }] = await db
+    .select({ total: count() })
+    .from(sysRole)
+    .where(whereClause);
 
   const roles = await db
     .select()
@@ -48,7 +56,7 @@ export async function getRoleList(
     .where(whereClause)
     .orderBy(asc(sysRole.sort))
     .limit(pageSize)
-    .offset(offset)
+    .offset(offset);
 
   return {
     items: roles.map(toRoleDto),
@@ -56,7 +64,7 @@ export async function getRoleList(
     page,
     pageSize,
     totalPages: total === 0 ? 0 : Math.ceil(total / pageSize),
-  }
+  };
 }
 
 /**
@@ -67,9 +75,9 @@ export async function getAllRoles(): Promise<RoleDto[]> {
     .select()
     .from(sysRole)
     .where(eq(sysRole.status, 1))
-    .orderBy(asc(sysRole.sort))
+    .orderBy(asc(sysRole.sort));
 
-  return roles.map(toRoleDto)
+  return roles.map(toRoleDto);
 }
 
 /**
@@ -81,21 +89,21 @@ export async function getRoleById(id: number): Promise<RoleDto> {
     .from(sysRole)
     .where(eq(sysRole.id, id))
     .limit(1)
-    .then((rows) => rows[0])
+    .then((rows) => rows[0]);
 
   if (!role) {
-    throw new NotFoundError('Role', id)
+    throw new NotFoundError("Role", id);
   }
 
   const roleMenus = await db
     .select({ menuId: sysRoleMenu.menuId })
     .from(sysRoleMenu)
-    .where(eq(sysRoleMenu.roleId, id))
+    .where(eq(sysRoleMenu.roleId, id));
 
   return {
     ...toRoleDto(role),
     menuIds: roleMenus.map((rm) => rm.menuId),
-  }
+  };
 }
 
 /**
@@ -107,10 +115,10 @@ export async function createRole(input: CreateRoleInput): Promise<RoleDto> {
     .from(sysRole)
     .where(eq(sysRole.roleName, input.roleName))
     .limit(1)
-    .then((rows) => rows[0])
+    .then((rows) => rows[0]);
 
   if (existing) {
-    throw new ConflictError(`角色名 ${input.roleName} 已存在`)
+    throw new ConflictError(`角色名 ${input.roleName} 已存在`);
   }
 
   const result = await db.transaction(async (tx) => {
@@ -119,33 +127,38 @@ export async function createRole(input: CreateRoleInput): Promise<RoleDto> {
       sort: input.sort ?? 0,
       status: input.status ?? 1,
       remark: input.remark,
-    })
+    });
 
-    const roleId = Number(insertResult.insertId)
+    const roleId = Number(insertResult.insertId);
 
     if (input.menuIds?.length) {
-      await tx.insert(sysRoleMenu).values(input.menuIds.map((menuId) => ({ roleId, menuId })))
+      await tx
+        .insert(sysRoleMenu)
+        .values(input.menuIds.map((menuId) => ({ roleId, menuId })));
     }
 
-    return roleId
-  })
+    return roleId;
+  });
 
-  return getRoleById(result)
+  return getRoleById(result);
 }
 
 /**
  * 更新角色
  */
-export async function updateRole(id: number, input: UpdateRoleInput): Promise<RoleDto> {
+export async function updateRole(
+  id: number,
+  input: UpdateRoleInput
+): Promise<RoleDto> {
   const existing = await db
     .select({ id: sysRole.id })
     .from(sysRole)
     .where(eq(sysRole.id, id))
     .limit(1)
-    .then((rows) => rows[0])
+    .then((rows) => rows[0]);
 
   if (!existing) {
-    throw new NotFoundError('Role', id)
+    throw new NotFoundError("Role", id);
   }
 
   if (input.roleName) {
@@ -154,10 +167,10 @@ export async function updateRole(id: number, input: UpdateRoleInput): Promise<Ro
       .from(sysRole)
       .where(and(eq(sysRole.roleName, input.roleName), ne(sysRole.id, id)))
       .limit(1)
-      .then((rows) => rows[0])
+      .then((rows) => rows[0]);
 
     if (duplicate) {
-      throw new ConflictError(`角色名 ${input.roleName} 已存在`)
+      throw new ConflictError(`角色名 ${input.roleName} 已存在`);
     }
   }
 
@@ -169,9 +182,9 @@ export async function updateRole(id: number, input: UpdateRoleInput): Promise<Ro
       status: input.status,
       remark: input.remark,
     })
-    .where(eq(sysRole.id, id))
+    .where(eq(sysRole.id, id));
 
-  return getRoleById(id)
+  return getRoleById(id);
 }
 
 /**
@@ -184,53 +197,61 @@ export async function deleteRole(id: number): Promise<void> {
     .from(sysRole)
     .where(eq(sysRole.id, id))
     .limit(1)
-    .then((rows) => rows[0])
+    .then((rows) => rows[0]);
 
   if (!existing) {
-    throw new NotFoundError('Role', id)
+    throw new NotFoundError("Role", id);
   }
 
   const adminCount = await db
     .select({ count: count() })
     .from(sysAdminRole)
     .where(eq(sysAdminRole.roleId, id))
-    .then((rows) => rows[0]?.count ?? 0)
+    .then((rows) => rows[0]?.count ?? 0);
 
   if (adminCount > 0) {
-    throw new BusinessError(`该角色已分配给 ${adminCount} 个管理员，请先解除关联`, 'ROLE_IN_USE')
+    throw new BusinessError(
+      `该角色已分配给 ${adminCount} 个管理员，请先解除关联`,
+      "ROLE_IN_USE"
+    );
   }
 
   await db.transaction(async (tx) => {
-    await tx.delete(sysRoleMenu).where(eq(sysRoleMenu.roleId, id))
-    await tx.delete(sysRole).where(eq(sysRole.id, id))
-  })
+    await tx.delete(sysRoleMenu).where(eq(sysRoleMenu.roleId, id));
+    await tx.delete(sysRole).where(eq(sysRole.id, id));
+  });
 }
 
 /**
  * 更新角色菜单权限
  * @description 清除所有权限缓存
  */
-export async function updateRoleMenus(id: number, menuIds: number[]): Promise<void> {
+export async function updateRoleMenus(
+  id: number,
+  menuIds: number[]
+): Promise<void> {
   const existing = await db
     .select({ id: sysRole.id })
     .from(sysRole)
     .where(eq(sysRole.id, id))
     .limit(1)
-    .then((rows) => rows[0])
+    .then((rows) => rows[0]);
 
   if (!existing) {
-    throw new NotFoundError('Role', id)
+    throw new NotFoundError("Role", id);
   }
 
   await db.transaction(async (tx) => {
-    await tx.delete(sysRoleMenu).where(eq(sysRoleMenu.roleId, id))
+    await tx.delete(sysRoleMenu).where(eq(sysRoleMenu.roleId, id));
 
     if (menuIds.length > 0) {
-      await tx.insert(sysRoleMenu).values(menuIds.map((menuId) => ({ roleId: id, menuId })))
+      await tx
+        .insert(sysRoleMenu)
+        .values(menuIds.map((menuId) => ({ roleId: id, menuId })));
     }
-  })
+  });
 
-  invalidateAllPermissionCache()
+  invalidateAllPermissionCache();
 }
 
 /**
@@ -240,7 +261,7 @@ export async function getRoleMenuIds(roleId: number): Promise<number[]> {
   const roleMenus = await db
     .select({ menuId: sysRoleMenu.menuId })
     .from(sysRoleMenu)
-    .where(eq(sysRoleMenu.roleId, roleId))
+    .where(eq(sysRoleMenu.roleId, roleId));
 
-  return roleMenus.map((rm) => rm.menuId)
+  return roleMenus.map((rm) => rm.menuId);
 }

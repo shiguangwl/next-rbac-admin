@@ -3,7 +3,6 @@
 /**
  * 角色菜单权限分配对话框
  * @description 为角色分配菜单权限
- * @requirements 4.6
  */
 
 import { CloseIcon, LoadingIcon } from "@/components/ui/icon";

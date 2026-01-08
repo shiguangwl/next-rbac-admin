@@ -3,7 +3,6 @@
 /**
  * 顶部导航栏组件
  * @description 后台管理系统顶部导航栏，显示用户信息和操作
- * @requirements 11.5
  */
 
 import { useAuth } from "@/hooks/use-auth";
