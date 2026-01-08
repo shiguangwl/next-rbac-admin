@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 /**
  * 登录页面
@@ -6,61 +6,64 @@
  * @requirements 2.1
  */
 
-import { useRouter } from 'next/navigation'
-import { type FormEvent, useState } from 'react'
-import { LoadingIcon } from '@/components/ui/icon'
-import { useAuth } from '@/hooks/use-auth'
+import { LoadingIcon } from "@/components/ui/icon";
+import { useAuth } from "@/hooks/use-auth";
+import { useRouter } from "next/navigation";
+import { type FormEvent, useState } from "react";
 
 /** 错误类型映射 */
 const ERROR_MESSAGES: Record<string, { title: string; description: string }> = {
   用户名或密码错误: {
-    title: '登录失败',
-    description: '用户名或密码不正确，请检查后重试',
+    title: "登录失败",
+    description: "用户名或密码不正确，请检查后重试",
   },
   账号已禁用: {
-    title: '账号已禁用',
-    description: '您的账号已被管理员禁用，请联系管理员处理',
+    title: "账号已禁用",
+    description: "您的账号已被管理员禁用，请联系管理员处理",
   },
-}
+};
 
 /** 获取友好的错误提示 */
 function getErrorInfo(message: string): { title: string; description: string } {
   return (
     ERROR_MESSAGES[message] || {
-      title: '登录失败',
-      description: message || '发生未知错误，请稍后重试',
+      title: "登录失败",
+      description: message || "发生未知错误，请稍后重试",
     }
-  )
+  );
 }
 
 export default function LoginPage() {
-  const router = useRouter()
-  const { login, loading } = useAuth()
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState<{ title: string; description: string } | null>(null)
+  const router = useRouter();
+  const { login, loading } = useAuth();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<{
+    title: string;
+    description: string;
+  } | null>(null);
 
   const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault()
-    setError(null)
+    e.preventDefault();
+    setError(null);
 
     if (!username.trim()) {
-      setError({ title: '请输入用户名', description: '用户名不能为空' })
-      return
+      setError({ title: "请输入用户名", description: "用户名不能为空" });
+      return;
     }
     if (!password) {
-      setError({ title: '请输入密码', description: '密码不能为空' })
-      return
+      setError({ title: "请输入密码", description: "密码不能为空" });
+      return;
     }
 
     try {
-      await login(username, password)
-      router.replace('/dashboard')
+      await login(username, password);
+      router.replace("/dashboard");
     } catch (err) {
-      const message = err instanceof Error ? err.message : '登录失败'
-      setError(getErrorInfo(message))
+      const message = err instanceof Error ? err.message : "登录失败";
+      setError(getErrorInfo(message));
     }
-  }
+  };
 
   return (
     <div className="w-full max-w-md">
@@ -91,7 +94,7 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* 错误提示 */}
           {error && (
-            <div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4">
+            <div className="flex items-start gap-3 rounded-lg  ed-200 bg-red-50 p-4">
               <svg
                 className="mt-0.5 h-5 w-5 shrink-0 text-red-500"
                 fill="none"
@@ -107,7 +110,9 @@ export default function LoginPage() {
                 />
               </svg>
               <div className="flex-1">
-                <p className="text-sm font-medium text-red-800">{error.title}</p>
+                <p className="text-sm font-medium text-red-800">
+                  {error.title}
+                </p>
                 <p className="mt-1 text-sm text-red-600">{error.description}</p>
               </div>
               <button
@@ -115,7 +120,12 @@ export default function LoginPage() {
                 onClick={() => setError(null)}
                 className="shrink-0 text-red-400 transition-colors hover:text-red-600"
               >
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
                   <title>关闭</title>
                   <path
                     strokeLinecap="round"
@@ -130,7 +140,10 @@ export default function LoginPage() {
 
           {/* 用户名 */}
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="username"
+              className="block text-sm font-medium text-gray-700"
+            >
               用户名
             </label>
             <input
@@ -138,7 +151,7 @@ export default function LoginPage() {
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-lg  -gray-300 px-4 py-3 focus:lue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               placeholder="请输入用户名"
               autoComplete="username"
               disabled={loading}
@@ -147,7 +160,10 @@ export default function LoginPage() {
 
           {/* 密码 */}
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
               密码
             </label>
             <input
@@ -155,7 +171,7 @@ export default function LoginPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-lg  -gray-300 px-4 py-3 focus:lue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               placeholder="请输入密码"
               autoComplete="current-password"
               disabled={loading}
@@ -169,10 +185,10 @@ export default function LoginPage() {
             className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-500 px-4 py-3 font-medium text-white transition-colors hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {loading && <LoadingIcon size="sm" />}
-            {loading ? '登录中...' : '登录'}
+            {loading ? "登录中..." : "登录"}
           </button>
         </form>
       </div>
     </div>
-  )
+  );
 }

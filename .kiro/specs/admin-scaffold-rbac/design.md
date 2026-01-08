@@ -1466,8 +1466,8 @@ export function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="w-64 border-r bg-white">
-      <div className="flex h-16 items-center border-b px-6">
+    <aside className="w-64  bg-white">
+      <div className="flex h-16 items-center  px-6">
         <span className="text-xl font-bold">Admin Panel</span>
       </div>
       <nav className="p-4">
@@ -2186,7 +2186,7 @@ export function Header() {
   }
 
   return (
-    <header className="flex h-16 items-center justify-between border-b bg-white px-6">
+    <header className="flex h-16 items-center justify-between  bg-white px-6">
       <div className="flex items-center gap-4">
         {/* 面包屑或其他导航元素 */}
       </div>

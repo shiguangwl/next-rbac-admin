@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 /**
  * 侧边栏组件
@@ -6,41 +6,41 @@
  * @requirements 11.5
  */
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { useMemo, useState } from 'react'
-import { DynamicIcon } from '@/components/dynamic-icon'
-import { useAuth } from '@/hooks/use-auth'
-import { cn } from '@/lib/utils'
+import { DynamicIcon } from "@/components/dynamic-icon";
+import { useAuth } from "@/hooks/use-auth";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useMemo, useState } from "react";
 
 /**
  * 菜单树节点类型
  */
 interface MenuTreeNode {
-  id: number
-  parentId: number
-  menuType: 'D' | 'M' | 'B'
-  menuName: string
-  permission: string | null
-  path: string | null
-  component: string | null
-  icon: string | null
-  sort: number
-  visible: number
-  status: number
-  isExternal: number
-  isCache: number
-  remark: string | null
-  createdAt: string
-  updatedAt: string
-  children?: MenuTreeNode[]
+  id: number;
+  parentId: number;
+  menuType: "D" | "M" | "B";
+  menuName: string;
+  permission: string | null;
+  path: string | null;
+  component: string | null;
+  icon: string | null;
+  sort: number;
+  visible: number;
+  status: number;
+  isExternal: number;
+  isCache: number;
+  remark: string | null;
+  createdAt: string;
+  updatedAt: string;
+  children?: MenuTreeNode[];
 }
 
 interface SidebarProps {
   /** 是否折叠 */
-  collapsed?: boolean
+  collapsed?: boolean;
   /** 折叠状态变化回调 */
-  onCollapsedChange?: (collapsed: boolean) => void
+  onCollapsedChange?: (collapsed: boolean) => void;
 }
 
 /**
@@ -53,24 +53,24 @@ function MenuItem({
   pathname,
   activeMenuIds,
 }: {
-  menu: MenuTreeNode
-  collapsed: boolean
-  level?: number
-  pathname: string
-  activeMenuIds: Set<number>
+  menu: MenuTreeNode;
+  collapsed: boolean;
+  level?: number;
+  pathname: string;
+  activeMenuIds: Set<number>;
 }) {
-  const [expanded, setExpanded] = useState(false)
+  const [expanded, setExpanded] = useState(false);
 
-  const hasChildren = menu.children && menu.children.length > 0
-  const isActive = menu.path ? pathname === menu.path : false
-  const isChildActive = activeMenuIds.has(menu.id) && !isActive
-  const isExpanded = expanded || isChildActive
+  const hasChildren = menu.children && menu.children.length > 0;
+  const isActive = menu.path ? pathname === menu.path : false;
+  const isChildActive = activeMenuIds.has(menu.id) && !isActive;
+  const isExpanded = expanded || isChildActive;
 
   // 不显示隐藏的菜单
-  if (menu.visible === 0 || menu.status === 0) return null
+  if (menu.visible === 0 || menu.status === 0) return null;
 
   // 按钮类型不在侧边栏显示
-  if (menu.menuType === 'B') return null
+  if (menu.menuType === "B") return null;
 
   const content = (
     <>
@@ -82,33 +82,41 @@ function MenuItem({
           <span className="flex-1 truncate">{menu.menuName}</span>
           {hasChildren && (
             <svg
-              className={cn('h-4 w-4 transition-transform', isExpanded && 'rotate-90')}
+              className={cn(
+                "h-4 w-4 transition-transform",
+                isExpanded && "rotate-90"
+              )}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              <title>{isExpanded ? '收起' : '展开'}</title>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              <title>{isExpanded ? "收起" : "展开"}</title>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
             </svg>
           )}
         </>
       )}
     </>
-  )
+  );
 
   const itemClass = cn(
-    'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors',
-    'hover:bg-gray-100',
-    (isActive || isChildActive) && 'bg-blue-50 text-blue-600',
-    level > 0 && !collapsed && 'ml-4'
-  )
+    "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
+    "hover:bg-gray-100",
+    (isActive || isChildActive) && "bg-blue-50 text-blue-600",
+    level > 0 && !collapsed && "ml-4"
+  );
 
   if (hasChildren) {
     return (
       <div>
         <button
           type="button"
-          className={cn(itemClass, 'w-full')}
+          className={cn(itemClass, "w-full")}
           onClick={() => setExpanded(!isExpanded)}
         >
           {content}
@@ -128,70 +136,78 @@ function MenuItem({
           </div>
         )}
       </div>
-    )
+    );
   }
 
   if (menu.path) {
     if (menu.isExternal === 1) {
       return (
-        <a href={menu.path} target="_blank" rel="noopener noreferrer" className={itemClass}>
+        <a
+          href={menu.path}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={itemClass}
+        >
           {content}
         </a>
-      )
+      );
     }
     return (
       <Link href={menu.path} className={itemClass}>
         {content}
       </Link>
-    )
+    );
   }
 
-  return <div className={itemClass}>{content}</div>
+  return <div className={itemClass}>{content}</div>;
 }
 
 /**
  * 侧边栏组件
  */
-export function Sidebar({ collapsed = false, onCollapsedChange }: SidebarProps) {
-  const { menus } = useAuth()
+export function Sidebar({
+  collapsed = false,
+  onCollapsedChange,
+}: SidebarProps) {
+  const { menus } = useAuth();
 
-  const pathname = usePathname() || ''
+  const pathname = usePathname() || "";
 
   const activeMenuIds = useMemo(() => {
-    const ids: number[] = []
+    const ids: number[] = [];
 
     const dfs = (items: MenuTreeNode[], parents: number[]): boolean => {
       for (const item of items) {
-        const currentParents = [...parents, item.id]
+        const currentParents = [...parents, item.id];
         if (item.path && item.path === pathname) {
-          ids.push(...currentParents)
-          return true
+          ids.push(...currentParents);
+          return true;
         }
         if (item.children && item.children.length > 0) {
           if (dfs(item.children, currentParents)) {
-            return true
+            return true;
           }
         }
       }
-      return false
-    }
+      return false;
+    };
 
     if (menus.length > 0 && pathname) {
-      dfs(menus, [])
+      dfs(menus, []);
     }
 
-    return new Set(ids)
-  }, [menus, pathname])
+    return new Set(ids);
+  }, [menus, pathname]);
 
   return (
     <aside
       className={cn(
-        'flex h-screen flex-col border-r bg-white transition-all duration-300',
-        collapsed ? 'w-16' : 'w-64'
+        "flex h-screen flex-col  bg-white transition-all duration-300",
+        collapsed ? "w-16" : "w-64"
       )}
     >
       {/* Logo */}
-      <div className="flex h-16 items-center justify-between border-b px-4">
+      <div className="flex h-16 items-center justify-between  px-4">
         {!collapsed && <span className="text-lg font-semibold">Admin</span>}
         <button
           type="button"
@@ -199,12 +215,15 @@ export function Sidebar({ collapsed = false, onCollapsedChange }: SidebarProps) 
           onClick={() => onCollapsedChange?.(!collapsed)}
         >
           <svg
-            className={cn('h-5 w-5 transition-transform', collapsed && 'rotate-180')}
+            className={cn(
+              "h-5 w-5 transition-transform",
+              collapsed && "rotate-180"
+            )}
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
           >
-            <title>{collapsed ? '展开侧边栏' : '收起侧边栏'}</title>
+            <title>{collapsed ? "展开侧边栏" : "收起侧边栏"}</title>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -228,5 +247,5 @@ export function Sidebar({ collapsed = false, onCollapsedChange }: SidebarProps) 
         ))}
       </nav>
     </aside>
-  )
+  );
 }

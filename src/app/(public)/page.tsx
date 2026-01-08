@@ -9,7 +9,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100">
       {/* 顶部导航 */}
-      <header className="border-b bg-white/80 backdrop-blur-sm">
+      <header className=" bg-white/80 backdrop-blur-sm">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-linear-to-br from-blue-500 to-indigo-600">
@@ -64,7 +64,7 @@ export default function HomePage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t bg-white/80 backdrop-blur-sm py-8 mt-16">
+      <footer className=" bg-white/80 backdrop-blur-sm py-8 mt-16">
         <div className="container mx-auto px-4 text-center text-sm text-gray-600">
           <p>© 2024 ETF Panel. All rights reserved.</p>
         </div>

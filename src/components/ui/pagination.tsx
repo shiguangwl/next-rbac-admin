@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 /**
  * 分页组件
@@ -6,70 +6,73 @@
  * @requirements 11.5
  */
 
-import { useMemo } from 'react'
-import { cn } from '@/lib/utils'
-import { ChevronLeftIcon, ChevronRightIcon } from './icon'
+import { cn } from "@/lib/utils";
+import { useMemo } from "react";
+import { ChevronLeftIcon, ChevronRightIcon } from "./icon";
 
 interface PaginationProps {
   /** 当前页码 */
-  page: number
+  page: number;
   /** 每页数量 */
-  pageSize: number
+  pageSize: number;
   /** 总记录数 */
-  total: number
+  total: number;
   /** 页码变化回调 */
-  onPageChange: (page: number) => void
+  onPageChange: (page: number) => void;
   /** 每页数量变化回调 */
-  onPageSizeChange?: (pageSize: number) => void
+  onPageSizeChange?: (pageSize: number) => void;
   /** 每页数量选项 */
-  pageSizeOptions?: number[]
+  pageSizeOptions?: number[];
   /** 是否显示每页数量选择器 */
-  showSizeChanger?: boolean
+  showSizeChanger?: boolean;
   /** 是否显示总数 */
-  showTotal?: boolean
+  showTotal?: boolean;
   /** 自定义类名 */
-  className?: string
+  className?: string;
 }
 
 /**
  * 生成页码数组
  */
-function generatePageNumbers(current: number, total: number): (number | 'ellipsis')[] {
-  const pages: (number | 'ellipsis')[] = []
-  const maxVisible = 7
+function generatePageNumbers(
+  current: number,
+  total: number
+): (number | "ellipsis")[] {
+  const pages: (number | "ellipsis")[] = [];
+  const maxVisible = 7;
 
   if (total <= maxVisible) {
     for (let i = 1; i <= total; i++) {
-      pages.push(i)
+      pages.push(i);
     }
-    return pages
+    return pages;
   }
 
   // 始终显示第一页
-  pages.push(1)
+  pages.push(1);
 
   if (current > 3) {
-    pages.push('ellipsis')
+    pages.push("ellipsis");
   }
 
   // 当前页附近的页码
-  const start = Math.max(2, current - 1)
-  const end = Math.min(total - 1, current + 1)
+  const start = Math.max(2, current - 1);
+  const end = Math.min(total - 1, current + 1);
 
   for (let i = start; i <= end; i++) {
-    pages.push(i)
+    pages.push(i);
   }
 
   if (current < total - 2) {
-    pages.push('ellipsis')
+    pages.push("ellipsis");
   }
 
   // 始终显示最后一页
   if (total > 1) {
-    pages.push(total)
+    pages.push(total);
   }
 
-  return pages
+  return pages;
 }
 
 /**
@@ -86,22 +89,33 @@ export function Pagination({
   showTotal = true,
   className,
 }: PaginationProps) {
-  const totalPages = useMemo(() => Math.ceil(total / pageSize), [total, pageSize])
-  const pageNumbers = useMemo(() => generatePageNumbers(page, totalPages), [page, totalPages])
+  const totalPages = useMemo(
+    () => Math.ceil(total / pageSize),
+    [total, pageSize]
+  );
+  const pageNumbers = useMemo(
+    () => generatePageNumbers(page, totalPages),
+    [page, totalPages]
+  );
 
-  const canGoPrev = page > 1
-  const canGoNext = page < totalPages
+  const canGoPrev = page > 1;
+  const canGoNext = page < totalPages;
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages && newPage !== page) {
-      onPageChange(newPage)
+      onPageChange(newPage);
     }
-  }
+  };
 
-  if (total === 0) return null
+  if (total === 0) return null;
 
   return (
-    <div className={cn('flex flex-wrap items-center justify-between gap-4', className)}>
+    <div
+      className={cn(
+        "flex flex-wrap items-center justify-between gap-4",
+        className
+      )}
+    >
       {/* 左侧：总数和每页数量 */}
       <div className="flex items-center gap-4 text-sm text-gray-600">
         {showTotal && <span>共 {total} 条</span>}
@@ -111,7 +125,7 @@ export function Pagination({
             <select
               value={pageSize}
               onChange={(e) => onPageSizeChange(Number(e.target.value))}
-              className="rounded border px-2 py-1 text-sm focus:border-blue-500 focus:outline-none"
+              className="rounded  px-2 py-1 text-sm focus:lue-500 focus:outline-none"
             >
               {pageSizeOptions.map((size) => (
                 <option key={size} value={size}>
@@ -132,10 +146,10 @@ export function Pagination({
           disabled={!canGoPrev}
           onClick={() => handlePageChange(page - 1)}
           className={cn(
-            'flex h-8 w-8 items-center justify-center rounded border transition-colors',
+            "flex h-8 w-8 items-center justify-center rounded  transition-colors",
             canGoPrev
-              ? 'hover:border-blue-500 hover:text-blue-500'
-              : 'cursor-not-allowed opacity-50'
+              ? "hover:lue-500 hover:text-blue-500"
+              : "cursor-not-allowed opacity-50"
           )}
         >
           <ChevronLeftIcon size="sm" />
@@ -143,33 +157,38 @@ export function Pagination({
 
         {/* 页码 */}
         {pageNumbers.map((pageNum, index) => {
-          if (pageNum === 'ellipsis') {
-            const prev = pageNumbers[index - 1]
-            const next = pageNumbers[index + 1]
-            const key = `ellipsis-${String(prev ?? 'start')}-${String(next ?? 'end')}`
+          if (pageNum === "ellipsis") {
+            const prev = pageNumbers[index - 1];
+            const next = pageNumbers[index + 1];
+            const key = `ellipsis-${String(prev ?? "start")}-${String(
+              next ?? "end"
+            )}`;
             return (
-              <span key={key} className="flex h-8 w-8 items-center justify-center text-gray-400">
+              <span
+                key={key}
+                className="flex h-8 w-8 items-center justify-center text-gray-400"
+              >
                 ...
               </span>
-            )
+            );
           }
 
-          const isActive = pageNum === page
+          const isActive = pageNum === page;
           return (
             <button
               key={pageNum}
               type="button"
               onClick={() => handlePageChange(pageNum)}
               className={cn(
-                'flex h-8 min-w-8 items-center justify-center rounded border px-2 text-sm transition-colors',
+                "flex h-8 min-w-8 items-center justify-center rounded  px-2 text-sm transition-colors",
                 isActive
-                  ? 'border-blue-500 bg-blue-500 text-white'
-                  : 'hover:border-blue-500 hover:text-blue-500'
+                  ? "lue-500 bg-blue-500 text-white"
+                  : "hover:lue-500 hover:text-blue-500"
               )}
             >
               {pageNum}
             </button>
-          )
+          );
         })}
 
         {/* 下一页 */}
@@ -178,15 +197,15 @@ export function Pagination({
           disabled={!canGoNext}
           onClick={() => handlePageChange(page + 1)}
           className={cn(
-            'flex h-8 w-8 items-center justify-center rounded border transition-colors',
+            "flex h-8 w-8 items-center justify-center rounded  transition-colors",
             canGoNext
-              ? 'hover:border-blue-500 hover:text-blue-500'
-              : 'cursor-not-allowed opacity-50'
+              ? "hover:lue-500 hover:text-blue-500"
+              : "cursor-not-allowed opacity-50"
           )}
         >
           <ChevronRightIcon size="sm" />
         </button>
       </div>
     </div>
-  )
+  );
 }
