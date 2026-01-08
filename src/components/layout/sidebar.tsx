@@ -105,8 +105,8 @@ function MenuItem({
 
   const itemClass = cn(
     "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
-    "hover:bg-gray-100",
-    (isActive || isChildActive) && "bg-blue-50 text-blue-600",
+    "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+    (isActive || isChildActive) && "bg-sidebar-accent text-sidebar-accent-foreground font-medium",
     level > 0 && !collapsed && "ml-4"
   );
 
@@ -201,16 +201,16 @@ export function Sidebar({
   return (
     <aside
       className={cn(
-        "flex h-screen flex-col  bg-white transition-all duration-300",
+        "flex h-screen flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-all duration-300",
         collapsed ? "w-16" : "w-64"
       )}
     >
       {/* Logo */}
-      <div className="flex h-16 items-center justify-between  px-4">
+      <div className="flex h-16 items-center justify-between px-4">
         {!collapsed && <span className="text-lg font-semibold">Admin</span>}
         <button
           type="button"
-          className="rounded-lg p-2 hover:bg-gray-100"
+          className="rounded-lg p-2 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
           onClick={() => onCollapsedChange?.(!collapsed)}
         >
           <svg

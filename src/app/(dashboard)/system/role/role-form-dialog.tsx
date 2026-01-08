@@ -189,17 +189,17 @@ export function RoleFormDialog({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="flex max-h-[90vh] w-full max-w-2xl flex-col rounded-lg bg-white shadow-xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4">
+      <div className="flex max-h-[90vh] w-full max-w-2xl flex-col rounded-lg bg-card shadow-xl border border-border">
         {/* 标题 */}
-        <div className="flex items-center justify-between  px-6 py-4">
-          <h3 className="text-lg font-semibold">
+        <div className="flex items-center justify-between border-b border-border px-6 py-4">
+          <h3 className="text-lg font-semibold text-card-foreground">
             {isEdit ? "编辑角色" : "新增角色"}
           </h3>
           <button
             type="button"
             onClick={onClose}
-            className="rounded p-1 hover:bg-gray-100"
+            className="rounded p-1 hover:bg-accent hover:text-accent-foreground transition-colors"
           >
             <CloseIcon size="sm" />
           </button>
@@ -212,7 +212,7 @@ export function RoleFormDialog({
         >
           <div className="flex-1 overflow-y-auto p-6">
             {error && (
-              <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-600">
+              <div className="mb-4 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
                 {error}
               </div>
             )}
@@ -220,15 +220,15 @@ export function RoleFormDialog({
             <div className="space-y-6">
               {/* 基本信息 */}
               <div>
-                <h4 className="mb-4 font-medium text-gray-900">基本信息</h4>
+                <h4 className="mb-4 font-medium text-card-foreground">基本信息</h4>
                 <div className="space-y-4">
                   {/* 角色名称 */}
                   <div>
                     <label
                       htmlFor="roleName"
-                      className="mb-1 block text-sm font-medium text-gray-700"
+                      className="mb-1 block text-sm font-medium text-foreground"
                     >
-                      角色名称 <span className="text-red-500">*</span>
+                      角色名称 <span className="text-destructive">*</span>
                     </label>
                     <input
                       id="roleName"
@@ -237,7 +237,7 @@ export function RoleFormDialog({
                       onChange={(e) =>
                         setFormData({ ...formData, roleName: e.target.value })
                       }
-                      className="w-full rounded-lg  px-4 py-2 focus:lue-500 focus:outline-none"
+                      className="w-full rounded-lg border border-input bg-background px-4 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                       placeholder="请输入角色名称"
                     />
                   </div>
@@ -247,7 +247,7 @@ export function RoleFormDialog({
                     <div>
                       <label
                         htmlFor="roleSort"
-                        className="mb-1 block text-sm font-medium text-gray-700"
+                        className="mb-1 block text-sm font-medium text-foreground"
                       >
                         排序
                       </label>
@@ -261,7 +261,7 @@ export function RoleFormDialog({
                             sort: Number(e.target.value),
                           })
                         }
-                        className="w-full rounded-lg  px-4 py-2 focus:lue-500 focus:outline-none"
+                        className="w-full rounded-lg border border-input bg-background px-4 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                         placeholder="请输入排序值"
                       />
                     </div>
@@ -269,7 +269,7 @@ export function RoleFormDialog({
                     <div>
                       <label
                         htmlFor="roleStatus"
-                        className="mb-1 block text-sm font-medium text-gray-700"
+                        className="mb-1 block text-sm font-medium text-foreground"
                       >
                         状态
                       </label>
@@ -282,7 +282,7 @@ export function RoleFormDialog({
                             status: Number(e.target.value),
                           })
                         }
-                        className="w-full rounded-lg  px-4 py-2 focus:lue-500 focus:outline-none"
+                        className="w-full rounded-lg border border-input bg-background px-4 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                       >
                         <option value={1}>正常</option>
                         <option value={0}>禁用</option>
@@ -294,7 +294,7 @@ export function RoleFormDialog({
                   <div>
                     <label
                       htmlFor="roleRemark"
-                      className="mb-1 block text-sm font-medium text-gray-700"
+                      className="mb-1 block text-sm font-medium text-foreground"
                     >
                       备注
                     </label>
@@ -305,7 +305,7 @@ export function RoleFormDialog({
                         setFormData({ ...formData, remark: e.target.value })
                       }
                       rows={3}
-                      className="w-full rounded-lg  px-4 py-2 focus:lue-500 focus:outline-none"
+                      className="w-full rounded-lg border border-input bg-background px-4 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                       placeholder="请输入备注"
                     />
                   </div>
@@ -314,14 +314,14 @@ export function RoleFormDialog({
 
               {/* 权限分配 */}
               <div>
-                <h4 className="mb-4 font-medium text-gray-900">权限分配</h4>
+                <h4 className="mb-4 font-medium text-card-foreground">权限分配</h4>
                 {isLoading ? (
                   <div className="flex items-center justify-center py-8">
                     <LoadingIcon size="lg" />
                   </div>
                 ) : (
                   <>
-                    <div className="mb-4 flex items-center gap-2 rounded-lg bg-gray-50 px-4 py-3">
+                    <div className="mb-4 flex items-center gap-2 rounded-lg bg-muted px-4 py-3">
                       <input
                         type="checkbox"
                         checked={
@@ -329,15 +329,15 @@ export function RoleFormDialog({
                           allMenuIds.length > 0
                         }
                         onChange={handleSelectAll}
-                        className="rounded -gray-300"
+                        className="rounded border-input text-primary focus:ring-primary"
                       />
-                      <span className="text-sm font-medium">全选/取消全选</span>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm font-medium text-foreground">全选/取消全选</span>
+                      <span className="text-sm text-muted-foreground">
                         (已选 {checkedMenuIds.length}/{allMenuIds.length})
                       </span>
                     </div>
 
-                    <div className="max-h-64 overflow-y-auto rounded-lg ">
+                    <div className="max-h-64 overflow-y-auto rounded-lg border border-input">
                       <div className="space-y-1 p-2">
                         {menuTree.map((node: MenuTreeNode) => (
                           <MenuTreeItem
@@ -359,18 +359,18 @@ export function RoleFormDialog({
           </div>
 
           {/* 操作按钮 */}
-          <div className="flex justify-end gap-2  px-6 py-4">
+          <div className="flex justify-end gap-2 border-t border-border px-6 py-4">
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg  px-4 py-2 hover:bg-gray-50"
+              className="rounded-lg border border-input bg-background px-4 py-2 hover:bg-accent hover:text-accent-foreground transition-colors"
             >
               取消
             </button>
             <button
               type="submit"
               disabled={isPending}
-              className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:opacity-50"
+              className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors"
             >
               {isPending && <LoadingIcon size="sm" />}
               {isPending ? "提交中..." : "确定"}

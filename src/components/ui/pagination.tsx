@@ -116,7 +116,7 @@ export function Pagination({
       )}
     >
       {/* 左侧：总数和每页数量 */}
-      <div className="flex items-center gap-4 text-sm text-gray-600">
+      <div className="flex items-center gap-4 text-sm text-muted-foreground">
         {showTotal && <span>共 {total} 条</span>}
         {showSizeChanger && onPageSizeChange && (
           <div className="flex items-center gap-2">
@@ -124,7 +124,7 @@ export function Pagination({
             <select
               value={pageSize}
               onChange={(e) => onPageSizeChange(Number(e.target.value))}
-              className="rounded  px-2 py-1 text-sm focus:lue-500 focus:outline-none"
+              className="rounded border border-input bg-background px-2 py-1 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             >
               {pageSizeOptions.map((size) => (
                 <option key={size} value={size}>
@@ -145,9 +145,9 @@ export function Pagination({
           disabled={!canGoPrev}
           onClick={() => handlePageChange(page - 1)}
           className={cn(
-            "flex h-8 w-8 items-center justify-center rounded  transition-colors",
+            "flex h-8 w-8 items-center justify-center rounded border border-input bg-background transition-colors",
             canGoPrev
-              ? "hover:lue-500 hover:text-blue-500"
+              ? "hover:bg-accent hover:text-accent-foreground"
               : "cursor-not-allowed opacity-50"
           )}
         >
@@ -165,7 +165,7 @@ export function Pagination({
             return (
               <span
                 key={key}
-                className="flex h-8 w-8 items-center justify-center text-gray-400"
+                className="flex h-8 w-8 items-center justify-center text-muted-foreground"
               >
                 ...
               </span>
@@ -179,10 +179,10 @@ export function Pagination({
               type="button"
               onClick={() => handlePageChange(pageNum)}
               className={cn(
-                "flex h-8 min-w-8 items-center justify-center rounded  px-2 text-sm transition-colors",
+                "flex h-8 min-w-8 items-center justify-center rounded border border-input px-2 text-sm transition-colors",
                 isActive
-                  ? "lue-500 bg-blue-500 text-white"
-                  : "hover:lue-500 hover:text-blue-500"
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-background hover:bg-accent hover:text-accent-foreground"
               )}
             >
               {pageNum}
@@ -196,9 +196,9 @@ export function Pagination({
           disabled={!canGoNext}
           onClick={() => handlePageChange(page + 1)}
           className={cn(
-            "flex h-8 w-8 items-center justify-center rounded  transition-colors",
+            "flex h-8 w-8 items-center justify-center rounded border border-input bg-background transition-colors",
             canGoNext
-              ? "hover:lue-500 hover:text-blue-500"
+              ? "hover:bg-accent hover:text-accent-foreground"
               : "cursor-not-allowed opacity-50"
           )}
         >

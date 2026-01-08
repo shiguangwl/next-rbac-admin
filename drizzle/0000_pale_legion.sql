@@ -13,15 +13,13 @@ CREATE TABLE `sys_admin` (
 	CONSTRAINT `uk_username` UNIQUE(`username`)
 );
 --> statement-breakpoint
-CREATE TABLE `sys_role` (
+CREATE TABLE `sys_admin_role` (
 	`id` bigint unsigned AUTO_INCREMENT NOT NULL,
-	`role_name` varchar(50) NOT NULL,
-	`sort` int unsigned NOT NULL DEFAULT 0,
-	`status` tinyint unsigned NOT NULL DEFAULT 1,
-	`remark` varchar(500),
+	`admin_id` bigint unsigned NOT NULL,
+	`role_id` bigint unsigned NOT NULL,
 	`created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	`updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-	CONSTRAINT `sys_role_id` PRIMARY KEY(`id`)
+	CONSTRAINT `sys_admin_role_id` PRIMARY KEY(`id`),
+	CONSTRAINT `uk_admin_role` UNIQUE(`admin_id`,`role_id`)
 );
 --> statement-breakpoint
 CREATE TABLE `sys_menu` (
@@ -43,24 +41,6 @@ CREATE TABLE `sys_menu` (
 	`updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	CONSTRAINT `sys_menu_id` PRIMARY KEY(`id`),
 	CONSTRAINT `uk_permission` UNIQUE(`permission`)
-);
---> statement-breakpoint
-CREATE TABLE `sys_admin_role` (
-	`id` bigint unsigned AUTO_INCREMENT NOT NULL,
-	`admin_id` bigint unsigned NOT NULL,
-	`role_id` bigint unsigned NOT NULL,
-	`created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	CONSTRAINT `sys_admin_role_id` PRIMARY KEY(`id`),
-	CONSTRAINT `uk_admin_role` UNIQUE(`admin_id`,`role_id`)
-);
---> statement-breakpoint
-CREATE TABLE `sys_role_menu` (
-	`id` bigint unsigned AUTO_INCREMENT NOT NULL,
-	`role_id` bigint unsigned NOT NULL,
-	`menu_id` bigint unsigned NOT NULL,
-	`created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	CONSTRAINT `sys_role_menu_id` PRIMARY KEY(`id`),
-	CONSTRAINT `uk_role_menu` UNIQUE(`role_id`,`menu_id`)
 );
 --> statement-breakpoint
 CREATE TABLE `sys_operation_log` (
@@ -85,19 +65,39 @@ CREATE TABLE `sys_operation_log` (
 	CONSTRAINT `sys_operation_log_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
+CREATE TABLE `sys_role` (
+	`id` bigint unsigned AUTO_INCREMENT NOT NULL,
+	`role_name` varchar(50) NOT NULL,
+	`sort` int unsigned NOT NULL DEFAULT 0,
+	`status` tinyint unsigned NOT NULL DEFAULT 1,
+	`remark` varchar(500),
+	`created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	`updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `sys_role_id` PRIMARY KEY(`id`)
+);
+--> statement-breakpoint
+CREATE TABLE `sys_role_menu` (
+	`id` bigint unsigned AUTO_INCREMENT NOT NULL,
+	`role_id` bigint unsigned NOT NULL,
+	`menu_id` bigint unsigned NOT NULL,
+	`created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	CONSTRAINT `sys_role_menu_id` PRIMARY KEY(`id`),
+	CONSTRAINT `uk_role_menu` UNIQUE(`role_id`,`menu_id`)
+);
+--> statement-breakpoint
 CREATE INDEX `idx_status` ON `sys_admin` (`status`);--> statement-breakpoint
-CREATE INDEX `idx_status` ON `sys_role` (`status`);--> statement-breakpoint
-CREATE INDEX `idx_sort` ON `sys_role` (`sort`);--> statement-breakpoint
+CREATE INDEX `idx_admin_id` ON `sys_admin_role` (`admin_id`);--> statement-breakpoint
+CREATE INDEX `idx_role_id` ON `sys_admin_role` (`role_id`);--> statement-breakpoint
 CREATE INDEX `idx_parent_id` ON `sys_menu` (`parent_id`);--> statement-breakpoint
 CREATE INDEX `idx_sort` ON `sys_menu` (`sort`);--> statement-breakpoint
 CREATE INDEX `idx_status` ON `sys_menu` (`status`);--> statement-breakpoint
 CREATE INDEX `idx_menu_type` ON `sys_menu` (`menu_type`);--> statement-breakpoint
-CREATE INDEX `idx_admin_id` ON `sys_admin_role` (`admin_id`);--> statement-breakpoint
-CREATE INDEX `idx_role_id` ON `sys_admin_role` (`role_id`);--> statement-breakpoint
-CREATE INDEX `idx_role_id` ON `sys_role_menu` (`role_id`);--> statement-breakpoint
-CREATE INDEX `idx_menu_id` ON `sys_role_menu` (`menu_id`);--> statement-breakpoint
 CREATE INDEX `idx_admin_id` ON `sys_operation_log` (`admin_id`);--> statement-breakpoint
 CREATE INDEX `idx_module` ON `sys_operation_log` (`module`);--> statement-breakpoint
 CREATE INDEX `idx_operation` ON `sys_operation_log` (`operation`);--> statement-breakpoint
 CREATE INDEX `idx_status` ON `sys_operation_log` (`status`);--> statement-breakpoint
-CREATE INDEX `idx_created_at` ON `sys_operation_log` (`created_at`);
+CREATE INDEX `idx_created_at` ON `sys_operation_log` (`created_at`);--> statement-breakpoint
+CREATE INDEX `idx_status` ON `sys_role` (`status`);--> statement-breakpoint
+CREATE INDEX `idx_sort` ON `sys_role` (`sort`);--> statement-breakpoint
+CREATE INDEX `idx_role_id` ON `sys_role_menu` (`role_id`);--> statement-breakpoint
+CREATE INDEX `idx_menu_id` ON `sys_role_menu` (`menu_id`);

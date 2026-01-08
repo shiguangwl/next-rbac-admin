@@ -143,17 +143,17 @@ export function MenuFormDialog({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="max-h-[90vh] w-full max-w-2xl overflow-auto rounded-lg bg-white shadow-xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+      <div className="max-h-[90vh] w-full max-w-2xl overflow-auto rounded-lg bg-card shadow-xl border border-border">
         {/* 标题 */}
-        <div className="sticky top-0 flex items-center justify-between  bg-white px-6 py-4">
-          <h3 className="text-lg font-semibold">
+        <div className="sticky top-0 flex items-center justify-between border-b border-border bg-card px-6 py-4">
+          <h3 className="text-lg font-semibold text-card-foreground">
             {isEdit ? "编辑菜单" : "新增菜单"}
           </h3>
           <button
             type="button"
             onClick={onClose}
-            className="rounded p-1 hover:bg-gray-100"
+            className="rounded p-1 hover:bg-accent hover:text-accent-foreground transition-colors"
           >
             <CloseIcon size="sm" />
           </button>
@@ -162,7 +162,7 @@ export function MenuFormDialog({
         {/* 表单 */}
         <form onSubmit={handleSubmit} className="p-6">
           {error && (
-            <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-600">
+            <div className="mb-4 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
               {error}
             </div>
           )}
@@ -178,14 +178,14 @@ export function MenuFormDialog({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg  px-4 py-2 hover:bg-gray-50"
+              className="rounded-lg border border-input bg-background px-4 py-2 hover:bg-accent hover:text-accent-foreground transition-colors"
             >
               取消
             </button>
             <button
               type="submit"
               disabled={isPending}
-              className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:opacity-50"
+              className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors"
             >
               {isPending && <LoadingIcon size="sm" />}
               {isPending ? "提交中..." : "确定"}

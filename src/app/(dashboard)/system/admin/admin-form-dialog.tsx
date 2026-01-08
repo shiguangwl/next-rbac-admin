@@ -135,17 +135,17 @@ export function AdminFormDialog({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="w-full max-w-lg rounded-lg bg-white shadow-xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+      <div className="w-full max-w-lg rounded-lg bg-card shadow-xl border border-border">
         {/* 标题 */}
-        <div className="flex items-center justify-between  px-6 py-4">
-          <h3 className="text-lg font-semibold">
+        <div className="flex items-center justify-between border-b border-border px-6 py-4">
+          <h3 className="text-lg font-semibold text-card-foreground">
             {isEdit ? "编辑管理员" : "新增管理员"}
           </h3>
           <button
             type="button"
             onClick={onClose}
-            className="rounded p-1 hover:bg-gray-100"
+            className="rounded p-1 hover:bg-accent hover:text-accent-foreground transition-colors"
           >
             <CloseIcon size="sm" />
           </button>
@@ -207,7 +207,7 @@ export function AdminFormDialog({
             <div>
               <label
                 htmlFor="adminNickname"
-                className="mb-1 block text-sm font-medium text-gray-700"
+                className="mb-1 block text-sm font-medium text-foreground"
               >
                 昵称
               </label>
@@ -218,7 +218,7 @@ export function AdminFormDialog({
                 onChange={(e) =>
                   setFormData({ ...formData, nickname: e.target.value })
                 }
-                className="w-full rounded-lg  px-4 py-2 focus:lue-500 focus:outline-none"
+                className="w-full rounded-lg border border-input bg-background px-4 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                 placeholder="请输入昵称"
               />
             </div>
@@ -227,7 +227,7 @@ export function AdminFormDialog({
             <div>
               <label
                 htmlFor="adminStatus"
-                className="mb-1 block text-sm font-medium text-gray-700"
+                className="mb-1 block text-sm font-medium text-foreground"
               >
                 状态
               </label>
@@ -237,7 +237,7 @@ export function AdminFormDialog({
                 onChange={(e) =>
                   setFormData({ ...formData, status: Number(e.target.value) })
                 }
-                className="w-full rounded-lg  px-4 py-2 focus:lue-500 focus:outline-none"
+                className="w-full rounded-lg border border-input bg-background px-4 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               >
                 <option value={1}>正常</option>
                 <option value={0}>禁用</option>
@@ -246,15 +246,15 @@ export function AdminFormDialog({
 
             {/* 角色 */}
             <div>
-              <div className="mb-1 block text-sm font-medium text-gray-700">
+              <div className="mb-1 block text-sm font-medium text-foreground">
                 角色
               </div>
               {isSuperAdmin ? (
-                <div className="rounded-lg  bg-gray-50 p-3 text-sm text-gray-500">
+                <div className="rounded-lg bg-muted p-3 text-sm text-muted-foreground">
                   超级管理员角色不可修改
                 </div>
               ) : (
-                <div className="max-h-40 space-y-2 overflow-y-auto rounded-lg  p-3">
+                <div className="max-h-40 space-y-2 overflow-y-auto rounded-lg border border-input p-3">
                   {roles.map((role) => (
                     <label key={role.id} className="flex items-center gap-2">
                       <input
@@ -275,13 +275,13 @@ export function AdminFormDialog({
                             });
                           }
                         }}
-                        className="rounded -gray-300"
+                        className="rounded border-input text-primary focus:ring-primary"
                       />
-                      <span className="text-sm">{role.roleName}</span>
+                      <span className="text-sm text-foreground">{role.roleName}</span>
                     </label>
                   ))}
                   {roles.length === 0 && (
-                    <p className="text-sm text-gray-500">暂无角色</p>
+                    <p className="text-sm text-muted-foreground">暂无角色</p>
                   )}
                 </div>
               )}
@@ -291,7 +291,7 @@ export function AdminFormDialog({
             <div>
               <label
                 htmlFor="adminRemark"
-                className="mb-1 block text-sm font-medium text-gray-700"
+                className="mb-1 block text-sm font-medium text-foreground"
               >
                 备注
               </label>
@@ -302,7 +302,7 @@ export function AdminFormDialog({
                   setFormData({ ...formData, remark: e.target.value })
                 }
                 rows={3}
-                className="w-full rounded-lg  px-4 py-2 focus:lue-500 focus:outline-none"
+                className="w-full rounded-lg border border-input bg-background px-4 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                 placeholder="请输入备注"
               />
             </div>
@@ -313,14 +313,14 @@ export function AdminFormDialog({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg  px-4 py-2 hover:bg-gray-50"
+              className="rounded-lg border border-input bg-background px-4 py-2 hover:bg-accent hover:text-accent-foreground transition-colors"
             >
               取消
             </button>
             <button
               type="submit"
               disabled={isPending}
-              className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:opacity-50"
+              className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors"
             >
               {isPending && <LoadingIcon size="sm" />}
               {isPending ? "提交中..." : "确定"}

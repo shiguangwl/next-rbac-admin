@@ -66,12 +66,12 @@ export default function LoginPage() {
 
   return (
     <div className="w-full max-w-md">
-      <div className="rounded-2xl bg-white p-8 shadow-xl">
+      <div className="rounded-2xl bg-card p-8 shadow-xl border border-border">
         {/* Logo */}
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-500">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground">
             <svg
-              className="h-8 w-8 text-white"
+              className="h-8 w-8"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -85,17 +85,17 @@ export default function LoginPage() {
               />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">后台管理系统</h1>
-          <p className="mt-2 text-sm text-gray-500">请登录您的管理员账号</p>
+          <h1 className="text-2xl font-bold text-card-foreground">后台管理系统</h1>
+          <p className="mt-2 text-sm text-muted-foreground">请登录您的管理员账号</p>
         </div>
 
         {/* 表单 */}
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* 错误提示 */}
           {error && (
-            <div className="flex items-start gap-3 rounded-lg  ed-200 bg-red-50 p-4">
+            <div className="flex items-start gap-3 rounded-lg border border-destructive/20 bg-destructive/10 p-4">
               <svg
-                className="mt-0.5 h-5 w-5 shrink-0 text-red-500"
+                className="mt-0.5 h-5 w-5 shrink-0 text-destructive"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -109,15 +109,15 @@ export default function LoginPage() {
                 />
               </svg>
               <div className="flex-1">
-                <p className="text-sm font-medium text-red-800">
+                <p className="text-sm font-medium text-destructive">
                   {error.title}
                 </p>
-                <p className="mt-1 text-sm text-red-600">{error.description}</p>
+                <p className="mt-1 text-sm text-destructive/80">{error.description}</p>
               </div>
               <button
                 type="button"
                 onClick={() => setError(null)}
-                className="shrink-0 text-red-400 transition-colors hover:text-red-600"
+                className="shrink-0 text-destructive/60 transition-colors hover:text-destructive"
               >
                 <svg
                   className="h-5 w-5"
@@ -141,7 +141,7 @@ export default function LoginPage() {
           <div>
             <label
               htmlFor="username"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-foreground"
             >
               用户名
             </label>
@@ -150,7 +150,7 @@ export default function LoginPage() {
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="mt-1 block w-full rounded-lg  -gray-300 px-4 py-3 focus:lue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-lg border border-input bg-background px-4 py-3 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               placeholder="请输入用户名"
               autoComplete="username"
               disabled={loading}
@@ -161,7 +161,7 @@ export default function LoginPage() {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-foreground"
             >
               密码
             </label>
@@ -170,7 +170,7 @@ export default function LoginPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full rounded-lg  -gray-300 px-4 py-3 focus:lue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-lg border border-input bg-background px-4 py-3 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               placeholder="请输入密码"
               autoComplete="current-password"
               disabled={loading}
@@ -181,7 +181,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-500 px-4 py-3 font-medium text-white transition-colors hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {loading && <LoadingIcon size="sm" />}
             {loading ? "登录中..." : "登录"}

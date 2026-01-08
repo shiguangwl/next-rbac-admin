@@ -48,11 +48,11 @@ function UserDropdown() {
     <div className="relative" ref={dropdownRef}>
       <button
         type="button"
-        className="flex items-center gap-2 rounded-lg px-3 py-2 hover:bg-gray-100"
+        className="flex items-center gap-2 rounded-lg px-3 py-2 hover:bg-accent hover:text-accent-foreground"
         onClick={() => setOpen(!open)}
       >
         {/* 头像 */}
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-500 text-sm font-medium text-white">
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm font-medium text-primary-foreground">
           {admin?.nickname?.charAt(0) || admin?.username?.charAt(0) || "A"}
         </div>
         {/* 用户名 */}
@@ -78,16 +78,16 @@ function UserDropdown() {
 
       {/* 下拉菜单 */}
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-2 w-48 rounded-lg  bg-white py-1 shadow-lg">
-          <div className=" px-4 py-2">
+        <div className="absolute right-0 top-full z-50 mt-2 w-48 rounded-lg border border-border bg-popover text-popover-foreground shadow-lg animate-in fade-in-0 zoom-in-95">
+          <div className="px-4 py-2 border-b border-border">
             <p className="text-sm font-medium">
               {admin?.nickname || admin?.username}
             </p>
-            <p className="text-xs text-gray-500">{admin?.username}</p>
+            <p className="text-xs text-muted-foreground">{admin?.username}</p>
           </div>
           <Link
             href="/"
-            className="flex w-full items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50"
+            className="flex w-full items-center gap-2 px-4 py-2 text-sm hover:bg-accent hover:text-accent-foreground transition-colors"
             onClick={() => setOpen(false)}
           >
             <svg
@@ -108,7 +108,7 @@ function UserDropdown() {
           </Link>
           <button
             type="button"
-            className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-50"
+            className="flex w-full items-center gap-2 px-4 py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors"
             onClick={handleLogout}
           >
             <svg
