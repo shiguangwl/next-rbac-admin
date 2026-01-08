@@ -3,8 +3,8 @@
  * @description 基于 Pino 的结构化日志，支持 requestId 上下文
  */
 
-import { env } from '@/env'
 import pino from 'pino'
+import { env } from '@/env'
 import { getRequestContext } from './request-context'
 
 /**

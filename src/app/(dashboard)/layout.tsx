@@ -6,10 +6,10 @@
  * @requirements 11.5
  */
 
+import { type ReactNode, useState } from 'react'
 import { AuthGuard } from '@/components/auth-guard'
 import { Header } from '@/components/layout/header'
 import { Sidebar } from '@/components/layout/sidebar'
-import { type ReactNode, useState } from 'react'
 
 interface DashboardLayoutProps {
   children: ReactNode

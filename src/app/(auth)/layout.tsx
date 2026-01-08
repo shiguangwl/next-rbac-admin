@@ -6,8 +6,8 @@
  * @requirements 2.1
  */
 
-import { GuestGuard } from '@/components/auth-guard'
 import type { ReactNode } from 'react'
+import { GuestGuard } from '@/components/auth-guard'
 
 interface AuthLayoutProps {
   children: ReactNode

@@ -6,13 +6,13 @@
  * @requirements 3.1, 3.2, 3.4, 3.6
  */
 
+import { useState } from 'react'
+import { toast } from 'sonner'
 import { PermissionGuard } from '@/components/permission-guard'
 import { EditIcon, PlusIcon, RefreshIcon, SearchIcon, TrashIcon } from '@/components/ui/icon'
 import { Pagination } from '@/components/ui/pagination'
 import { useAdmins, useDeleteAdmin, useResetPassword } from '@/hooks/queries/use-admins'
 import { SUPER_ADMIN_ID } from '@/lib/constants'
-import { useState } from 'react'
-import { toast } from 'sonner'
 import { AdminFormDialog } from './admin-form-dialog'
 
 type Admin = {

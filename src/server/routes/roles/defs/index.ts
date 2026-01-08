@@ -4,7 +4,7 @@
  * @requirements 10.7, 10.8
  */
 
-export { listRolesRoute, getAllRolesRoute } from './list'
-export { createRoleRoute } from './create'
-export { getRoleRoute, updateRoleRoute, deleteRoleRoute } from './detail'
 export { updateRoleMenusRoute } from './actions'
+export { createRoleRoute } from './create'
+export { deleteRoleRoute, getRoleRoute, updateRoleRoute } from './detail'
+export { getAllRolesRoute, listRolesRoute } from './list'

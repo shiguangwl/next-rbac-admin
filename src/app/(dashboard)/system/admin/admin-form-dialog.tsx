@@ -6,11 +6,11 @@
  * @requirements 3.2, 3.4
  */
 
+import { useEffect, useState } from 'react'
 import { CloseIcon, LoadingIcon } from '@/components/ui/icon'
 import { useCreateAdmin, useUpdateAdmin, useUpdateAdminRoles } from '@/hooks/queries/use-admins'
 import { useAllRoles } from '@/hooks/queries/use-roles'
 import { SUPER_ADMIN_ID } from '@/lib/constants'
-import { useEffect, useState } from 'react'
 
 type Admin = {
   id: number

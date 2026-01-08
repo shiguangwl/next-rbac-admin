@@ -4,6 +4,7 @@
  * @requirements 10.7, 10.8
  */
 
+import { OpenAPIHono } from '@hono/zod-openapi'
 import type { Env } from '@/server/context'
 import { auditLog } from '@/server/middleware/audit-log'
 import { requireAuth } from '@/server/middleware/jwt-auth'
@@ -17,7 +18,6 @@ import {
   updateRole,
   updateRoleMenus,
 } from '@/server/services/role.service'
-import { OpenAPIHono } from '@hono/zod-openapi'
 import {
   createRoleRoute,
   deleteRoleRoute,

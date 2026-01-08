@@ -19,7 +19,14 @@ export const env = createEnv({
 
     // JWT 配置
     JWT_SECRET: z.string().min(32, 'JWT_SECRET must be at least 32 characters'),
-    JWT_EXPIRES_IN: z.string().optional().default('7d'),
+    JWT_EXPIRES_IN: z
+      .string()
+      .regex(
+        /^\d+(\.\d+)?\s*(ms|milliseconds?|s|secs?|seconds?|m|mins?|minutes?|h|hrs?|hours?|d|days?|w|weeks?|y|yrs?|years?)$/i,
+        'JWT_EXPIRES_IN must be a valid time span (e.g., 60, 1h, 7d, 2 days)'
+      )
+      .optional()
+      .default('7d'),
 
     // 运行环境
     NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),

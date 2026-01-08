@@ -4,8 +4,8 @@
  * @requirements 11.5
  */
 
-import { cn } from '@/lib/utils'
 import type { SVGProps } from 'react'
+import { cn } from '@/lib/utils'
 
 type IconProps = SVGProps<SVGSVGElement> & {
   /** 图标大小 */

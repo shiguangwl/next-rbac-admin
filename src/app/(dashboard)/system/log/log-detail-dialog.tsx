@@ -89,7 +89,11 @@ function DetailItem({
   label,
   value,
   isCode,
-}: { label: string; value: string | number | null | undefined; isCode?: boolean }) {
+}: {
+  label: string
+  value: string | number | null | undefined
+  isCode?: boolean
+}) {
   return (
     <div>
       <span className="block text-sm font-medium text-gray-500">{label}</span>

@@ -6,8 +6,8 @@
  * @requirements 11.5
  */
 
-import { cn } from '@/lib/utils'
 import { useMemo } from 'react'
+import { cn } from '@/lib/utils'
 import { ChevronLeftIcon, ChevronRightIcon } from './icon'
 
 interface PaginationProps {

@@ -6,9 +6,9 @@
  * @requirements 5.2, 5.4
  */
 
+import { useEffect, useState } from 'react'
 import { CloseIcon, LoadingIcon } from '@/components/ui/icon'
 import { useCreateMenu, useUpdateMenu } from '@/hooks/queries/use-menus'
-import { useEffect, useState } from 'react'
 import { type MenuFormData, MenuFormFields } from './menu-form-fields'
 
 type MenuTreeNode = {

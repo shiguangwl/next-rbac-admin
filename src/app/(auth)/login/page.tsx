@@ -6,18 +6,18 @@
  * @requirements 2.1
  */
 
-import { LoadingIcon } from '@/components/ui/icon'
-import { useAuth } from '@/hooks/use-auth'
 import { useRouter } from 'next/navigation'
 import { type FormEvent, useState } from 'react'
+import { LoadingIcon } from '@/components/ui/icon'
+import { useAuth } from '@/hooks/use-auth'
 
 /** 错误类型映射 */
 const ERROR_MESSAGES: Record<string, { title: string; description: string }> = {
-  '用户名或密码错误': {
+  用户名或密码错误: {
     title: '登录失败',
     description: '用户名或密码不正确，请检查后重试',
   },
-  '账号已禁用': {
+  账号已禁用: {
     title: '账号已禁用',
     description: '您的账号已被管理员禁用，请联系管理员处理',
   },

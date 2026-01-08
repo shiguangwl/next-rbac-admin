@@ -4,10 +4,10 @@
  * @requirements 7.4
  */
 
-import { verifyToken } from '@/lib/jwt'
-import type { Env } from '@/server/context'
 import { createMiddleware } from 'hono/factory'
 import { HTTPException } from 'hono/http-exception'
+import { verifyToken } from '@/lib/jwt'
+import type { Env } from '@/server/context'
 
 /**
  * JWT 认证中间件（可选认证）

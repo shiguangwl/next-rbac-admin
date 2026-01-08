@@ -30,7 +30,7 @@ function validateLogCompleteness(log: OperationLog): {
   isComplete: boolean
   missingFields: string[]
 } {
-  const requiredFields = [
+  const _requiredFields = [
     'adminId',
     'adminName',
     'module',

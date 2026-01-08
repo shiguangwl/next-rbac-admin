@@ -4,9 +4,9 @@
  * @validates Requirements 3.1, 3.3, 3.6, 3.7, 6.3
  */
 
-import { BusinessError } from '@/lib/errors'
 import * as fc from 'fast-check'
 import { describe, expect, it } from 'vitest'
+import { BusinessError } from '@/lib/errors'
 
 // ========== 纯函数测试 ==========
 

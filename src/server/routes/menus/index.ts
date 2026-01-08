@@ -4,6 +4,7 @@
  * @requirements 10.9, 10.10
  */
 
+import { OpenAPIHono } from '@hono/zod-openapi'
 import type { Env } from '@/server/context'
 import { auditLog } from '@/server/middleware/audit-log'
 import { requireAuth } from '@/server/middleware/jwt-auth'
@@ -16,7 +17,6 @@ import {
   getMenuTree,
   updateMenu,
 } from '@/server/services/menu.service'
-import { OpenAPIHono } from '@hono/zod-openapi'
 import {
   createMenuRoute,
   deleteMenuRoute,

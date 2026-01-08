@@ -6,10 +6,10 @@
 
 import { createRoute } from '@hono/zod-openapi'
 import {
+  createDataResponseSchema,
   ErrorSchema,
   IdParamSchema,
   SuccessSchema,
-  createDataResponseSchema,
 } from '../../common/dtos'
 import { MenuSchema, UpdateMenuInputSchema } from '../dtos'
 

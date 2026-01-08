@@ -1,4 +1,3 @@
-import { hashPassword, verifyPassword } from '@/lib/password'
 import * as fc from 'fast-check'
 /**
  * Property 1: 密码加密验证
@@ -9,6 +8,7 @@ import * as fc from 'fast-check'
  * - 任意密码加密后，使用不同密码验证应返回 false
  */
 import { describe, expect, it } from 'vitest'
+import { hashPassword, verifyPassword } from '@/lib/password'
 
 /**
  * 生成有效的密码字符串

@@ -4,6 +4,7 @@
  * @requirements 11.2
  */
 
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { type ClientResponse, getApiClient, unwrapApiData } from '@/lib/client'
 import type {
   CreateMenuInput,
@@ -12,7 +13,6 @@ import type {
   MenuTreeNodeDto,
   UpdateMenuInput,
 } from '@/server/routes/menus/dtos'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 type MenusClient = {
   $get: (args: { query: Record<string, string> }) => Promise<ClientResponse<unknown>>
@@ -22,9 +22,10 @@ type MenusClient = {
   }
   ':id': {
     $get: (args: { param: { id: string } }) => Promise<ClientResponse<unknown>>
-    $put: (args: { param: { id: string }; json: UpdateMenuInput }) => Promise<
-      ClientResponse<unknown>
-    >
+    $put: (args: {
+      param: { id: string }
+      json: UpdateMenuInput
+    }) => Promise<ClientResponse<unknown>>
     $delete: (args: { param: { id: string } }) => Promise<ClientResponse<unknown>>
   }
 }
@@ -121,13 +122,7 @@ export function useUpdateMenu() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({
-      id,
-      input,
-    }: {
-      id: number
-      input: UpdateMenuInput
-    }) => {
+    mutationFn: async ({ id, input }: { id: number; input: UpdateMenuInput }) => {
       const response = await menusClient()[':id'].$put({
         param: { id: String(id) },
         json: input,

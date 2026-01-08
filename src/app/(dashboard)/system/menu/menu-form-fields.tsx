@@ -6,9 +6,9 @@
  * @requirements 5.2, 5.4
  */
 
+import { useState } from 'react'
 import { DynamicIcon } from '@/components/dynamic-icon'
 import { IconPicker } from '@/components/icon-picker'
-import { useState } from 'react'
 
 export type MenuFormData = {
   parentId: number

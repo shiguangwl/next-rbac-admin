@@ -5,7 +5,7 @@
  */
 
 import { z } from '@hono/zod-openapi'
-import { PaginationQuerySchema, createPaginatedSchema } from '../common/dtos'
+import { createPaginatedSchema, PaginationQuerySchema } from '../common/dtos'
 
 // ========== 基础 Schema ==========
 

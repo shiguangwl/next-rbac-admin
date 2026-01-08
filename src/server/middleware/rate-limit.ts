@@ -4,9 +4,9 @@
  * @requirements 10.12
  */
 
-import type { Env } from '@/server/context'
 import { createMiddleware } from 'hono/factory'
 import { HTTPException } from 'hono/http-exception'
+import type { Env } from '@/server/context'
 
 /**
  * 速率限制配置
@@ -19,9 +19,7 @@ export interface RateLimitOptions {
   /** 自定义错误消息 */
   message?: string
   /** 自定义 key 生成函数 */
-  keyGenerator?: (c: {
-    req: { header: (name: string) => string | undefined }
-  }) => string
+  keyGenerator?: (c: { req: { header: (name: string) => string | undefined } }) => string
 }
 
 /**
@@ -62,9 +60,7 @@ function startCleanup() {
 /**
  * 默认 key 生成函数（基于 IP 地址）
  */
-function defaultKeyGenerator(c: {
-  req: { header: (name: string) => string | undefined }
-}): string {
+function defaultKeyGenerator(c: { req: { header: (name: string) => string | undefined } }): string {
   return (
     c.req.header('x-forwarded-for')?.split(',')[0]?.trim() || c.req.header('x-real-ip') || 'unknown'
   )

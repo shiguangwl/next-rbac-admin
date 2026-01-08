@@ -3,8 +3,8 @@
  * @description 处理跨域资源共享
  */
 
-import { env } from '@/env'
 import { cors } from 'hono/cors'
+import { env } from '@/env'
 
 /**
  * 构建允许的 Origin 列表

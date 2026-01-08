@@ -4,12 +4,12 @@
  * @requirements 10.1, 10.2, 10.3
  */
 
+import { OpenAPIHono } from '@hono/zod-openapi'
 import type { Env } from '@/server/context'
 import { requireAuth } from '@/server/middleware/jwt-auth'
 import { loginRateLimit } from '@/server/middleware/rate-limit'
 import { getAdminById } from '@/server/services/admin.service'
 import { getAdminMenuTree, getAdminPermissions, login } from '@/server/services/auth.service'
-import { OpenAPIHono } from '@hono/zod-openapi'
 import { getAuthInfoRoute, loginRoute, logoutRoute } from './defs'
 
 const auth = new OpenAPIHono<Env>()

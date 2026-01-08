@@ -4,9 +4,9 @@
  * @requirements 8.1, 8.2, 8.3, 8.4, 8.5, 8.6
  */
 
+import { createMiddleware } from 'hono/factory'
 import { logger } from '@/lib/logger'
 import type { Env } from '@/server/context'
-import { createMiddleware } from 'hono/factory'
 
 /**
  * 操作日志选项

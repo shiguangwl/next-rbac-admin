@@ -4,6 +4,7 @@
  * @requirements 10.11
  */
 
+import { OpenAPIHono } from '@hono/zod-openapi'
 import type { Env } from '@/server/context'
 import { requireAuth } from '@/server/middleware/jwt-auth'
 import { requirePermission } from '@/server/middleware/rbac'
@@ -12,7 +13,6 @@ import {
   getOperationLogById,
   getOperationLogList,
 } from '@/server/services/audit.service'
-import { OpenAPIHono } from '@hono/zod-openapi'
 import { deleteLogRoute, getLogRoute, listLogsRoute } from './defs'
 
 const operationLogs = new OpenAPIHono<Env>()

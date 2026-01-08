@@ -1,12 +1,13 @@
-import type { MySql2Database, MySql2DrizzleConfig } from 'drizzle-orm/mysql2'
+import type { MySql2Database } from 'drizzle-orm/mysql2'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyDatabase = MySql2Database<any>
+
+import { eq } from 'drizzle-orm'
 import { sysAdmin, sysAdminRole, sysMenu, sysRole, sysRoleMenu } from '@/db/schema'
 import { MENUS, ROLES } from '@/db/seed-data'
 import { SUPER_ADMIN_ID } from '@/lib/constants'
 import { hashPassword } from '@/lib/password'
-import { eq } from 'drizzle-orm'
 
 export interface SeedOptions {
   username: string

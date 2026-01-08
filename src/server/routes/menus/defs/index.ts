@@ -4,6 +4,6 @@
  * @requirements 10.9, 10.10
  */
 
-export { listMenusRoute, getMenuTreeRoute } from './list'
 export { createMenuRoute } from './create'
-export { getMenuRoute, updateMenuRoute, deleteMenuRoute } from './detail'
+export { deleteMenuRoute, getMenuRoute, updateMenuRoute } from './detail'
+export { getMenuTreeRoute, listMenusRoute } from './list'

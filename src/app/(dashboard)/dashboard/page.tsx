@@ -6,8 +6,8 @@
  * @requirements 11.5
  */
 
-import { useAuth } from '@/hooks/use-auth'
 import Link from 'next/link'
+import { useAuth } from '@/hooks/use-auth'
 
 export default function DashboardPage() {
   const { admin } = useAuth()

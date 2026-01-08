@@ -1,4 +1,3 @@
-import { type AdminPayload, signToken, verifyToken } from '@/lib/jwt'
 /**
  * Property 2: JWT Token 结构完整性
  * Validates: Requirements 2.1, 2.7
@@ -9,6 +8,7 @@ import { type AdminPayload, signToken, verifyToken } from '@/lib/jwt'
  */
 import * as fc from 'fast-check'
 import { describe, expect, it } from 'vitest'
+import { type AdminPayload, signToken, verifyToken } from '@/lib/jwt'
 
 /**
  * 生成有效的 adminId（正整数）

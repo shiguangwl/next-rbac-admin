@@ -5,7 +5,7 @@
  */
 
 import { createRoute } from '@hono/zod-openapi'
-import { ErrorSchema, createDataResponseSchema } from '../../common/dtos'
+import { createDataResponseSchema, ErrorSchema } from '../../common/dtos'
 import { AdminSchema, CreateAdminInputSchema } from '../dtos'
 
 /**

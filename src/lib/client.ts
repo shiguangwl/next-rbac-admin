@@ -3,9 +3,9 @@
  * @description 配置 Hono RPC 客户端，支持 SSR/CSR 区分和自动注入 Authorization
  */
 
+import { type ClientResponse, hc } from 'hono/client'
 import { env } from '@/env'
 import type { AppType } from '@/server/types'
-import { type ClientResponse, hc } from 'hono/client'
 
 const hcApp = hc<AppType>
 

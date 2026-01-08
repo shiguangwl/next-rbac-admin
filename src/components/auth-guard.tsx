@@ -6,9 +6,9 @@
  * @requirements 11.4
  */
 
-import { useAuth } from '@/hooks/use-auth'
 import { useRouter } from 'next/navigation'
 import { type ReactNode, useEffect } from 'react'
+import { useAuth } from '@/hooks/use-auth'
 
 interface AuthGuardProps {
   /** 子组件 */

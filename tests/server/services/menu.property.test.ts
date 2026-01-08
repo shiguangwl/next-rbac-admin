@@ -4,10 +4,10 @@
  * @validates Requirements 5.1, 5.5
  */
 
-import { BusinessError } from '@/lib/errors'
-import { type MenuDto, type MenuTreeNode, buildMenuTree } from '@/server/services/menu.service'
 import * as fc from 'fast-check'
 import { describe, expect, it } from 'vitest'
+import { BusinessError } from '@/lib/errors'
+import { buildMenuTree, type MenuDto, type MenuTreeNode } from '@/server/services/menu.service'
 
 // ========== 纯函数测试 ==========
 
@@ -42,7 +42,7 @@ function hasCircularReference(nodes: MenuTreeNode[], visited = new Set<number>()
 /**
  * 验证树形结构的父子关系正确性
  */
-function validateParentChildRelation(nodes: MenuTreeNode[], parentId = 0): boolean {
+function _validateParentChildRelation(nodes: MenuTreeNode[], parentId = 0): boolean {
   for (const node of nodes) {
     // 根节点的 parentId 应该是 0
     if (parentId === 0 && node.parentId !== 0) {
@@ -54,7 +54,7 @@ function validateParentChildRelation(nodes: MenuTreeNode[], parentId = 0): boole
     }
     // 递归验证子节点
     if (node.children?.length) {
-      if (!validateParentChildRelation(node.children, node.id)) {
+      if (!_validateParentChildRelation(node.children, node.id)) {
         return false
       }
     }
@@ -120,7 +120,7 @@ describe('Property 9: 菜单树形结构正确性', () => {
             return result
           }
 
-          const allTreeNodes = collectNodes(tree)
+          const _allTreeNodes = collectNodes(tree)
 
           // 验证：每个子节点的 parentId 应该等于其父节点的 id
           const validateChildren = (nodes: MenuTreeNode[], expectedParentId: number) => {

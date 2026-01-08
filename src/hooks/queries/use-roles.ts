@@ -4,6 +4,7 @@
  * @requirements 11.2
  */
 
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { type ClientResponse, getApiClient, unwrapApiData } from '@/lib/client'
 import type {
   CreateRoleInput,
@@ -13,7 +14,6 @@ import type {
   UpdateRoleInput,
   UpdateRoleMenusInput,
 } from '@/server/routes/roles/dtos'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 type RolesClient = {
   $get: (args: { query: Record<string, string> }) => Promise<ClientResponse<unknown>>
@@ -23,9 +23,10 @@ type RolesClient = {
   }
   ':id': {
     $get: (args: { param: { id: string } }) => Promise<ClientResponse<unknown>>
-    $put: (args: { param: { id: string }; json: UpdateRoleInput }) => Promise<
-      ClientResponse<unknown>
-    >
+    $put: (args: {
+      param: { id: string }
+      json: UpdateRoleInput
+    }) => Promise<ClientResponse<unknown>>
     $delete: (args: { param: { id: string } }) => Promise<ClientResponse<unknown>>
     menus: {
       $put: (args: {
@@ -127,13 +128,7 @@ export function useUpdateRole() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({
-      id,
-      input,
-    }: {
-      id: number
-      input: UpdateRoleInput
-    }) => {
+    mutationFn: async ({ id, input }: { id: number; input: UpdateRoleInput }) => {
       const response = await rolesClient()[':id'].$put({
         param: { id: String(id) },
         json: input,
@@ -173,13 +168,7 @@ export function useUpdateRoleMenus() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({
-      id,
-      input,
-    }: {
-      id: number
-      input: UpdateRoleMenusInput
-    }) => {
+    mutationFn: async ({ id, input }: { id: number; input: UpdateRoleMenusInput }) => {
       const response = await rolesClient()[':id'].menus.$put({
         param: { id: String(id) },
         json: input,

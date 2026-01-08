@@ -4,8 +4,9 @@
  * @requirements 2.1, 2.7
  */
 
-import { env } from '@/env'
 import jwt from 'jsonwebtoken'
+import type { StringValue } from 'ms'
+import { env } from '@/env'
 
 /**
  * JWT Payload 类型
@@ -21,8 +22,9 @@ export interface AdminPayload {
  * @returns 签发的 JWT Token
  */
 export function signToken(payload: AdminPayload): string {
+  // env.JWT_EXPIRES_IN 已通过 Zod 验证，确保格式正确
   return jwt.sign(payload, env.JWT_SECRET, {
-    expiresIn: env.JWT_EXPIRES_IN,
+    expiresIn: env.JWT_EXPIRES_IN as StringValue,
   })
 }
 

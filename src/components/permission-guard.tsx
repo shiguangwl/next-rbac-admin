@@ -6,8 +6,8 @@
  * @requirements 11.4
  */
 
-import { usePermission } from '@/hooks/use-permission'
 import type { ReactNode } from 'react'
+import { usePermission } from '@/hooks/use-permission'
 
 interface PermissionGuardProps {
   /** 子组件 */

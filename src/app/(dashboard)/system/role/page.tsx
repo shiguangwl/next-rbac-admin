@@ -6,12 +6,12 @@
  * @requirements 4.1, 4.2, 4.3, 4.4, 4.6
  */
 
+import { useState } from 'react'
+import { toast } from 'sonner'
 import { PermissionGuard } from '@/components/permission-guard'
 import { EditIcon, PlusIcon, RefreshIcon, SearchIcon, TrashIcon } from '@/components/ui/icon'
 import { Pagination } from '@/components/ui/pagination'
 import { useDeleteRole, useRoles } from '@/hooks/queries/use-roles'
-import { useState } from 'react'
-import { toast } from 'sonner'
 import { RoleFormDialog } from './role-form-dialog'
 import { RoleMenuDialog } from './role-menu-dialog'
 

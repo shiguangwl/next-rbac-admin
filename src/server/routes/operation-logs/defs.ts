@@ -5,7 +5,7 @@
  */
 
 import { createRoute } from '@hono/zod-openapi'
-import { ErrorSchema, IdParamSchema, SuccessSchema, createDataResponseSchema } from '../common/dtos'
+import { createDataResponseSchema, ErrorSchema, IdParamSchema, SuccessSchema } from '../common/dtos'
 import { LogQuerySchema, OperationLogSchema, PaginatedOperationLogSchema } from './dtos'
 
 /**

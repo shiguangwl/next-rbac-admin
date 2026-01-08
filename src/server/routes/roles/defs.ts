@@ -5,11 +5,11 @@
  */
 
 export {
-  listRolesRoute,
-  getAllRolesRoute,
   createRoleRoute,
-  getRoleRoute,
-  updateRoleRoute,
   deleteRoleRoute,
+  getAllRolesRoute,
+  getRoleRoute,
+  listRolesRoute,
   updateRoleMenusRoute,
+  updateRoleRoute,
 } from './defs/index'

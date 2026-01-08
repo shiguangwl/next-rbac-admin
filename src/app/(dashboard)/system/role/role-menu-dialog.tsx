@@ -6,10 +6,10 @@
  * @requirements 4.6
  */
 
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { CloseIcon, LoadingIcon } from '@/components/ui/icon'
 import { useMenuTree } from '@/hooks/queries/use-menus'
 import { useRole, useUpdateRoleMenus } from '@/hooks/queries/use-roles'
-import { useEffect, useMemo, useRef, useState } from 'react'
 import { MenuTreeItem, type MenuTreeNode } from './menu-tree-item'
 
 type Role = {

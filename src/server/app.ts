@@ -3,13 +3,13 @@
  * @description 创建和配置 Hono 应用，注册中间件和路由
  */
 
+import { swaggerUI } from '@hono/swagger-ui'
+import { OpenAPIHono } from '@hono/zod-openapi'
+import { HTTPException } from 'hono/http-exception'
 import { env } from '@/env'
 import { mapErrorToResponse } from '@/lib/error-handler'
 import { logger } from '@/lib/logger'
 import { createRequestContext, runWithRequestContext } from '@/lib/request-context'
-import { swaggerUI } from '@hono/swagger-ui'
-import { OpenAPIHono } from '@hono/zod-openapi'
-import { HTTPException } from 'hono/http-exception'
 import type { Env } from './context'
 import { setLogRecorder } from './middleware/audit-log'
 import { corsMiddleware } from './middleware/cors'

@@ -4,10 +4,10 @@
  * @validates Requirements 2.2, 2.3
  */
 
-import { BusinessError, UnauthorizedError } from '@/lib/errors'
-import { hashPassword } from '@/lib/password'
 import * as fc from 'fast-check'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { BusinessError, UnauthorizedError } from '@/lib/errors'
+import { hashPassword } from '@/lib/password'
 
 // Mock 数据库模块
 vi.mock('@/db', () => ({

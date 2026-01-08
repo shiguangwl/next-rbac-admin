@@ -5,10 +5,10 @@
  */
 
 export {
-  listMenusRoute,
-  getMenuTreeRoute,
   createMenuRoute,
-  getMenuRoute,
-  updateMenuRoute,
   deleteMenuRoute,
+  getMenuRoute,
+  getMenuTreeRoute,
+  listMenusRoute,
+  updateMenuRoute,
 } from './defs/index'

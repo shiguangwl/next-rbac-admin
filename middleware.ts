@@ -49,7 +49,7 @@ export function middleware(request: NextRequest) {
 
   // 受保护路由：检查是否有 token cookie
   // 注意：这只是初步检查，完整的认证验证在 AuthGuard 组件中
-  const authCookie = request.cookies.get('auth-token')
+  const _authCookie = request.cookies.get('auth-token')
 
   // 如果没有 token 且不是公开路由，可以选择重定向到登录页
   // 但由于我们使用 localStorage 存储 token，这里不做强制重定向

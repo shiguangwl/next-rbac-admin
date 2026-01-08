@@ -5,11 +5,11 @@
  */
 
 export {
-  listAdminsRoute,
   createAdminRoute,
-  getAdminRoute,
-  updateAdminRoute,
   deleteAdminRoute,
+  getAdminRoute,
+  listAdminsRoute,
   resetPasswordRoute,
   updateAdminRolesRoute,
+  updateAdminRoute,
 } from './defs/index'

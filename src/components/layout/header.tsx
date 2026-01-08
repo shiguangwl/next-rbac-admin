@@ -6,11 +6,11 @@
  * @requirements 11.5
  */
 
-import { useAuth } from '@/hooks/use-auth'
-import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
+import { useAuth } from '@/hooks/use-auth'
+import { cn } from '@/lib/utils'
 
 interface HeaderProps {
   /** 自定义类名 */

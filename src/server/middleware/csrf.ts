@@ -3,16 +3,16 @@
  * @description 防止跨站请求伪造攻击
  */
 
-import { env } from '@/env'
-import type { Env } from '@/server/context'
 import { createMiddleware } from 'hono/factory'
 import { HTTPException } from 'hono/http-exception'
+import { env } from '@/env'
+import type { Env } from '@/server/context'
 
 /** 安全的 HTTP 方法（不需要 CSRF 验证） */
 const SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
 
 /** CSRF Token Header 名称 */
-const CSRF_HEADER = 'X-CSRF-Token'
+const _CSRF_HEADER = 'X-CSRF-Token'
 
 /**
  * 构建允许的 Origin 列表

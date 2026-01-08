@@ -4,7 +4,7 @@
  * @requirements 10.4, 10.5, 10.6
  */
 
-export { listAdminsRoute } from './list'
-export { createAdminRoute } from './create'
-export { getAdminRoute, updateAdminRoute, deleteAdminRoute } from './detail'
 export { resetPasswordRoute, updateAdminRolesRoute } from './actions'
+export { createAdminRoute } from './create'
+export { deleteAdminRoute, getAdminRoute, updateAdminRoute } from './detail'
+export { listAdminsRoute } from './list'

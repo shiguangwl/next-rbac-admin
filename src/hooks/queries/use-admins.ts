@@ -4,6 +4,7 @@
  * @requirements 11.2
  */
 
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { type ClientResponse, getApiClient, unwrapApiData } from '@/lib/client'
 import type {
   Admin,
@@ -14,16 +15,16 @@ import type {
   UpdateAdminInput,
   UpdateAdminRolesInput,
 } from '@/server/routes/admins/dtos'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 type AdminsClient = {
   $get: (args: { query: Record<string, string> }) => Promise<ClientResponse<unknown>>
   $post: (args: { json: CreateAdminInput }) => Promise<ClientResponse<unknown>>
   ':id': {
     $get: (args: { param: { id: string } }) => Promise<ClientResponse<unknown>>
-    $put: (args: { param: { id: string }; json: UpdateAdminInput }) => Promise<
-      ClientResponse<unknown>
-    >
+    $put: (args: {
+      param: { id: string }
+      json: UpdateAdminInput
+    }) => Promise<ClientResponse<unknown>>
     $delete: (args: { param: { id: string } }) => Promise<ClientResponse<unknown>>
     roles: {
       $put: (args: {
@@ -32,9 +33,10 @@ type AdminsClient = {
       }) => Promise<ClientResponse<unknown>>
     }
     'reset-password': {
-      $put: (args: { param: { id: string }; json: ResetPasswordInput }) => Promise<
-        ClientResponse<unknown>
-      >
+      $put: (args: {
+        param: { id: string }
+        json: ResetPasswordInput
+      }) => Promise<ClientResponse<unknown>>
     }
   }
 }
@@ -117,13 +119,7 @@ export function useUpdateAdmin() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({
-      id,
-      input,
-    }: {
-      id: number
-      input: UpdateAdminInput
-    }) => {
+    mutationFn: async ({ id, input }: { id: number; input: UpdateAdminInput }) => {
       const response = await adminsClient()[':id'].$put({
         param: { id: String(id) },
         json: input,
@@ -161,13 +157,7 @@ export function useDeleteAdmin() {
  */
 export function useResetPassword() {
   return useMutation({
-    mutationFn: async ({
-      id,
-      input,
-    }: {
-      id: number
-      input: ResetPasswordInput
-    }) => {
+    mutationFn: async ({ id, input }: { id: number; input: ResetPasswordInput }) => {
       const response = await adminsClient()[':id']['reset-password'].$put({
         param: { id: String(id) },
         json: input,
@@ -184,13 +174,7 @@ export function useUpdateAdminRoles() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({
-      id,
-      input,
-    }: {
-      id: number
-      input: UpdateAdminRolesInput
-    }) => {
+    mutationFn: async ({ id, input }: { id: number; input: UpdateAdminRolesInput }) => {
       const response = await adminsClient()[':id'].roles.$put({
         param: { id: String(id) },
         json: input,
