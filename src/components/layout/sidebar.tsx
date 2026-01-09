@@ -10,7 +10,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 /**
  * 菜单树节点类型
@@ -59,11 +59,22 @@ function MenuItem({
   activeMenuIds: Set<number>;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const [manuallyCollapsed, setManuallyCollapsed] = useState(false);
 
   const hasChildren = menu.children && menu.children.length > 0;
   const isActive = menu.path ? pathname === menu.path : false;
   const isChildActive = activeMenuIds.has(menu.id) && !isActive;
-  const isExpanded = expanded || isChildActive;
+
+  // 有活跃子菜单时默认展开,但允许用户手动折叠
+  // 无活跃子菜单时使用普通的展开状态
+  const isExpanded = isChildActive ? !manuallyCollapsed : expanded;
+
+  // 当不再有活跃子菜单时,重置手动折叠状态
+  useEffect(() => {
+    if (!isChildActive) {
+      setManuallyCollapsed(false);
+    }
+  }, [isChildActive]);
 
   // 不显示隐藏的菜单
   if (menu.visible === 0 || menu.status === 0) return null;
@@ -106,17 +117,28 @@ function MenuItem({
   const itemClass = cn(
     "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
     "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-    (isActive || isChildActive) && "bg-sidebar-accent text-sidebar-accent-foreground font-medium",
+    (isActive || isChildActive) &&
+      "bg-sidebar-accent text-sidebar-accent-foreground font-medium",
     level > 0 && !collapsed && "ml-4"
   );
 
   if (hasChildren) {
+    const handleClick = () => {
+      if (isChildActive) {
+        // 当前有活跃子菜单,切换手动折叠状态
+        setManuallyCollapsed(!manuallyCollapsed);
+      } else {
+        // 正常切换展开状态
+        setExpanded(!expanded);
+      }
+    };
+
     return (
       <div>
         <button
           type="button"
           className={cn(itemClass, "w-full")}
-          onClick={() => setExpanded(!isExpanded)}
+          onClick={handleClick}
         >
           {content}
         </button>

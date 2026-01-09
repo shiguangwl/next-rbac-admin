@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 /**
  * 菜单树节点组件
@@ -6,28 +6,28 @@
  */
 
 export type MenuTreeNode = {
-  id: number;
-  parentId: number;
-  menuType: "D" | "M" | "B";
-  menuName: string;
-  permission: string | null;
-  children?: MenuTreeNode[];
-};
+  id: number
+  parentId: number
+  menuType: 'D' | 'M' | 'B'
+  menuName: string
+  permission: string | null
+  children?: MenuTreeNode[]
+}
 
 interface MenuTreeItemProps {
-  node: MenuTreeNode;
-  checkedIds: number[];
-  expandedIds: number[];
-  onToggleCheck: (node: MenuTreeNode) => void;
-  onToggleExpand: (id: number) => void;
-  level: number;
+  node: MenuTreeNode
+  checkedIds: number[]
+  expandedIds: number[]
+  onToggleCheck: (node: MenuTreeNode) => void
+  onToggleExpand: (id: number) => void
+  level: number
 }
 
 const typeLabel = {
-  D: "目录",
-  M: "菜单",
-  B: "按钮",
-};
+  D: '目录',
+  M: '菜单',
+  B: '按钮',
+}
 
 export function MenuTreeItem({
   node,
@@ -37,9 +37,9 @@ export function MenuTreeItem({
   onToggleExpand,
   level,
 }: MenuTreeItemProps) {
-  const hasChildren = node.children && node.children.length > 0;
-  const isExpanded = expandedIds.includes(node.id);
-  const isChecked = checkedIds.includes(node.id);
+  const hasChildren = node.children && node.children.length > 0
+  const isExpanded = expandedIds.includes(node.id)
+  const isChecked = checkedIds.includes(node.id)
 
   return (
     <div>
@@ -52,23 +52,16 @@ export function MenuTreeItem({
             type="button"
             onClick={() => onToggleExpand(node.id)}
             className="flex h-5 w-5 items-center justify-center"
-            aria-label={isExpanded ? "收起" : "展开"}
+            aria-label={isExpanded ? '收起' : '展开'}
           >
             <svg
-              className={`h-4 w-4 transition-transform ${
-                isExpanded ? "rotate-90" : ""
-              }`}
+              className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
               aria-hidden="true"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
         ) : (
@@ -86,11 +79,11 @@ export function MenuTreeItem({
 
         <span
           className={`rounded px-1.5 py-0.5 text-xs ${
-            node.menuType === "D"
-              ? "bg-blue-100 text-blue-600"
-              : node.menuType === "M"
-              ? "bg-green-100 text-green-600"
-              : "bg-orange-100 text-orange-600"
+            node.menuType === 'D'
+              ? 'bg-blue-100 text-blue-600'
+              : node.menuType === 'M'
+                ? 'bg-green-100 text-green-600'
+                : 'bg-orange-100 text-orange-600'
           }`}
         >
           {typeLabel[node.menuType]}
@@ -113,5 +106,5 @@ export function MenuTreeItem({
         </div>
       )}
     </div>
-  );
+  )
 }

@@ -3,27 +3,27 @@
  * @description 提供权限检查函数，用于前端权限控制
  */
 
-import { useCallback, useMemo } from "react";
-import { useAuthStore } from "./use-auth";
+import { useCallback, useMemo } from 'react'
+import { useAuthStore } from './use-auth'
 
 /**
  * 超级管理员权限标识
  */
-const SUPER_ADMIN_PERMISSION = "*";
+const SUPER_ADMIN_PERMISSION = '*'
 
 /**
  * 权限检查 Hook
  * @description 提供权限检查函数
  */
 export function usePermission() {
-  const permissions = useAuthStore((state) => state.permissions);
+  const permissions = useAuthStore((state) => state.permissions)
 
   /**
    * 检查是否为超级管理员
    */
   const isSuperAdmin = useMemo(() => {
-    return permissions.includes(SUPER_ADMIN_PERMISSION);
-  }, [permissions]);
+    return permissions.includes(SUPER_ADMIN_PERMISSION)
+  }, [permissions])
 
   /**
    * 检查是否拥有指定权限
@@ -34,12 +34,12 @@ export function usePermission() {
     (permission: string): boolean => {
       // 超级管理员拥有所有权限
       if (isSuperAdmin) {
-        return true;
+        return true
       }
-      return permissions.includes(permission);
+      return permissions.includes(permission)
     },
     [permissions, isSuperAdmin]
-  );
+  )
 
   /**
    * 检查是否拥有任意一个指定权限
@@ -50,12 +50,12 @@ export function usePermission() {
     (permissionList: string[]): boolean => {
       // 超级管理员拥有所有权限
       if (isSuperAdmin) {
-        return true;
+        return true
       }
-      return permissionList.some((p) => permissions.includes(p));
+      return permissionList.some((p) => permissions.includes(p))
     },
     [permissions, isSuperAdmin]
-  );
+  )
 
   /**
    * 检查是否拥有所有指定权限
@@ -66,12 +66,12 @@ export function usePermission() {
     (permissionList: string[]): boolean => {
       // 超级管理员拥有所有权限
       if (isSuperAdmin) {
-        return true;
+        return true
       }
-      return permissionList.every((p) => permissions.includes(p));
+      return permissionList.every((p) => permissions.includes(p))
     },
     [permissions, isSuperAdmin]
-  );
+  )
 
   return {
     permissions,
@@ -79,5 +79,5 @@ export function usePermission() {
     hasPermission,
     hasAnyPermission,
     hasAllPermissions,
-  };
+  }
 }

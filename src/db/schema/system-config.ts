@@ -1,5 +1,14 @@
 import { sql } from 'drizzle-orm'
-import { bigint, datetime, index, mysqlTable, text, tinyint, uniqueIndex, varchar } from 'drizzle-orm/mysql-core'
+import {
+  bigint,
+  datetime,
+  index,
+  mysqlTable,
+  text,
+  tinyint,
+  uniqueIndex,
+  varchar,
+} from 'drizzle-orm/mysql-core'
 
 export const sysConfig = mysqlTable(
   'sys_config',
@@ -26,4 +35,3 @@ export const sysConfig = mysqlTable(
 
 export type SysConfig = typeof sysConfig.$inferSelect
 export type NewSysConfig = typeof sysConfig.$inferInsert
-

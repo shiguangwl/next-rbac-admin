@@ -10,4 +10,4 @@ export {
   getMenuTreeRoute,
   listMenusRoute,
   updateMenuRoute,
-} from "./defs/index";
+} from './defs/index'

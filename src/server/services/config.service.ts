@@ -145,10 +145,7 @@ export async function getConfigValue<T = unknown>(key: string): Promise<T | null
 }
 
 export async function preloadAllActiveConfigs(): Promise<void> {
-  const rows = await db
-    .select()
-    .from(sysConfig)
-    .where(eq(sysConfig.status, 1))
+  const rows = await db.select().from(sysConfig).where(eq(sysConfig.status, 1))
 
   configCache.clear()
 
@@ -193,7 +190,9 @@ export async function getConfigByKey(key: string): Promise<ConfigDto> {
   return toConfigDto(row)
 }
 
-export async function listConfigs(options: ConfigQueryOptions): Promise<PaginatedResult<ConfigDto>> {
+export async function listConfigs(
+  options: ConfigQueryOptions
+): Promise<PaginatedResult<ConfigDto>> {
   const page = options.page && options.page > 0 ? options.page : 1
   const pageSize =
     options.pageSize && options.pageSize > 0 && options.pageSize <= 100 ? options.pageSize : 20
@@ -254,18 +253,16 @@ export async function createConfig(input: UpsertConfigInput): Promise<ConfigDto>
     throw new ConflictError(`配置键 ${input.configKey} 已存在`)
   }
 
-  const [insertResult] = await db
-    .insert(sysConfig)
-    .values({
-      configKey: input.configKey,
-      configValue: input.configValue,
-      configType: input.configType,
-      configGroup: input.configGroup,
-      configName: input.configName,
-      remark: input.remark ?? null,
-      isSystem: input.isSystem ?? 0,
-      status: input.status ?? 1,
-    })
+  const [insertResult] = await db.insert(sysConfig).values({
+    configKey: input.configKey,
+    configValue: input.configValue,
+    configType: input.configType,
+    configGroup: input.configGroup,
+    configName: input.configName,
+    remark: input.remark ?? null,
+    isSystem: input.isSystem ?? 0,
+    status: input.status ?? 1,
+  })
 
   const id = Number(insertResult.insertId)
   removeConfigCache(input.configKey)
@@ -373,4 +370,3 @@ export async function deleteConfig(id: number): Promise<void> {
   await db.delete(sysConfig).where(eq(sysConfig.id, id))
   removeConfigCache(existing.configKey)
 }
-

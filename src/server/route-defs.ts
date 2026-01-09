@@ -7,10 +7,11 @@ import { OpenAPIHono } from '@hono/zod-openapi'
 import type { Env } from './context'
 import { admins } from './routes/admins'
 import { auth } from './routes/auth'
+import { configs } from './routes/configs'
 import { menus } from './routes/menus'
 import { operationLogs } from './routes/operation-logs'
-import { configs } from './routes/configs'
 import { roles } from './routes/roles'
+import { stock } from './routes/stock'
 
 /**
  * 创建路由实例并挂载模块
@@ -22,6 +23,7 @@ export const routes = new OpenAPIHono<Env>()
   .route('/menus', menus)
   .route('/operation-logs', operationLogs)
   .route('/configs', configs)
+  .route('/stock', stock)
 
 /**
  * 导出 AppType 类型（用于 Hono RPC Client）

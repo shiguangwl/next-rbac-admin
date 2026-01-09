@@ -1,33 +1,19 @@
 import { z } from '@hono/zod-openapi'
 import { createPaginatedSchema, PaginationQuerySchema } from '../common/dtos'
 
-export const ConfigTypeSchema = z
-  .enum(['string', 'boolean', 'number', 'json', 'array'])
-  .openapi({
-    description: '配置类型',
-    example: 'string',
-  })
+export const ConfigTypeSchema = z.enum(['string', 'boolean', 'number', 'json', 'array']).openapi({
+  description: '配置类型',
+  example: 'string',
+})
 
 export const ConfigSchema = z
   .object({
     id: z.number().openapi({ description: '配置 ID', example: 1 }),
-    configKey: z
-      .string()
-      .max(100)
-      .openapi({ description: '配置键', example: 'site.allow_reg' }),
-    configValue: z
-      .string()
-      .nullable()
-      .openapi({ description: '配置值（原始字符串或 JSON 串）' }),
+    configKey: z.string().max(100).openapi({ description: '配置键', example: 'site.allow_reg' }),
+    configValue: z.string().nullable().openapi({ description: '配置值（原始字符串或 JSON 串）' }),
     configType: ConfigTypeSchema,
-    configGroup: z
-      .string()
-      .max(50)
-      .openapi({ description: '配置分组', example: 'security' }),
-    configName: z
-      .string()
-      .max(100)
-      .openapi({ description: '配置名称', example: '是否允许注册' }),
+    configGroup: z.string().max(50).openapi({ description: '配置分组', example: 'security' }),
+    configName: z.string().max(100).openapi({ description: '配置名称', example: '是否允许注册' }),
     remark: z.string().nullable().openapi({ description: '配置说明' }),
     isSystem: z
       .number()
@@ -41,22 +27,14 @@ export const ConfigSchema = z
       .min(0)
       .max(1)
       .openapi({ description: '状态：1-启用 0-停用', example: 1 }),
-    createdAt: z
-      .string()
-      .openapi({ description: '创建时间', example: '2024-01-01T00:00:00.000Z' }),
-    updatedAt: z
-      .string()
-      .openapi({ description: '更新时间', example: '2024-01-01T00:00:00.000Z' }),
+    createdAt: z.string().openapi({ description: '创建时间', example: '2024-01-01T00:00:00.000Z' }),
+    updatedAt: z.string().openapi({ description: '更新时间', example: '2024-01-01T00:00:00.000Z' }),
   })
   .openapi('SysConfig')
 
 export const ConfigQuerySchema = PaginationQuerySchema.extend({
-  group: z
-    .string()
-    .optional()
-    .openapi({ description: '配置分组', example: 'security' }),
-  status: z
-    .coerce
+  group: z.string().optional().openapi({ description: '配置分组', example: 'security' }),
+  status: z.coerce
     .number()
     .int()
     .min(0)
@@ -83,16 +61,8 @@ export const CreateConfigInputSchema = z
       .max(50)
       .default('general')
       .openapi({ description: '配置分组', example: 'security' }),
-    configName: z
-      .string()
-      .max(100)
-      .openapi({ description: '配置名称', example: '是否允许注册' }),
-    remark: z
-      .string()
-      .max(255)
-      .nullable()
-      .optional()
-      .openapi({ description: '配置说明' }),
+    configName: z.string().max(100).openapi({ description: '配置名称', example: '是否允许注册' }),
+    remark: z.string().max(255).nullable().optional().openapi({ description: '配置说明' }),
     isSystem: z
       .number()
       .int()
@@ -135,12 +105,7 @@ export const UpdateConfigInputSchema = z
       .max(100)
       .optional()
       .openapi({ description: '配置名称', example: '是否允许注册' }),
-    remark: z
-      .string()
-      .max(255)
-      .nullable()
-      .optional()
-      .openapi({ description: '配置说明' }),
+    remark: z.string().max(255).nullable().optional().openapi({ description: '配置说明' }),
     isSystem: z
       .number()
       .int()
@@ -160,10 +125,7 @@ export const UpdateConfigInputSchema = z
 
 export const UpdateConfigValueInputSchema = z
   .object({
-    configValue: z
-      .string()
-      .nullable()
-      .openapi({ description: '配置值（原始字符串或 JSON 串）' }),
+    configValue: z.string().nullable().openapi({ description: '配置值（原始字符串或 JSON 串）' }),
     configType: ConfigTypeSchema.optional(),
     status: z
       .number()

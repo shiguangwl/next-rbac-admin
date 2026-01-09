@@ -1,97 +1,87 @@
-"use client";
+'use client'
 
 /**
  * 管理员表单对话框
  * @description 创建和编辑管理员的表单对话框
  */
 
-import { CloseIcon, LoadingIcon } from "@/components/ui/icon";
-import {
-  useCreateAdmin,
-  useUpdateAdmin,
-  useUpdateAdminRoles,
-} from "@/hooks/queries/use-admins";
-import { useAllRoles } from "@/hooks/queries/use-roles";
-import { SUPER_ADMIN_ID } from "@/lib/constants";
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react'
+import { CloseIcon, LoadingIcon } from '@/components/ui/icon'
+import { useCreateAdmin, useUpdateAdmin, useUpdateAdminRoles } from '@/hooks/queries/use-admins'
+import { useAllRoles } from '@/hooks/queries/use-roles'
+import { SUPER_ADMIN_ID } from '@/lib/constants'
 
 type Admin = {
-  id: number;
-  username: string;
-  nickname: string;
-  status: number;
-  remark: string | null;
-  roles?: Array<{ id: number; roleName: string }>;
-};
-
-interface AdminFormDialogProps {
-  open: boolean;
-  admin: Admin | null;
-  onClose: () => void;
-  onSuccess: () => void;
+  id: number
+  username: string
+  nickname: string
+  status: number
+  remark: string | null
+  roles?: Array<{ id: number; roleName: string }>
 }
 
-export function AdminFormDialog({
-  open,
-  admin,
-  onClose,
-  onSuccess,
-}: AdminFormDialogProps) {
-  const isEdit = !!admin;
-  const isSuperAdmin = admin?.id === SUPER_ADMIN_ID;
-  const [formData, setFormData] = useState({
-    username: "",
-    password: "",
-    nickname: "",
-    status: 1,
-    remark: "",
-    roleIds: [] as number[],
-  });
-  const [error, setError] = useState("");
+interface AdminFormDialogProps {
+  open: boolean
+  admin: Admin | null
+  onClose: () => void
+  onSuccess: () => void
+}
 
-  const { data: rolesData } = useAllRoles();
-  const roles =
-    (rolesData as Array<{ id: number; roleName: string }> | undefined) || [];
-  const createAdmin = useCreateAdmin();
-  const updateAdmin = useUpdateAdmin();
-  const updateAdminRoles = useUpdateAdminRoles();
+export function AdminFormDialog({ open, admin, onClose, onSuccess }: AdminFormDialogProps) {
+  const isEdit = !!admin
+  const isSuperAdmin = admin?.id === SUPER_ADMIN_ID
+  const [formData, setFormData] = useState({
+    username: '',
+    password: '',
+    nickname: '',
+    status: 1,
+    remark: '',
+    roleIds: [] as number[],
+  })
+  const [error, setError] = useState('')
+
+  const { data: rolesData } = useAllRoles()
+  const roles = (rolesData as Array<{ id: number; roleName: string }> | undefined) || []
+  const createAdmin = useCreateAdmin()
+  const updateAdmin = useUpdateAdmin()
+  const updateAdminRoles = useUpdateAdminRoles()
 
   useEffect(() => {
     if (open) {
       if (admin) {
         setFormData({
           username: admin.username,
-          password: "",
-          nickname: admin.nickname || "",
+          password: '',
+          nickname: admin.nickname || '',
           status: admin.status,
-          remark: admin.remark || "",
+          remark: admin.remark || '',
           roleIds: admin.roles?.map((r) => r.id) || [],
-        });
+        })
       } else {
         setFormData({
-          username: "",
-          password: "",
-          nickname: "",
+          username: '',
+          password: '',
+          nickname: '',
           status: 1,
-          remark: "",
+          remark: '',
           roleIds: [],
-        });
+        })
       }
-      setError("");
+      setError('')
     }
-  }, [open, admin]);
+  }, [open, admin])
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
+    e.preventDefault()
+    setError('')
 
     if (!formData.username.trim()) {
-      setError("请输入用户名");
-      return;
+      setError('请输入用户名')
+      return
     }
     if (!isEdit && !formData.password) {
-      setError("请输入密码");
-      return;
+      setError('请输入密码')
+      return
     }
 
     try {
@@ -103,13 +93,13 @@ export function AdminFormDialog({
             status: formData.status,
             remark: formData.remark || undefined,
           },
-        });
+        })
         // 超级管理员不能修改角色
         if (!isSuperAdmin) {
           await updateAdminRoles.mutateAsync({
             id: admin.id,
             input: { roleIds: formData.roleIds },
-          });
+          })
         }
       } else {
         await createAdmin.mutateAsync({
@@ -119,20 +109,17 @@ export function AdminFormDialog({
           status: formData.status,
           remark: formData.remark || undefined,
           roleIds: formData.roleIds.length > 0 ? formData.roleIds : undefined,
-        });
+        })
       }
-      onSuccess();
+      onSuccess()
     } catch (err) {
-      setError(err instanceof Error ? err.message : "操作失败");
+      setError(err instanceof Error ? err.message : '操作失败')
     }
-  };
+  }
 
-  const isPending =
-    createAdmin.isPending ||
-    updateAdmin.isPending ||
-    updateAdminRoles.isPending;
+  const isPending = createAdmin.isPending || updateAdmin.isPending || updateAdminRoles.isPending
 
-  if (!open) return null;
+  if (!open) return null
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
@@ -140,7 +127,7 @@ export function AdminFormDialog({
         {/* 标题 */}
         <div className="flex items-center justify-between border-b border-border px-6 py-4">
           <h3 className="text-lg font-semibold text-card-foreground">
-            {isEdit ? "编辑管理员" : "新增管理员"}
+            {isEdit ? '编辑管理员' : '新增管理员'}
           </h3>
           <button
             type="button"
@@ -154,9 +141,7 @@ export function AdminFormDialog({
         {/* 表单 */}
         <form onSubmit={handleSubmit} className="p-6">
           {error && (
-            <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-600">
-              {error}
-            </div>
+            <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-600">{error}</div>
           )}
 
           <div className="space-y-4">
@@ -172,9 +157,7 @@ export function AdminFormDialog({
                 id="adminUsername"
                 type="text"
                 value={formData.username}
-                onChange={(e) =>
-                  setFormData({ ...formData, username: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                 disabled={isEdit}
                 className="w-full rounded-lg  px-4 py-2 focus:lue-500 focus:outline-none disabled:bg-gray-100"
                 placeholder="请输入用户名"
@@ -194,9 +177,7 @@ export function AdminFormDialog({
                   id="adminPassword"
                   type="password"
                   value={formData.password}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   className="w-full rounded-lg  px-4 py-2 focus:lue-500 focus:outline-none"
                   placeholder="请输入密码"
                 />
@@ -215,9 +196,7 @@ export function AdminFormDialog({
                 id="adminNickname"
                 type="text"
                 value={formData.nickname}
-                onChange={(e) =>
-                  setFormData({ ...formData, nickname: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, nickname: e.target.value })}
                 className="w-full rounded-lg border border-input bg-background px-4 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                 placeholder="请输入昵称"
               />
@@ -234,9 +213,7 @@ export function AdminFormDialog({
               <select
                 id="adminStatus"
                 value={formData.status}
-                onChange={(e) =>
-                  setFormData({ ...formData, status: Number(e.target.value) })
-                }
+                onChange={(e) => setFormData({ ...formData, status: Number(e.target.value) })}
                 className="w-full rounded-lg border border-input bg-background px-4 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               >
                 <option value={1}>正常</option>
@@ -246,9 +223,7 @@ export function AdminFormDialog({
 
             {/* 角色 */}
             <div>
-              <div className="mb-1 block text-sm font-medium text-foreground">
-                角色
-              </div>
+              <div className="mb-1 block text-sm font-medium text-foreground">角色</div>
               {isSuperAdmin ? (
                 <div className="rounded-lg bg-muted p-3 text-sm text-muted-foreground">
                   超级管理员角色不可修改
@@ -265,14 +240,12 @@ export function AdminFormDialog({
                             setFormData({
                               ...formData,
                               roleIds: [...formData.roleIds, role.id],
-                            });
+                            })
                           } else {
                             setFormData({
                               ...formData,
-                              roleIds: formData.roleIds.filter(
-                                (id) => id !== role.id
-                              ),
-                            });
+                              roleIds: formData.roleIds.filter((id) => id !== role.id),
+                            })
                           }
                         }}
                         className="rounded border-input text-primary focus:ring-primary"
@@ -280,9 +253,7 @@ export function AdminFormDialog({
                       <span className="text-sm text-foreground">{role.roleName}</span>
                     </label>
                   ))}
-                  {roles.length === 0 && (
-                    <p className="text-sm text-muted-foreground">暂无角色</p>
-                  )}
+                  {roles.length === 0 && <p className="text-sm text-muted-foreground">暂无角色</p>}
                 </div>
               )}
             </div>
@@ -298,9 +269,7 @@ export function AdminFormDialog({
               <textarea
                 id="adminRemark"
                 value={formData.remark}
-                onChange={(e) =>
-                  setFormData({ ...formData, remark: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, remark: e.target.value })}
                 rows={3}
                 className="w-full rounded-lg border border-input bg-background px-4 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                 placeholder="请输入备注"
@@ -323,11 +292,11 @@ export function AdminFormDialog({
               className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors"
             >
               {isPending && <LoadingIcon size="sm" />}
-              {isPending ? "提交中..." : "确定"}
+              {isPending ? '提交中...' : '确定'}
             </button>
           </div>
         </form>
       </div>
     </div>
-  );
+  )
 }

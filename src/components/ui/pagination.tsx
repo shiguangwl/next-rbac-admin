@@ -1,77 +1,74 @@
-"use client";
+'use client'
 
 /**
  * 分页组件
  * @description 通用分页组件，支持页码跳转和每页数量选择
  */
 
-import { cn } from "@/lib/utils";
-import { useMemo } from "react";
-import { ChevronLeftIcon, ChevronRightIcon } from "./icon";
+import { useMemo } from 'react'
+import { cn } from '@/lib/utils'
+import { ChevronLeftIcon, ChevronRightIcon } from './icon'
 
 interface PaginationProps {
   /** 当前页码 */
-  page: number;
+  page: number
   /** 每页数量 */
-  pageSize: number;
+  pageSize: number
   /** 总记录数 */
-  total: number;
+  total: number
   /** 页码变化回调 */
-  onPageChange: (page: number) => void;
+  onPageChange: (page: number) => void
   /** 每页数量变化回调 */
-  onPageSizeChange?: (pageSize: number) => void;
+  onPageSizeChange?: (pageSize: number) => void
   /** 每页数量选项 */
-  pageSizeOptions?: number[];
+  pageSizeOptions?: number[]
   /** 是否显示每页数量选择器 */
-  showSizeChanger?: boolean;
+  showSizeChanger?: boolean
   /** 是否显示总数 */
-  showTotal?: boolean;
+  showTotal?: boolean
   /** 自定义类名 */
-  className?: string;
+  className?: string
 }
 
 /**
  * 生成页码数组
  */
-function generatePageNumbers(
-  current: number,
-  total: number
-): (number | "ellipsis")[] {
-  const pages: (number | "ellipsis")[] = [];
-  const maxVisible = 7;
+function generatePageNumbers(current: number, total: number): (number | 'ellipsis')[] {
+  const pages: (number | 'ellipsis')[] = []
+  const maxVisible = 7
 
   if (total <= maxVisible) {
     for (let i = 1; i <= total; i++) {
-      pages.push(i);
+      pages.push(i)
     }
-    return pages;
+    return pages
   }
 
   // 始终显示第一页
-  pages.push(1);
+  pages.push(1)
 
   if (current > 3) {
-    pages.push("ellipsis");
+    pages.push('ellipsis')
   }
 
   // 当前页附近的页码
-  const start = Math.max(2, current - 1);
-  const end = Math.min(total - 1, current + 1);
+  const start = Math.max(2, current - 1)
+  const end = Math.min(total - 1, current + 1)
 
   for (let i = start; i <= end; i++) {
-    pages.push(i);
+    pages.push(i)
   }
 
   if (current < total - 2) {
-    pages.push("ellipsis");
+    pages.push('ellipsis')
   }
 
   // 始终显示最后一页
   if (total > 1) {
-    pages.push(total);
+    pages.push(total)
   }
 
-  return pages;
+  return pages
 }
 
 /**
@@ -88,33 +85,22 @@ export function Pagination({
   showTotal = true,
   className,
 }: PaginationProps) {
-  const totalPages = useMemo(
-    () => Math.ceil(total / pageSize),
-    [total, pageSize]
-  );
-  const pageNumbers = useMemo(
-    () => generatePageNumbers(page, totalPages),
-    [page, totalPages]
-  );
+  const totalPages = useMemo(() => Math.ceil(total / pageSize), [total, pageSize])
+  const pageNumbers = useMemo(() => generatePageNumbers(page, totalPages), [page, totalPages])
 
-  const canGoPrev = page > 1;
-  const canGoNext = page < totalPages;
+  const canGoPrev = page > 1
+  const canGoNext = page < totalPages
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages && newPage !== page) {
-      onPageChange(newPage);
+      onPageChange(newPage)
     }
-  };
+  }
 
-  if (total === 0) return null;
+  if (total === 0) return null
 
   return (
-    <div
-      className={cn(
-        "flex flex-wrap items-center justify-between gap-4",
-        className
-      )}
-    >
+    <div className={cn('flex flex-wrap items-center justify-between gap-4', className)}>
       {/* 左侧：总数和每页数量 */}
       <div className="flex items-center gap-4 text-sm text-muted-foreground">
         {showTotal && <span>共 {total} 条</span>}
@@ -145,10 +131,10 @@ export function Pagination({
           disabled={!canGoPrev}
           onClick={() => handlePageChange(page - 1)}
           className={cn(
-            "flex h-8 w-8 items-center justify-center rounded border border-input bg-background transition-colors",
+            'flex h-8 w-8 items-center justify-center rounded border border-input bg-background transition-colors',
             canGoPrev
-              ? "hover:bg-accent hover:text-accent-foreground"
-              : "cursor-not-allowed opacity-50"
+              ? 'hover:bg-accent hover:text-accent-foreground'
+              : 'cursor-not-allowed opacity-50'
           )}
         >
           <ChevronLeftIcon size="sm" />
@@ -156,12 +142,10 @@ export function Pagination({
 
         {/* 页码 */}
         {pageNumbers.map((pageNum, index) => {
-          if (pageNum === "ellipsis") {
-            const prev = pageNumbers[index - 1];
-            const next = pageNumbers[index + 1];
-            const key = `ellipsis-${String(prev ?? "start")}-${String(
-              next ?? "end"
-            )}`;
+          if (pageNum === 'ellipsis') {
+            const prev = pageNumbers[index - 1]
+            const next = pageNumbers[index + 1]
+            const key = `ellipsis-${String(prev ?? 'start')}-${String(next ?? 'end')}`
             return (
               <span
                 key={key}
@@ -169,25 +153,25 @@ export function Pagination({
               >
                 ...
               </span>
-            );
+            )
           }
 
-          const isActive = pageNum === page;
+          const isActive = pageNum === page
           return (
             <button
               key={pageNum}
               type="button"
               onClick={() => handlePageChange(pageNum)}
               className={cn(
-                "flex h-8 min-w-8 items-center justify-center rounded border border-input px-2 text-sm transition-colors",
+                'flex h-8 min-w-8 items-center justify-center rounded border border-input px-2 text-sm transition-colors',
                 isActive
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : "bg-background hover:bg-accent hover:text-accent-foreground"
+                  ? 'bg-primary text-primary-foreground border-primary'
+                  : 'bg-background hover:bg-accent hover:text-accent-foreground'
               )}
             >
               {pageNum}
             </button>
-          );
+          )
         })}
 
         {/* 下一页 */}
@@ -196,15 +180,15 @@ export function Pagination({
           disabled={!canGoNext}
           onClick={() => handlePageChange(page + 1)}
           className={cn(
-            "flex h-8 w-8 items-center justify-center rounded border border-input bg-background transition-colors",
+            'flex h-8 w-8 items-center justify-center rounded border border-input bg-background transition-colors',
             canGoNext
-              ? "hover:bg-accent hover:text-accent-foreground"
-              : "cursor-not-allowed opacity-50"
+              ? 'hover:bg-accent hover:text-accent-foreground'
+              : 'cursor-not-allowed opacity-50'
           )}
         >
           <ChevronRightIcon size="sm" />
         </button>
       </div>
     </div>
-  );
+  )
 }

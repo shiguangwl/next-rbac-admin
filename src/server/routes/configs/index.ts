@@ -1,3 +1,4 @@
+import { OpenAPIHono } from '@hono/zod-openapi'
 import type { Env } from '@/server/context'
 import { auditLog } from '@/server/middleware/audit-log'
 import { requireAuth } from '@/server/middleware/jwt-auth'
@@ -11,7 +12,6 @@ import {
   preloadAllActiveConfigs,
   updateConfig,
 } from '@/server/services/config.service'
-import { OpenAPIHono } from '@hono/zod-openapi'
 import {
   createConfigRoute,
   deleteConfigRoute,
@@ -154,4 +154,3 @@ configs.openapi(deleteConfigRoute, async (c) => {
 })
 
 export { configs }
-

@@ -3,7 +3,7 @@
  * @description 定义 API 响应的通用结构和分页 Schema
  */
 
-import { z } from "@hono/zod-openapi";
+import { z } from '@hono/zod-openapi'
 
 // ========== 错误响应 ==========
 
@@ -12,13 +12,11 @@ import { z } from "@hono/zod-openapi";
  */
 export const ErrorSchema = z
   .object({
-    code: z.string().openapi({ description: "错误代码", example: "NOT_FOUND" }),
-    message: z
-      .string()
-      .openapi({ description: "错误消息", example: "资源不存在" }),
-    details: z.any().optional().openapi({ description: "错误详情" }),
+    code: z.string().openapi({ description: '错误代码', example: 'NOT_FOUND' }),
+    message: z.string().openapi({ description: '错误消息', example: '资源不存在' }),
+    details: z.any().optional().openapi({ description: '错误详情' }),
   })
-  .openapi("Error");
+  .openapi('Error')
 
 // ========== 分页相关 ==========
 
@@ -26,62 +24,51 @@ export const ErrorSchema = z
  * 分页查询参数 Schema
  */
 export const PaginationQuerySchema = z.object({
-  page: z.coerce
-    .number()
-    .int()
-    .min(1)
-    .default(1)
-    .openapi({ description: "页码", example: 1 }),
+  page: z.coerce.number().int().min(1).default(1).openapi({ description: '页码', example: 1 }),
   pageSize: z.coerce
     .number()
     .int()
     .min(1)
     .max(100)
     .default(20)
-    .openapi({ description: "每页数量", example: 20 }),
-});
+    .openapi({ description: '每页数量', example: 20 }),
+})
 
 /**
  * 分页元数据 Schema
  */
 export const PaginationMetaSchema = z.object({
-  total: z.number().openapi({ description: "总记录数", example: 100 }),
-  page: z.number().openapi({ description: "当前页码", example: 1 }),
-  pageSize: z.number().openapi({ description: "每页数量", example: 20 }),
-  totalPages: z.number().openapi({ description: "总页数", example: 5 }),
-});
+  total: z.number().openapi({ description: '总记录数', example: 100 }),
+  page: z.number().openapi({ description: '当前页码', example: 1 }),
+  pageSize: z.number().openapi({ description: '每页数量', example: 20 }),
+  totalPages: z.number().openapi({ description: '总页数', example: 5 }),
+})
 
 /**
  * 创建分页响应 Schema 工厂函数
  * @param itemSchema - 列表项 Schema
  * @param name - OpenAPI 名称
  */
-export function createPaginatedSchema<T extends z.ZodTypeAny>(
-  itemSchema: T,
-  name: string
-) {
+export function createPaginatedSchema<T extends z.ZodTypeAny>(itemSchema: T, name: string) {
   return z
     .object({
-      items: z.array(itemSchema).openapi({ description: "数据列表" }),
-      total: z.number().openapi({ description: "总记录数", example: 100 }),
-      page: z.number().openapi({ description: "当前页码", example: 1 }),
-      pageSize: z.number().openapi({ description: "每页数量", example: 20 }),
-      totalPages: z.number().openapi({ description: "总页数", example: 5 }),
+      items: z.array(itemSchema).openapi({ description: '数据列表' }),
+      total: z.number().openapi({ description: '总记录数', example: 100 }),
+      page: z.number().openapi({ description: '当前页码', example: 1 }),
+      pageSize: z.number().openapi({ description: '每页数量', example: 20 }),
+      totalPages: z.number().openapi({ description: '总页数', example: 5 }),
     })
-    .openapi(name);
+    .openapi(name)
 }
 
-export function createDataResponseSchema<T extends z.ZodTypeAny>(
-  dataSchema: T,
-  name: string
-) {
+export function createDataResponseSchema<T extends z.ZodTypeAny>(dataSchema: T, name: string) {
   return z
     .object({
-      code: z.string().openapi({ description: "业务状态码", example: "OK" }),
-      message: z.string().optional().openapi({ description: "提示信息" }),
-      data: dataSchema.openapi({ description: "业务数据" }),
+      code: z.string().openapi({ description: '业务状态码', example: 'OK' }),
+      message: z.string().optional().openapi({ description: '提示信息' }),
+      data: dataSchema.openapi({ description: '业务数据' }),
     })
-    .openapi(name);
+    .openapi(name)
 }
 
 // ========== 通用响应 ==========
@@ -91,29 +78,23 @@ export function createDataResponseSchema<T extends z.ZodTypeAny>(
  */
 export const SuccessSchema = z
   .object({
-    code: z.string().openapi({ description: "业务状态码", example: "OK" }),
-    message: z.string().optional().openapi({ description: "成功消息" }),
-    data: z
-      .null()
-      .openapi({ description: "无业务数据时固定为 null", example: null }),
+    code: z.string().openapi({ description: '业务状态码', example: 'OK' }),
+    message: z.string().optional().openapi({ description: '成功消息' }),
+    data: z.null().openapi({ description: '无业务数据时固定为 null', example: null }),
   })
-  .openapi("Success");
+  .openapi('Success')
 
 /**
  * ID 参数 Schema
  */
 export const IdParamSchema = z.object({
-  id: z.coerce
-    .number()
-    .int()
-    .positive()
-    .openapi({ description: "资源 ID", example: 1 }),
-});
+  id: z.coerce.number().int().positive().openapi({ description: '资源 ID', example: 1 }),
+})
 
 // ========== 类型导出 ==========
 
-export type ErrorResponse = z.infer<typeof ErrorSchema>;
-export type PaginationQuery = z.infer<typeof PaginationQuerySchema>;
-export type PaginationMeta = z.infer<typeof PaginationMetaSchema>;
-export type SuccessResponse = z.infer<typeof SuccessSchema>;
-export type IdParam = z.infer<typeof IdParamSchema>;
+export type ErrorResponse = z.infer<typeof ErrorSchema>
+export type PaginationQuery = z.infer<typeof PaginationQuerySchema>
+export type PaginationMeta = z.infer<typeof PaginationMetaSchema>
+export type SuccessResponse = z.infer<typeof SuccessSchema>
+export type IdParam = z.infer<typeof IdParamSchema>

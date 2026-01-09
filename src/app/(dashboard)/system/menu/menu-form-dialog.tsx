@@ -1,55 +1,55 @@
-"use client";
+'use client'
 
 /**
  * 菜单表单对话框
  * @description 创建和编辑菜单的表单对话框
  */
 
-import { CloseIcon, LoadingIcon } from "@/components/ui/icon";
-import { useCreateMenu, useUpdateMenu } from "@/hooks/queries/use-menus";
-import { useEffect, useState } from "react";
-import { type MenuFormData, MenuFormFields } from "./menu-form-fields";
+import { useEffect, useState } from 'react'
+import { CloseIcon, LoadingIcon } from '@/components/ui/icon'
+import { useCreateMenu, useUpdateMenu } from '@/hooks/queries/use-menus'
+import { type MenuFormData, MenuFormFields } from './menu-form-fields'
 
 type MenuTreeNode = {
-  id: number;
-  parentId: number;
-  menuType: "D" | "M" | "B";
-  menuName: string;
-  permission: string | null;
-  path: string | null;
-  component: string | null;
-  icon: string | null;
-  sort: number;
-  visible: number;
-  status: number;
-  isExternal: number;
-  isCache: number;
-  remark: string | null;
-};
+  id: number
+  parentId: number
+  menuType: 'D' | 'M' | 'B'
+  menuName: string
+  permission: string | null
+  path: string | null
+  component: string | null
+  icon: string | null
+  sort: number
+  visible: number
+  status: number
+  isExternal: number
+  isCache: number
+  remark: string | null
+}
 
 interface MenuFormDialogProps {
-  open: boolean;
-  menu: MenuTreeNode | null;
-  parentMenu: MenuTreeNode | null;
-  onClose: () => void;
-  onSuccess: () => void;
+  open: boolean
+  menu: MenuTreeNode | null
+  parentMenu: MenuTreeNode | null
+  onClose: () => void
+  onSuccess: () => void
 }
 
 const defaultFormData: MenuFormData = {
   parentId: 0,
-  menuType: "M",
-  menuName: "",
-  permission: "",
-  path: "",
-  component: "",
-  icon: "",
+  menuType: 'M',
+  menuName: '',
+  permission: '',
+  path: '',
+  component: '',
+  icon: '',
   sort: 0,
   visible: 1,
   status: 1,
   isExternal: 0,
   isCache: 1,
-  remark: "",
-};
+  remark: '',
+}
 
 export function MenuFormDialog({
   open,
@@ -58,12 +58,12 @@ export function MenuFormDialog({
   onClose,
   onSuccess,
 }: MenuFormDialogProps) {
-  const isEdit = !!menu;
-  const [formData, setFormData] = useState<MenuFormData>(defaultFormData);
-  const [error, setError] = useState("");
+  const isEdit = !!menu
+  const [formData, setFormData] = useState<MenuFormData>(defaultFormData)
+  const [error, setError] = useState('')
 
-  const createMenu = useCreateMenu();
-  const updateMenu = useUpdateMenu();
+  const createMenu = useCreateMenu()
+  const updateMenu = useUpdateMenu()
 
   useEffect(() => {
     if (open) {
@@ -72,39 +72,35 @@ export function MenuFormDialog({
           parentId: menu.parentId,
           menuType: menu.menuType,
           menuName: menu.menuName,
-          permission: menu.permission || "",
-          path: menu.path || "",
-          component: menu.component || "",
-          icon: menu.icon || "",
+          permission: menu.permission || '',
+          path: menu.path || '',
+          component: menu.component || '',
+          icon: menu.icon || '',
           sort: menu.sort,
           visible: menu.visible,
           status: menu.status,
           isExternal: menu.isExternal,
           isCache: menu.isCache,
-          remark: menu.remark || "",
-        });
+          remark: menu.remark || '',
+        })
       } else {
         setFormData({
           ...defaultFormData,
           parentId: parentMenu?.id || 0,
-          menuType: parentMenu
-            ? parentMenu.menuType === "D"
-              ? "M"
-              : "B"
-            : "D",
-        });
+          menuType: parentMenu ? (parentMenu.menuType === 'D' ? 'M' : 'B') : 'D',
+        })
       }
-      setError("");
+      setError('')
     }
-  }, [open, menu, parentMenu]);
+  }, [open, menu, parentMenu])
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
+    e.preventDefault()
+    setError('')
 
     if (!formData.menuName.trim()) {
-      setError("请输入菜单名称");
-      return;
+      setError('请输入菜单名称')
+      return
     }
 
     try {
@@ -122,25 +118,24 @@ export function MenuFormDialog({
         isExternal: formData.isExternal,
         isCache: formData.isCache,
         remark: formData.remark || undefined,
-      };
+      }
 
       if (isEdit && menu) {
-        await updateMenu.mutateAsync({ id: menu.id, input });
+        await updateMenu.mutateAsync({ id: menu.id, input })
       } else {
-        await createMenu.mutateAsync(input);
+        await createMenu.mutateAsync(input)
       }
-      onSuccess();
+      onSuccess()
     } catch (err) {
-      setError(err instanceof Error ? err.message : "操作失败");
+      setError(err instanceof Error ? err.message : '操作失败')
     }
-  };
+  }
 
-  const isPending = createMenu.isPending || updateMenu.isPending;
+  const isPending = createMenu.isPending || updateMenu.isPending
   const parentMenuName =
-    parentMenu?.menuName ||
-    (formData.parentId === 0 ? "根目录" : `ID: ${formData.parentId}`);
+    parentMenu?.menuName || (formData.parentId === 0 ? '根目录' : `ID: ${formData.parentId}`)
 
-  if (!open) return null;
+  if (!open) return null
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
@@ -148,7 +143,7 @@ export function MenuFormDialog({
         {/* 标题 */}
         <div className="sticky top-0 flex items-center justify-between border-b border-border bg-card px-6 py-4">
           <h3 className="text-lg font-semibold text-card-foreground">
-            {isEdit ? "编辑菜单" : "新增菜单"}
+            {isEdit ? '编辑菜单' : '新增菜单'}
           </h3>
           <button
             type="button"
@@ -188,11 +183,11 @@ export function MenuFormDialog({
               className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors"
             >
               {isPending && <LoadingIcon size="sm" />}
-              {isPending ? "提交中..." : "确定"}
+              {isPending ? '提交中...' : '确定'}
             </button>
           </div>
         </form>
       </div>
     </div>
-  );
+  )
 }

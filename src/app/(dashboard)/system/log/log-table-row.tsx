@@ -1,49 +1,45 @@
-"use client";
+'use client'
 
 /**
  * 日志表格行组件
  * @description 操作日志表格的单行显示
  */
 
-import { PermissionGuard } from "@/components/permission-guard";
-import { TrashIcon } from "@/components/ui/icon";
-import type { OperationLog } from "./log-detail-dialog";
+import { PermissionGuard } from '@/components/permission-guard'
+import { TrashIcon } from '@/components/ui/icon'
+import type { OperationLog } from './log-detail-dialog'
 
 interface LogTableRowProps {
-  log: OperationLog;
-  onViewDetail: (log: OperationLog) => void;
-  onDelete: (log: OperationLog) => void;
+  log: OperationLog
+  onViewDetail: (log: OperationLog) => void
+  onDelete: (log: OperationLog) => void
 }
 
 export function LogTableRow({ log, onViewDetail, onDelete }: LogTableRowProps) {
-  const methodColorClass = getMethodColorClass(log.requestMethod);
+  const methodColorClass = getMethodColorClass(log.requestMethod)
   const statusColorClass =
-    log.status === 1
-      ? "bg-green-100 text-green-700"
-      : "bg-red-100 text-red-700";
+    log.status === 1 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
 
   return (
     <tr className="hover:bg-gray-50">
       <td className="px-4 py-3 text-sm">{log.id}</td>
-      <td className="px-4 py-3 text-sm">{log.adminName || "-"}</td>
-      <td className="px-4 py-3 text-sm">{log.module || "-"}</td>
-      <td className="px-4 py-3 text-sm">{log.operation || "-"}</td>
+      <td className="px-4 py-3 text-sm">{log.adminName || '-'}</td>
+      <td className="px-4 py-3 text-sm">{log.module || '-'}</td>
+      <td className="px-4 py-3 text-sm">{log.operation || '-'}</td>
       <td className="px-4 py-3 text-sm">
-        <span
-          className={`inline-flex rounded px-2 py-0.5 text-xs font-medium ${methodColorClass}`}
-        >
-          {log.requestMethod || "-"}
+        <span className={`inline-flex rounded px-2 py-0.5 text-xs font-medium ${methodColorClass}`}>
+          {log.requestMethod || '-'}
         </span>
       </td>
-      <td className="px-4 py-3 text-sm text-gray-500">{log.ip || "-"}</td>
+      <td className="px-4 py-3 text-sm text-gray-500">{log.ip || '-'}</td>
       <td className="px-4 py-3 text-sm text-gray-500">
-        {log.executionTime !== null ? `${log.executionTime}ms` : "-"}
+        {log.executionTime !== null ? `${log.executionTime}ms` : '-'}
       </td>
       <td className="px-4 py-3">
         <span
           className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${statusColorClass}`}
         >
-          {log.status === 1 ? "成功" : "失败"}
+          {log.status === 1 ? '成功' : '失败'}
         </span>
       </td>
       <td className="px-4 py-3 text-sm text-gray-500">
@@ -92,20 +88,20 @@ export function LogTableRow({ log, onViewDetail, onDelete }: LogTableRowProps) {
         </div>
       </td>
     </tr>
-  );
+  )
 }
 
 function getMethodColorClass(method: string | null): string {
   switch (method) {
-    case "GET":
-      return "bg-green-100 text-green-700";
-    case "POST":
-      return "bg-blue-100 text-blue-700";
-    case "PUT":
-      return "bg-orange-100 text-orange-700";
-    case "DELETE":
-      return "bg-red-100 text-red-700";
+    case 'GET':
+      return 'bg-green-100 text-green-700'
+    case 'POST':
+      return 'bg-blue-100 text-blue-700'
+    case 'PUT':
+      return 'bg-orange-100 text-orange-700'
+    case 'DELETE':
+      return 'bg-red-100 text-red-700'
     default:
-      return "bg-gray-100 text-gray-700";
+      return 'bg-gray-100 text-gray-700'
   }
 }

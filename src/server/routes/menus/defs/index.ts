@@ -3,6 +3,6 @@
  * @description 从子模块导出所有路由定义
  */
 
-export { createMenuRoute } from "./create";
-export { deleteMenuRoute, getMenuRoute, updateMenuRoute } from "./detail";
-export { getMenuTreeRoute, listMenusRoute } from "./list";
+export { createMenuRoute } from './create'
+export { deleteMenuRoute, getMenuRoute, updateMenuRoute } from './detail'
+export { getMenuTreeRoute, listMenusRoute } from './list'

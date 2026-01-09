@@ -8,6 +8,8 @@ import { sysAdminRole } from './admin-role'
 import { sysMenu } from './menu'
 import { sysRole } from './role'
 import { sysRoleMenu } from './role-menu'
+import { stockConfig } from './stock-config'
+import { stockData } from './stock-data'
 
 // 管理员关联
 export const sysAdminRelations = relations(sysAdmin, ({ many }) => ({
@@ -48,3 +50,9 @@ export const sysRoleMenuRelations = relations(sysRoleMenu, ({ one }) => ({
     references: [sysMenu.id],
   }),
 }))
+
+// 股票配置关联（无外键关联，仅用于 query builder）
+export const stockConfigRelations = relations(stockConfig, () => ({}))
+
+// 股票数据关联（无外键关联，仅用于 query builder）
+export const stockDataRelations = relations(stockData, () => ({}))

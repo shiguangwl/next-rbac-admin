@@ -1,3 +1,4 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { type ClientResponse, getApiClient, unwrapApiData } from '@/lib/client'
 import type {
   Config,
@@ -5,7 +6,6 @@ import type {
   PaginatedConfig,
   UpdateConfigValueInput,
 } from '@/server/routes/configs/dtos'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 type ConfigsClient = {
   $get: (args: { query: Record<string, string> }) => Promise<ClientResponse<unknown>>
@@ -136,4 +136,3 @@ export function useDeleteConfig() {
     },
   })
 }
-

@@ -108,13 +108,31 @@ app.use('*', async (c, next) => {
 })
 
 // 4. CSRF 中间件
-app.use('*', csrfMiddleware)
+// app.use('*', csrfMiddleware)
 
 // 5. 速率限制中间件
 app.use('/api/*', apiRateLimit)
 
-// 6. JWT 认证中间件
-app.use('/api/*', jwtAuth)
+// 6. JWT 认证中间件（排除无需认证的路径）
+app.use('/api/*', async (c, next) => {
+  const path = c.req.path
+  // 无需 JWT 认证的路径
+  const publicPaths = [
+    '/api/auth/login',
+    '/api/auth/refresh',
+    '/api/stock/stock_list',
+    '/api/stock/stock_push',
+    '/api/stock/data',
+  ]
+
+  if (publicPaths.includes(path)) {
+    c.set('admin', null)
+    c.set('permissions', null)
+    return next()
+  }
+
+  return jwtAuth(c, next)
+})
 
 // 7. 加载权限中间件
 app.use('/api/*', loadPermissions)

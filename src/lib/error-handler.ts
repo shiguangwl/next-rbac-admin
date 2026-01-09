@@ -3,7 +3,7 @@
  * @description 将 Service 层错误映射到 HTTP 状态码
  */
 
-import { env } from "@/env";
+import { env } from '@/env'
 import {
   AppError,
   ConflictError,
@@ -11,20 +11,20 @@ import {
   NotFoundError,
   UnauthorizedError,
   ValidationError,
-} from "./errors";
+} from './errors'
 
 export interface ErrorResponse {
-  status: number;
-  code: string;
-  message: string;
-  details?: unknown;
+  status: number
+  code: string
+  message: string
+  details?: unknown
 }
 
 /**
  * 将错误映射为 HTTP 响应
  */
 export function mapErrorToResponse(err: unknown): ErrorResponse {
-  const shouldExposeDetails = env.NODE_ENV !== "production";
+  const shouldExposeDetails = env.NODE_ENV !== 'production'
 
   // 未授权错误 -> 401
   if (err instanceof UnauthorizedError) {
@@ -32,7 +32,7 @@ export function mapErrorToResponse(err: unknown): ErrorResponse {
       status: 401,
       code: err.code,
       message: err.message,
-    };
+    }
   }
 
   // 禁止访问错误 -> 403
@@ -41,7 +41,7 @@ export function mapErrorToResponse(err: unknown): ErrorResponse {
       status: 403,
       code: err.code,
       message: err.message,
-    };
+    }
   }
 
   // 资源未找到错误 -> 404
@@ -50,7 +50,7 @@ export function mapErrorToResponse(err: unknown): ErrorResponse {
       status: 404,
       code: err.code,
       message: err.message,
-    };
+    }
   }
 
   // 资源冲突错误 -> 409
@@ -59,7 +59,7 @@ export function mapErrorToResponse(err: unknown): ErrorResponse {
       status: 409,
       code: err.code,
       message: err.message,
-    };
+    }
   }
 
   // 验证错误 -> 400
@@ -69,7 +69,7 @@ export function mapErrorToResponse(err: unknown): ErrorResponse {
       code: err.code,
       message: err.message,
       details: shouldExposeDetails ? err.details : undefined,
-    };
+    }
   }
 
   // 其他应用错误 -> 400
@@ -79,19 +79,19 @@ export function mapErrorToResponse(err: unknown): ErrorResponse {
       code: err.code,
       message: err.message,
       details: shouldExposeDetails ? err.details : undefined,
-    };
+    }
   }
 
   // 未知错误 -> 500
   const message =
-    env.NODE_ENV === "production"
-      ? "Internal Server Error"
+    env.NODE_ENV === 'production'
+      ? 'Internal Server Error'
       : err instanceof Error
-      ? err.message
-      : "Internal Server Error";
+        ? err.message
+        : 'Internal Server Error'
   return {
     status: 500,
-    code: "INTERNAL_ERROR",
+    code: 'INTERNAL_ERROR',
     message,
-  };
+  }
 }

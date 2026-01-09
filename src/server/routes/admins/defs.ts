@@ -11,4 +11,4 @@ export {
   resetPasswordRoute,
   updateAdminRolesRoute,
   updateAdminRoute,
-} from "./defs/index";
+} from './defs/index'

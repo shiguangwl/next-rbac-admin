@@ -11,4 +11,4 @@ export {
   listRolesRoute,
   updateRoleMenusRoute,
   updateRoleRoute,
-} from "./defs/index";
+} from './defs/index'

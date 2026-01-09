@@ -3,26 +3,26 @@
  * @description 重置密码、更新角色等操作路由
  */
 
-import { createRoute } from "@hono/zod-openapi";
-import { ErrorSchema, IdParamSchema, SuccessSchema } from "../../common/dtos";
-import { ResetPasswordInputSchema, UpdateAdminRolesInputSchema } from "../dtos";
+import { createRoute } from '@hono/zod-openapi'
+import { ErrorSchema, IdParamSchema, SuccessSchema } from '../../common/dtos'
+import { ResetPasswordInputSchema, UpdateAdminRolesInputSchema } from '../dtos'
 
 /**
  * 重置密码路由定义
  * PUT /api/admins/:id/reset-password
  */
 export const resetPasswordRoute = createRoute({
-  method: "put",
-  path: "/{id}/reset-password",
-  tags: ["用户管理"],
-  summary: "重置密码",
-  description: "重置管理员密码",
+  method: 'put',
+  path: '/{id}/reset-password',
+  tags: ['用户管理'],
+  summary: '重置密码',
+  description: '重置管理员密码',
   security: [{ bearerAuth: [] }],
   request: {
     params: IdParamSchema,
     body: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: ResetPasswordInputSchema,
         },
       },
@@ -31,56 +31,56 @@ export const resetPasswordRoute = createRoute({
   },
   responses: {
     200: {
-      description: "重置成功",
+      description: '重置成功',
       content: {
-        "application/json": {
+        'application/json': {
           schema: SuccessSchema,
         },
       },
     },
     401: {
-      description: "未登录或登录已过期",
+      description: '未登录或登录已过期',
       content: {
-        "application/json": {
+        'application/json': {
           schema: ErrorSchema,
         },
       },
     },
     403: {
-      description: "无权限访问",
+      description: '无权限访问',
       content: {
-        "application/json": {
+        'application/json': {
           schema: ErrorSchema,
         },
       },
     },
     404: {
-      description: "管理员不存在",
+      description: '管理员不存在',
       content: {
-        "application/json": {
+        'application/json': {
           schema: ErrorSchema,
         },
       },
     },
   },
-});
+})
 
 /**
  * 更新管理员角色路由定义
  * PUT /api/admins/:id/roles
  */
 export const updateAdminRolesRoute = createRoute({
-  method: "put",
-  path: "/{id}/roles",
-  tags: ["用户管理"],
-  summary: "更新管理员角色",
-  description: "批量更新管理员的角色分配",
+  method: 'put',
+  path: '/{id}/roles',
+  tags: ['用户管理'],
+  summary: '更新管理员角色',
+  description: '批量更新管理员的角色分配',
   security: [{ bearerAuth: [] }],
   request: {
     params: IdParamSchema,
     body: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: UpdateAdminRolesInputSchema,
         },
       },
@@ -89,36 +89,36 @@ export const updateAdminRolesRoute = createRoute({
   },
   responses: {
     200: {
-      description: "更新成功",
+      description: '更新成功',
       content: {
-        "application/json": {
+        'application/json': {
           schema: SuccessSchema,
         },
       },
     },
     401: {
-      description: "未登录或登录已过期",
+      description: '未登录或登录已过期',
       content: {
-        "application/json": {
+        'application/json': {
           schema: ErrorSchema,
         },
       },
     },
     403: {
-      description: "无权限访问",
+      description: '无权限访问',
       content: {
-        "application/json": {
+        'application/json': {
           schema: ErrorSchema,
         },
       },
     },
     404: {
-      description: "管理员不存在",
+      description: '管理员不存在',
       content: {
-        "application/json": {
+        'application/json': {
           schema: ErrorSchema,
         },
       },
     },
   },
-});
+})

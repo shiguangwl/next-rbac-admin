@@ -4,7 +4,7 @@
  */
 
 export * from './use-admins'
+export * from './use-configs'
 export * from './use-menus'
 export * from './use-operation-logs'
 export * from './use-roles'
-export * from './use-configs'
