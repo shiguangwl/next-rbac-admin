@@ -9,6 +9,7 @@ import { admins } from './routes/admins'
 import { auth } from './routes/auth'
 import { menus } from './routes/menus'
 import { operationLogs } from './routes/operation-logs'
+import { configs } from './routes/configs'
 import { roles } from './routes/roles'
 
 /**
@@ -20,6 +21,7 @@ export const routes = new OpenAPIHono<Env>()
   .route('/roles', roles)
   .route('/menus', menus)
   .route('/operation-logs', operationLogs)
+  .route('/configs', configs)
 
 /**
  * 导出 AppType 类型（用于 Hono RPC Client）
