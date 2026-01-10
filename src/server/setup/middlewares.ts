@@ -27,7 +27,7 @@ import { requestLoggerMiddleware } from '@/server/middleware/request-logger'
  */
 export function setupMiddlewares(app: OpenAPIHono<Env>): void {
   // 1. CORS 中间件（最先处理）
-  app.use('*', corsMiddleware)
+  // app.use('*', corsMiddleware)
 
   // 2. 请求上下文中间件
   app.use('*', requestContextMiddleware)

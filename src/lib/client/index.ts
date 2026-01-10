@@ -3,48 +3,52 @@
  * @description 配置 Hono RPC 客户端，支持 SSR/CSR 区分和自动注入 Authorization
  */
 
-import { type ClientResponse, hc } from 'hono/client'
-import { env } from '@/env'
-import type { AppType } from '@/server/types'
+import { env } from "@/env";
+import type { AppType } from "@/server/types";
+import { type ClientResponse, hc } from "hono/client";
 
-const hcApp = hc<AppType>
+const hcApp = hc<AppType>;
 
-export type HonoClient = ReturnType<typeof hcApp>
+export type HonoClient = ReturnType<typeof hcApp>;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null
+  return typeof value === "object" && value !== null;
 }
 
 export type ApiErrorResponse = {
-  code: string
-  message: string
-  details?: unknown
-}
+  code: string;
+  message: string;
+  details?: unknown;
+};
 
 export type ApiSuccessResponse<T> = {
-  code: string
-  message?: string
-  data: T
-}
+  code: string;
+  message?: string;
+  data: T;
+};
 
 export async function unwrapApiData<T>(
-  response: Pick<ClientResponse<unknown>, 'ok' | 'json'>,
+  response: Pick<ClientResponse<unknown>, "ok" | "json">,
   fallbackMessage: string
 ): Promise<T> {
-  const payload = await response.json().catch(() => null)
+  const payload = await response.json().catch(() => null);
 
   if (!response.ok) {
-    if (isRecord(payload) && typeof payload.message === 'string' && payload.message.trim()) {
-      throw new Error(payload.message)
+    if (
+      isRecord(payload) &&
+      typeof payload.message === "string" &&
+      payload.message.trim()
+    ) {
+      throw new Error(payload.message);
     }
-    throw new Error(fallbackMessage)
+    throw new Error(fallbackMessage);
   }
 
-  if (!isRecord(payload) || !('data' in payload)) {
-    throw new Error(fallbackMessage)
+  if (!isRecord(payload) || !("data" in payload)) {
+    throw new Error(fallbackMessage);
   }
 
-  return (payload as ApiSuccessResponse<T>).data
+  return (payload as ApiSuccessResponse<T>).data;
 }
 
 /**
@@ -53,12 +57,26 @@ export async function unwrapApiData<T>(
  * - CSR: 使用相对路径（浏览器自动补全）
  */
 function getBaseUrl(): string {
-  // 服务端渲染时使用完整 URL
-  if (typeof window === 'undefined') {
-    return env.NEXT_PUBLIC_APP_URL
-  }
   // 客户端使用相对路径
-  return ''
+  if (typeof window !== "undefined") {
+    return "";
+  }
+
+  // 服务端渲染时优先使用配置的 URL
+  if (env.NEXT_PUBLIC_APP_URL) {
+    return env.NEXT_PUBLIC_APP_URL;
+  }
+
+  // 生产环境未配置时，尝试从环境变量获取（Vercel/Railway 等平台）
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  if (process.env.RAILWAY_PUBLIC_DOMAIN) {
+    return `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`;
+  }
+
+  // 最终 fallback：返回 localhost（仅开发环境）
+  return "http://localhost:3000";
 }
 
 /**
@@ -66,19 +84,19 @@ function getBaseUrl(): string {
  * 从 localStorage 中读取 Zustand 持久化的认证状态
  */
 function getStoredToken(): string | null {
-  if (typeof window === 'undefined') {
-    return null
+  if (typeof window === "undefined") {
+    return null;
   }
   try {
-    const authStorage = localStorage.getItem('auth-storage')
+    const authStorage = localStorage.getItem("auth-storage");
     if (authStorage) {
-      const parsed = JSON.parse(authStorage)
-      return parsed?.state?.token || null
+      const parsed = JSON.parse(authStorage);
+      return parsed?.state?.token || null;
     }
   } catch {
     // 解析失败时返回 null
   }
-  return null
+  return null;
 }
 
 /**
@@ -86,12 +104,12 @@ function getStoredToken(): string | null {
  */
 function createHeaders(token: string | null): Record<string, string> {
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  }
+    "Content-Type": "application/json",
+  };
   if (token) {
-    headers.Authorization = `Bearer ${token}`
+    headers.Authorization = `Bearer ${token}`;
   }
-  return headers
+  return headers;
 }
 
 /**
@@ -99,11 +117,11 @@ function createHeaders(token: string | null): Record<string, string> {
  * @param customToken 可选的自定义 Token（用于 SSR 场景）
  */
 export function createClient(customToken?: string): HonoClient {
-  const baseUrl = getBaseUrl()
+  const baseUrl = getBaseUrl();
 
   return hcApp(`${baseUrl}/api`, {
     headers: () => createHeaders(customToken ?? getStoredToken()),
-  })
+  });
 }
 
 /**
@@ -111,10 +129,10 @@ export function createClient(customToken?: string): HonoClient {
  * 每次调用都会重新获取 token，确保使用最新的认证状态
  */
 export function getApiClient(): HonoClient {
-  return createClient()
+  return createClient();
 }
 
 /**
  * 类型导出
  */
-export type { ClientResponse }
+export type { ClientResponse };
