@@ -6,7 +6,7 @@
 import type { Context } from 'hono'
 import { ForbiddenError, InternalServerError } from '@/lib/errors'
 import { logger } from '@/lib/logging'
-import { getConfigByKey } from '@/server/services/config.service'
+import { getConfigByKey } from '@/server/services'
 
 /**
  * 验证 API Key

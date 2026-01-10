@@ -1,6 +1,5 @@
 /**
  * 角色服务
- * @description 角色 CRUD 及菜单权限分配业务逻辑
  */
 
 import { and, asc, count, eq, ne } from 'drizzle-orm'
@@ -8,24 +7,14 @@ import { db } from '@/db'
 import { sysAdminRole, sysRole, sysRoleMenu } from '@/db/schema'
 import { BusinessError, ConflictError, ErrorCode, NotFoundError } from '@/lib/errors'
 import { invalidateAllPermissionCache } from '@/server/security/permission-cache'
-import type {
-  CreateRoleInput,
-  PaginatedResult,
-  PaginationOptions,
-  RoleDto,
-  UpdateRoleInput,
-} from './types'
-import { toRoleDto } from './utils'
+import type { PaginatedResult, PaginationQuery } from '../../shared'
+import type { CreateRoleInput, RoleVo, UpdateRoleInput } from './models'
+import { toRoleVo } from './role.utils'
 
-// 重新导出类型供外部使用
-export type { CreateRoleInput, PaginatedResult, PaginationOptions, RoleDto, UpdateRoleInput }
-
-/**
- * 获取角色列表（分页，按 sort 排序）
- */
+/** 获取角色列表（分页） */
 export async function getRoleList(
-  options: PaginationOptions = {}
-): Promise<PaginatedResult<RoleDto>> {
+  options: PaginationQuery = {}
+): Promise<PaginatedResult<RoleVo>> {
   const { page = 1, pageSize = 20, keyword, status } = options
   const offset = (page - 1) * pageSize
 
@@ -50,7 +39,7 @@ export async function getRoleList(
     .offset(offset)
 
   return {
-    items: roles.map(toRoleDto),
+    items: roles.map(toRoleVo),
     total,
     page,
     pageSize,
@@ -58,23 +47,19 @@ export async function getRoleList(
   }
 }
 
-/**
- * 获取所有角色（不分页，用于下拉选择）
- */
-export async function getAllRoles(): Promise<RoleDto[]> {
+/** 获取所有角色（不分页） */
+export async function getAllRoles(): Promise<RoleVo[]> {
   const roles = await db
     .select()
     .from(sysRole)
     .where(eq(sysRole.status, 1))
     .orderBy(asc(sysRole.sort))
 
-  return roles.map(toRoleDto)
+  return roles.map(toRoleVo)
 }
 
-/**
- * 获取角色详情
- */
-export async function getRoleById(id: number): Promise<RoleDto> {
+/** 获取角色详情 */
+export async function getRoleById(id: number): Promise<RoleVo> {
   const role = await db
     .select()
     .from(sysRole)
@@ -92,15 +77,13 @@ export async function getRoleById(id: number): Promise<RoleDto> {
     .where(eq(sysRoleMenu.roleId, id))
 
   return {
-    ...toRoleDto(role),
+    ...toRoleVo(role),
     menuIds: roleMenus.map((rm) => rm.menuId),
   }
 }
 
-/**
- * 创建角色
- */
-export async function createRole(input: CreateRoleInput): Promise<RoleDto> {
+/** 创建角色 */
+export async function createRole(input: CreateRoleInput): Promise<RoleVo> {
   const existing = await db
     .select({ id: sysRole.id })
     .from(sysRole)
@@ -132,10 +115,8 @@ export async function createRole(input: CreateRoleInput): Promise<RoleDto> {
   return getRoleById(result)
 }
 
-/**
- * 更新角色
- */
-export async function updateRole(id: number, input: UpdateRoleInput): Promise<RoleDto> {
+/** 更新角色 */
+export async function updateRole(id: number, input: UpdateRoleInput): Promise<RoleVo> {
   const existing = await db
     .select({ id: sysRole.id })
     .from(sysRole)
@@ -173,10 +154,7 @@ export async function updateRole(id: number, input: UpdateRoleInput): Promise<Ro
   return getRoleById(id)
 }
 
-/**
- * 删除角色
- * @description 检查是否有管理员关联，有则拒绝删除
- */
+/** 删除角色 */
 export async function deleteRole(id: number): Promise<void> {
   const existing = await db
     .select({ id: sysRole.id })
@@ -208,10 +186,7 @@ export async function deleteRole(id: number): Promise<void> {
   })
 }
 
-/**
- * 更新角色菜单权限
- * @description 清除所有权限缓存
- */
+/** 更新角色菜单权限 */
 export async function updateRoleMenus(id: number, menuIds: number[]): Promise<void> {
   const existing = await db
     .select({ id: sysRole.id })
@@ -235,9 +210,7 @@ export async function updateRoleMenus(id: number, menuIds: number[]): Promise<vo
   invalidateAllPermissionCache()
 }
 
-/**
- * 获取角色的菜单 ID 列表
- */
+/** 获取角色的菜单 ID 列表 */
 export async function getRoleMenuIds(roleId: number): Promise<number[]> {
   const roleMenus = await db
     .select({ menuId: sysRoleMenu.menuId })

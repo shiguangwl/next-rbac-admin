@@ -8,7 +8,7 @@ import {
   invalidateAllPermissionCache,
   invalidatePermissionCache,
 } from '@/server/security/permission-cache'
-import { getAdminPermissions } from '@/server/services/auth.service'
+import { getAdminPermissions } from '@/server/services'
 
 export { getPermissionCacheSize, invalidateAllPermissionCache, invalidatePermissionCache }
 

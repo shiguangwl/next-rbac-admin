@@ -2,13 +2,17 @@
  * Service 层统一导出
  */
 
-export * from './admin.service'
-export * from './audit.service'
+// 共享基础设施
+export * from './shared'
 
-// 服务导出
-export * from './auth.service'
-export * from './menu.service'
-export * from './role.service'
-// 类型导出
-export * from './types'
-export * from './utils'
+// 系统管理领域
+export * from './system'
+
+// 认证授权领域
+export * from './auth'
+
+// 审计日志领域
+export * from './audit'
+
+// 股票业务领域
+export * from './stock'

@@ -15,7 +15,7 @@ import {
   getStockDataList,
   pushStockData,
   updateStockConfig,
-} from '@/server/services/stock.service'
+} from '@/server/services'
 import {
   createStockConfigRoute,
   deleteStockConfigRoute,

@@ -16,7 +16,7 @@ import {
   getRoleList,
   updateRole,
   updateRoleMenus,
-} from '@/server/services/role.service'
+} from '@/server/services'
 import {
   createRoleRoute,
   deleteRoleRoute,

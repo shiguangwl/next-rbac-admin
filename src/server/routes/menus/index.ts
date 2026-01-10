@@ -15,7 +15,7 @@ import {
   getMenuList,
   getMenuTree,
   updateMenu,
-} from '@/server/services/menu.service'
+} from '@/server/services'
 import {
   createMenuRoute,
   deleteMenuRoute,

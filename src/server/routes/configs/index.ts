@@ -11,7 +11,7 @@ import {
   listConfigs,
   preloadAllActiveConfigs,
   updateConfig,
-} from '@/server/services/config.service'
+} from '@/server/services'
 import {
   createConfigRoute,
   deleteConfigRoute,

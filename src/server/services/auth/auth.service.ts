@@ -1,21 +1,20 @@
+/**
+ * 认证服务
+ */
+
 import { and, eq, inArray, isNotNull } from 'drizzle-orm'
 import { db } from '@/db'
 import { sysAdmin, sysAdminRole, sysMenu, sysRoleMenu } from '@/db/schema'
 import { type AdminPayload, signToken, verifyPassword } from '@/lib/auth'
 import { BusinessError, ErrorCode, UnauthorizedError } from '@/lib/errors'
 import { SUPER_ADMIN_ID } from '@/lib/utils'
-import type { LoginInput, LoginResult, MenuTreeNode } from './types'
-import { buildMenuTree, toAdminDto, toMenuTreeNode } from './utils'
+import { toAdminVo } from '../system/admin/admin.utils'
+import { buildMenuTree, toMenuTreeNode } from '../system/menu/menu.utils'
+import type { MenuTreeNode } from '../system/menu'
+import type { LoginInput, LoginResultVo } from './models'
 
-// 重新导出类型供外部使用
-export type { AdminDto } from './types'
-export type { LoginInput, LoginResult, MenuTreeNode }
-
-/**
- * 管理员登录
- * @description 验证凭据、更新登录信息、生成 Token
- */
-export async function login(input: LoginInput): Promise<LoginResult> {
+/** 管理员登录 */
+export async function login(input: LoginInput): Promise<LoginResultVo> {
   // 1. 查询管理员
   const admin = await db
     .select()
@@ -39,7 +38,7 @@ export async function login(input: LoginInput): Promise<LoginResult> {
     throw new BusinessError('账号已禁用', ErrorCode.ACCOUNT_DISABLED)
   }
 
-  // 5. 更新登录信息
+  // 4. 更新登录信息
   await db
     .update(sysAdmin)
     .set({
@@ -48,18 +47,18 @@ export async function login(input: LoginInput): Promise<LoginResult> {
     })
     .where(eq(sysAdmin.id, admin.id))
 
-  // 6. 生成 JWT Token
+  // 5. 生成 JWT Token
   const payload: AdminPayload = {
     adminId: admin.id,
     username: admin.username,
   }
   const token = signToken(payload)
 
-  // 7. 获取权限和菜单
+  // 6. 获取权限和菜单
   const permissions = await getAdminPermissions(admin.id)
   const menus = await getAdminMenuTree(admin.id)
 
-  // 8. 更新管理员信息（包含最新登录时间）
+  // 7. 获取更新后的管理员信息
   const updatedAdmin = await db
     .select()
     .from(sysAdmin)
@@ -69,15 +68,13 @@ export async function login(input: LoginInput): Promise<LoginResult> {
 
   return {
     token,
-    admin: toAdminDto(updatedAdmin!),
+    admin: toAdminVo(updatedAdmin!),
     permissions,
     menus,
   }
 }
 
-/**
- * 获取管理员角色 ID 列表
- */
+/** 获取管理员角色 ID 列表 */
 export async function getAdminRoleIds(adminId: number): Promise<number[]> {
   const adminRoles = await db
     .select({ roleId: sysAdminRole.roleId })
@@ -87,10 +84,7 @@ export async function getAdminRoleIds(adminId: number): Promise<number[]> {
   return adminRoles.map((ar) => ar.roleId)
 }
 
-/**
- * 获取管理员权限列表
- * @description 查询管理员所有角色关联的菜单权限标识（去重）
- */
+/** 获取管理员权限列表 */
 export async function getAdminPermissions(adminId: number): Promise<string[]> {
   if (adminId === SUPER_ADMIN_ID) {
     const menus = await db
@@ -127,7 +121,7 @@ export async function getAdminPermissions(adminId: number): Promise<string[]> {
 
   const menuIds = roleMenus.map((rm) => rm.menuId)
 
-  // 3. 查询菜单的权限标识（只取有权限标识的记录）
+  // 3. 查询菜单的权限标识
   const menus = await db
     .select({ permission: sysMenu.permission })
     .from(sysMenu)
@@ -144,11 +138,7 @@ export async function getAdminPermissions(adminId: number): Promise<string[]> {
   return Array.from(permissions)
 }
 
-/**
- * 获取管理员菜单树
- * @description 查询管理员所有角色关联的菜单，构建树形结构
- * 只返回 menuType 为 D 或 M 的菜单（不包含按钮）
- */
+/** 获取管理员菜单树 */
 export async function getAdminMenuTree(adminId: number): Promise<MenuTreeNode[]> {
   if (adminId === SUPER_ADMIN_ID) {
     const menus = await db
@@ -181,7 +171,7 @@ export async function getAdminMenuTree(adminId: number): Promise<MenuTreeNode[]>
 
   const menuIds = [...new Set(roleMenus.map((rm) => rm.menuId))]
 
-  // 3. 查询菜单详情（只取目录和菜单，不包含按钮）
+  // 3. 查询菜单详情（只取目录和菜单）
   const menus = await db
     .select()
     .from(sysMenu)

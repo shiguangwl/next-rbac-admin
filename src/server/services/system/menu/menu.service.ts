@@ -1,29 +1,16 @@
 /**
  * 菜单服务
- * @description 菜单权限 CRUD 及树形结构构建业务逻辑
  */
 
 import { and, asc, count, eq } from 'drizzle-orm'
 import { db } from '@/db'
 import { sysMenu, sysRoleMenu } from '@/db/schema'
 import { BusinessError, ConflictError, ErrorCode, NotFoundError } from '@/lib/errors'
-import type {
-  CreateMenuInput,
-  MenuDto,
-  MenuQueryOptions,
-  MenuTreeNode,
-  UpdateMenuInput,
-} from './types'
-import { buildMenuTree, toMenuDto } from './utils'
+import type { CreateMenuInput, MenuQuery, MenuTreeNode, MenuVo, UpdateMenuInput } from './models'
+import { buildMenuTree, toMenuVo } from './menu.utils'
 
-// 重新导出类型和函数供外部使用
-export { buildMenuTree }
-export type { CreateMenuInput, MenuDto, MenuQueryOptions, MenuTreeNode, UpdateMenuInput }
-
-/**
- * 获取菜单列表（扁平）
- */
-export async function getMenuList(options: MenuQueryOptions = {}): Promise<MenuDto[]> {
+/** 获取菜单列表（扁平） */
+export async function getMenuList(options: MenuQuery = {}): Promise<MenuVo[]> {
   const { menuType, status } = options
 
   const conditions = []
@@ -38,22 +25,17 @@ export async function getMenuList(options: MenuQueryOptions = {}): Promise<MenuD
 
   const menus = await db.select().from(sysMenu).where(whereClause).orderBy(asc(sysMenu.sort))
 
-  return menus.map(toMenuDto)
+  return menus.map(toMenuVo)
 }
 
-/**
- * 获取菜单树
- * @description 从数据库获取扁平列表，在内存中构建树形结构
- */
-export async function getMenuTree(options: MenuQueryOptions = {}): Promise<MenuTreeNode[]> {
+/** 获取菜单树 */
+export async function getMenuTree(options: MenuQuery = {}): Promise<MenuTreeNode[]> {
   const menus = await getMenuList(options)
-  return buildMenuTree(menus)
+  return buildMenuTree(menus as MenuTreeNode[])
 }
 
-/**
- * 获取菜单详情
- */
-export async function getMenuById(id: number): Promise<MenuDto> {
+/** 获取菜单详情 */
+export async function getMenuById(id: number): Promise<MenuVo> {
   const menu = await db
     .select()
     .from(sysMenu)
@@ -65,13 +47,11 @@ export async function getMenuById(id: number): Promise<MenuDto> {
     throw new NotFoundError('Menu', id)
   }
 
-  return toMenuDto(menu)
+  return toMenuVo(menu)
 }
 
-/**
- * 创建菜单
- */
-export async function createMenu(input: CreateMenuInput): Promise<MenuDto> {
+/** 创建菜单 */
+export async function createMenu(input: CreateMenuInput): Promise<MenuVo> {
   // 如果有权限标识，检查是否已存在
   if (input.permission) {
     const existing = await db
@@ -119,10 +99,8 @@ export async function createMenu(input: CreateMenuInput): Promise<MenuDto> {
   return getMenuById(Number(insertResult.insertId))
 }
 
-/**
- * 更新菜单
- */
-export async function updateMenu(id: number, input: UpdateMenuInput): Promise<MenuDto> {
+/** 更新菜单 */
+export async function updateMenu(id: number, input: UpdateMenuInput): Promise<MenuVo> {
   const existing = await db
     .select({ id: sysMenu.id })
     .from(sysMenu)
@@ -188,10 +166,7 @@ export async function updateMenu(id: number, input: UpdateMenuInput): Promise<Me
   return getMenuById(id)
 }
 
-/**
- * 删除菜单
- * @description 检查是否有子菜单，有则拒绝删除
- */
+/** 删除菜单 */
 export async function deleteMenu(id: number): Promise<void> {
   const existing = await db
     .select({ id: sysMenu.id })

@@ -7,8 +7,7 @@ import { OpenAPIHono } from '@hono/zod-openapi'
 import type { Env } from '@/server/context'
 import { requireAuth } from '@/server/middleware/jwt-auth'
 import { loginRateLimit } from '@/server/middleware/rate-limit'
-import { getAdminById } from '@/server/services/admin.service'
-import { getAdminMenuTree, getAdminPermissions, login } from '@/server/services/auth.service'
+import { getAdminById, getAdminMenuTree, getAdminPermissions, login } from '@/server/services'
 import { getAuthInfoRoute, loginRoute, logoutRoute } from './defs'
 
 const auth = new OpenAPIHono<Env>()

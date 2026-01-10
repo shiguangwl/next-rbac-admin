@@ -1,27 +1,16 @@
 /**
  * 审计日志服务
- * @description 操作日志记录和查询业务逻辑
  */
 
 import { and, count, desc, eq, gte, like, lte, sql } from 'drizzle-orm'
 import { db } from '@/db'
 import { sysOperationLog } from '@/db/schema'
 import { NotFoundError } from '@/lib/errors'
-import type {
-  CreateOperationLogInput,
-  OperationLogDto,
-  OperationLogQueryOptions,
-  PaginatedResult,
-} from './types'
-import { toOperationLogDto } from './utils'
+import type { PaginatedResult } from '../shared'
+import type { CreateOperationLogInput, OperationLogQuery, OperationLogVo } from './models'
+import { toOperationLogVo } from './audit.utils'
 
-// 重新导出类型供外部使用
-export type { CreateOperationLogInput, OperationLogDto, OperationLogQueryOptions, PaginatedResult }
-
-/**
- * 创建操作日志
- * @description 异步记录操作日志，不阻塞主业务流程
- */
+/** 创建操作日志 */
 export async function createOperationLog(input: CreateOperationLogInput): Promise<void> {
   await db.insert(sysOperationLog).values({
     adminId: input.adminId,
@@ -43,12 +32,10 @@ export async function createOperationLog(input: CreateOperationLogInput): Promis
   })
 }
 
-/**
- * 获取操作日志列表（分页 + 多条件筛选）
- */
+/** 获取操作日志列表（分页） */
 export async function getOperationLogList(
-  options: OperationLogQueryOptions = {}
-): Promise<PaginatedResult<OperationLogDto>> {
+  options: OperationLogQuery = {}
+): Promise<PaginatedResult<OperationLogVo>> {
   const {
     page = 1,
     pageSize = 20,
@@ -99,7 +86,7 @@ export async function getOperationLogList(
     .offset(offset)
 
   return {
-    items: logs.map(toOperationLogDto),
+    items: logs.map(toOperationLogVo),
     total,
     page,
     pageSize,
@@ -107,10 +94,8 @@ export async function getOperationLogList(
   }
 }
 
-/**
- * 获取操作日志详情
- */
-export async function getOperationLogById(id: number): Promise<OperationLogDto> {
+/** 获取操作日志详情 */
+export async function getOperationLogById(id: number): Promise<OperationLogVo> {
   const log = await db
     .select()
     .from(sysOperationLog)
@@ -122,12 +107,10 @@ export async function getOperationLogById(id: number): Promise<OperationLogDto> 
     throw new NotFoundError('OperationLog', id)
   }
 
-  return toOperationLogDto(log)
+  return toOperationLogVo(log)
 }
 
-/**
- * 删除操作日志
- */
+/** 删除操作日志 */
 export async function deleteOperationLog(id: number): Promise<void> {
   const existing = await db
     .select({ id: sysOperationLog.id })
@@ -143,9 +126,7 @@ export async function deleteOperationLog(id: number): Promise<void> {
   await db.delete(sysOperationLog).where(eq(sysOperationLog.id, id))
 }
 
-/**
- * 批量删除操作日志
- */
+/** 批量删除操作日志 */
 export async function batchDeleteOperationLogs(ids: number[]): Promise<void> {
   if (ids.length === 0) return
 
@@ -157,10 +138,7 @@ export async function batchDeleteOperationLogs(ids: number[]): Promise<void> {
   )
 }
 
-/**
- * 清理过期日志
- * @param days 保留天数
- */
+/** 清理过期日志 */
 export async function cleanExpiredLogs(days: number): Promise<number> {
   const expireDate = new Date()
   expireDate.setDate(expireDate.getDate() - days)
@@ -170,9 +148,7 @@ export async function cleanExpiredLogs(days: number): Promise<number> {
   return result[0]?.affectedRows ?? 0
 }
 
-/**
- * 获取日志统计信息
- */
+/** 获取日志统计信息 */
 export async function getLogStatistics(): Promise<{
   total: number
   successCount: number

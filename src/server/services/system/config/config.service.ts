@@ -1,56 +1,22 @@
+/**
+ * 系统配置服务
+ */
+
 import { and, eq } from 'drizzle-orm'
 import { db } from '@/db'
 import { sysConfig } from '@/db/schema'
 import { ConflictError, NotFoundError } from '@/lib/errors'
-import type { PaginatedResult } from './types'
+import type { PaginatedResult } from '../../shared'
+import type {
+  ConfigQuery,
+  ConfigValueType,
+  ConfigVo,
+  ConfigCacheEntry,
+  UpsertConfigInput,
+  UpdateConfigValueInput,
+} from './models'
 
-type ConfigPrimitiveType = 'string' | 'boolean' | 'number'
-export type ConfigValueType = ConfigPrimitiveType | 'json' | 'array'
-
-export interface ConfigDto {
-  id: number
-  configKey: string
-  configValue: string | null
-  configType: ConfigValueType
-  configGroup: string
-  configName: string
-  remark: string | null
-  isSystem: number
-  status: number
-  createdAt: string
-  updatedAt: string
-}
-
-export interface ConfigQueryOptions {
-  page?: number
-  pageSize?: number
-  group?: string
-  keyword?: string
-  status?: number
-}
-
-export interface UpsertConfigInput {
-  configKey: string
-  configValue: string | null
-  configType: ConfigValueType
-  configGroup: string
-  configName: string
-  remark?: string | null
-  isSystem?: number
-  status?: number
-}
-
-export interface UpdateConfigValueInput {
-  configValue: string | null
-  configType?: ConfigValueType
-  status?: number
-}
-
-interface ConfigCacheEntry {
-  rawValue: string | null
-  parsedValue: unknown
-  type: ConfigValueType
-}
+// ========== 缓存管理 ==========
 
 const configCache = new Map<string, ConfigCacheEntry>()
 
@@ -66,14 +32,12 @@ export function getConfigCacheSize(): number {
   return configCache.size
 }
 
-function parseConfigValue(value: string | null, type: ConfigValueType): unknown {
-  if (value === null) {
-    return null
-  }
+// ========== 内部工具 ==========
 
-  if (type === 'string') {
-    return value
-  }
+function parseConfigValue(value: string | null, type: ConfigValueType): unknown {
+  if (value === null) return null
+
+  if (type === 'string') return value
 
   if (type === 'boolean') {
     const normalized = value.trim().toLowerCase()
@@ -101,7 +65,7 @@ function parseConfigValue(value: string | null, type: ConfigValueType): unknown 
   }
 }
 
-function toConfigDto(row: typeof sysConfig.$inferSelect): ConfigDto {
+function toConfigVo(row: typeof sysConfig.$inferSelect): ConfigVo {
   return {
     id: row.id,
     configKey: row.configKey,
@@ -117,6 +81,9 @@ function toConfigDto(row: typeof sysConfig.$inferSelect): ConfigDto {
   }
 }
 
+// ========== 服务方法 ==========
+
+/** 获取配置值（带缓存） */
 export async function getConfigValue<T = unknown>(key: string): Promise<T | null> {
   const cached = configCache.get(key)
   if (cached) {
@@ -130,9 +97,7 @@ export async function getConfigValue<T = unknown>(key: string): Promise<T | null
     .limit(1)
     .then((rows) => rows[0])
 
-  if (!row) {
-    return null
-  }
+  if (!row) return null
 
   const parsedValue = parseConfigValue(row.configValue, row.configType as ConfigValueType)
   configCache.set(key, {
@@ -144,6 +109,7 @@ export async function getConfigValue<T = unknown>(key: string): Promise<T | null
   return parsedValue as T
 }
 
+/** 预加载所有启用的配置 */
 export async function preloadAllActiveConfigs(): Promise<void> {
   const rows = await db.select().from(sysConfig).where(eq(sysConfig.status, 1))
 
@@ -160,7 +126,8 @@ export async function preloadAllActiveConfigs(): Promise<void> {
   }
 }
 
-export async function getConfigById(id: number): Promise<ConfigDto> {
+/** 根据 ID 获取配置 */
+export async function getConfigById(id: number): Promise<ConfigVo> {
   const row = await db
     .select()
     .from(sysConfig)
@@ -172,10 +139,11 @@ export async function getConfigById(id: number): Promise<ConfigDto> {
     throw new NotFoundError('SysConfig', id)
   }
 
-  return toConfigDto(row)
+  return toConfigVo(row)
 }
 
-export async function getConfigByKey(key: string): Promise<ConfigDto> {
+/** 根据 Key 获取配置 */
+export async function getConfigByKey(key: string): Promise<ConfigVo> {
   const row = await db
     .select()
     .from(sysConfig)
@@ -187,12 +155,11 @@ export async function getConfigByKey(key: string): Promise<ConfigDto> {
     throw new NotFoundError('SysConfig', key)
   }
 
-  return toConfigDto(row)
+  return toConfigVo(row)
 }
 
-export async function listConfigs(
-  options: ConfigQueryOptions
-): Promise<PaginatedResult<ConfigDto>> {
+/** 获取配置列表（分页） */
+export async function listConfigs(options: ConfigQuery): Promise<PaginatedResult<ConfigVo>> {
   const page = options.page && options.page > 0 ? options.page : 1
   const pageSize =
     options.pageSize && options.pageSize > 0 && options.pageSize <= 100 ? options.pageSize : 20
@@ -233,7 +200,7 @@ export async function listConfigs(
   const totalPages = total === 0 ? 0 : Math.ceil(total / pageSize)
 
   return {
-    items: items.map(toConfigDto),
+    items: items.map(toConfigVo),
     total,
     page,
     pageSize,
@@ -241,7 +208,8 @@ export async function listConfigs(
   }
 }
 
-export async function createConfig(input: UpsertConfigInput): Promise<ConfigDto> {
+/** 创建配置 */
+export async function createConfig(input: UpsertConfigInput): Promise<ConfigVo> {
   const existing = await db
     .select({ id: sysConfig.id })
     .from(sysConfig)
@@ -269,10 +237,11 @@ export async function createConfig(input: UpsertConfigInput): Promise<ConfigDto>
   return getConfigById(id)
 }
 
+/** 更新配置 */
 export async function updateConfig(
   id: number,
   input: Partial<UpsertConfigInput>
-): Promise<ConfigDto> {
+): Promise<ConfigVo> {
   const existing = await db
     .select()
     .from(sysConfig)
@@ -323,10 +292,11 @@ export async function updateConfig(
   return getConfigById(id)
 }
 
+/** 根据 Key 更新配置值 */
 export async function updateConfigValueByKey(
   key: string,
   input: UpdateConfigValueInput
-): Promise<ConfigDto> {
+): Promise<ConfigVo> {
   const existing = await db
     .select()
     .from(sysConfig)
@@ -351,6 +321,7 @@ export async function updateConfigValueByKey(
   return getConfigByKey(key)
 }
 
+/** 删除配置 */
 export async function deleteConfig(id: number): Promise<void> {
   const existing = await db
     .select()

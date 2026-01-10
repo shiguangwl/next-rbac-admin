@@ -11,7 +11,7 @@ import {
   deleteOperationLog,
   getOperationLogById,
   getOperationLogList,
-} from '@/server/services/audit.service'
+} from '@/server/services'
 import { deleteLogRoute, getLogRoute, listLogsRoute } from './defs'
 
 const operationLogs = new OpenAPIHono<Env>()

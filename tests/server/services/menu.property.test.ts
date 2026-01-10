@@ -8,7 +8,7 @@ import * as fc from 'fast-check'
 import { describe, expect, it } from 'vitest'
 import { ErrorCode } from '@/lib/error-codes'
 import { BusinessError } from '@/lib/errors'
-import { buildMenuTree, type MenuDto, type MenuTreeNode } from '@/server/services/menu.service'
+import { buildMenuTree, type MenuVo, type MenuTreeNode } from '@/server/services'
 
 // ========== 纯函数测试 ==========
 
@@ -67,7 +67,7 @@ function _validateParentChildRelation(nodes: MenuTreeNode[], parentId = 0): bool
 }
 
 // 生成菜单数据的 Arbitrary
-const menuDtoArb = fc.record({
+const menuVoArb = fc.record({
   id: fc.integer({ min: 1, max: 10000 }),
   parentId: fc.integer({ min: 0, max: 10000 }),
   menuType: fc.constantFrom('D', 'M', 'B') as fc.Arbitrary<'D' | 'M' | 'B'>,
@@ -91,8 +91,8 @@ const menuDtoArb = fc.record({
 })
 
 // 生成有效的菜单树数据（确保 parentId 引用有效）
-function generateValidMenuList(count: number): fc.Arbitrary<MenuDto[]> {
-  return fc.array(menuDtoArb, { minLength: count, maxLength: count }).map((menus) => {
+function generateValidMenuList(count: number): fc.Arbitrary<MenuVo[]> {
+  return fc.array(menuVoArb, { minLength: count, maxLength: count }).map((menus) => {
     // 确保 ID 唯一
     const uniqueMenus = menus.map((m, i) => ({ ...m, id: i + 1 }))
     // 确保 parentId 引用有效（0 或已存在的 ID）

@@ -16,7 +16,7 @@ import {
   resetPassword,
   updateAdmin,
   updateAdminRoles,
-} from '@/server/services/admin.service'
+} from '@/server/services'
 import {
   createAdminRoute,
   deleteAdminRoute,

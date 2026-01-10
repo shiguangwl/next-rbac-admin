@@ -4,7 +4,7 @@
  */
 
 import { setLogRecorder } from '@/server/middleware/audit-log'
-import { createOperationLog } from '@/server/services/audit.service'
+import { createOperationLog } from '@/server/services'
 
 /**
  * 配置审计日志记录器

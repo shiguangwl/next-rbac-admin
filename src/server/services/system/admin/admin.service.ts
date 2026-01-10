@@ -1,6 +1,5 @@
 /**
  * 管理员服务
- * @description 管理员 CRUD 及角色分配业务逻辑
  */
 
 import { and, count, eq, inArray, like, sql } from 'drizzle-orm'
@@ -16,28 +15,17 @@ import {
 } from '@/lib/errors'
 import { SUPER_ADMIN_ID } from '@/lib/utils'
 import { invalidatePermissionCache } from '@/server/security/permission-cache'
-import type {
-  AdminDto,
-  CreateAdminInput,
-  PaginatedResult,
-  PaginationOptions,
-  UpdateAdminInput,
-} from './types'
-import { toAdminDto } from './utils'
+import type { PaginatedResult, PaginationQuery } from '../../shared'
+import type { AdminVo, CreateAdminInput, UpdateAdminInput } from './models'
+import { toAdminVo } from './admin.utils'
 
-// 重新导出类型供外部使用
-export type { AdminDto, CreateAdminInput, PaginatedResult, PaginationOptions, UpdateAdminInput }
-
-/**
- * 获取管理员列表（分页）
- */
+/** 获取管理员列表（分页） */
 export async function getAdminList(
-  options: PaginationOptions = {}
-): Promise<PaginatedResult<AdminDto>> {
+  options: PaginationQuery = {}
+): Promise<PaginatedResult<AdminVo>> {
   const { page = 1, pageSize = 20, keyword, status } = options
   const offset = (page - 1) * pageSize
 
-  // 构建查询条件
   const conditions = []
   if (keyword) {
     conditions.push(like(sysAdmin.username, `%${keyword}%`))
@@ -48,10 +36,8 @@ export async function getAdminList(
 
   const whereClause = conditions.length > 0 ? and(...conditions) : undefined
 
-  // 查询总数
   const [{ total }] = await db.select({ total: count() }).from(sysAdmin).where(whereClause)
 
-  // 查询列表
   const admins = await db
     .select()
     .from(sysAdmin)
@@ -85,7 +71,7 @@ export async function getAdminList(
   }
 
   const items = admins.map((admin) => ({
-    ...toAdminDto(admin),
+    ...toAdminVo(admin),
     roles: roleMap.get(admin.id) || [],
   }))
 
@@ -98,10 +84,8 @@ export async function getAdminList(
   }
 }
 
-/**
- * 获取管理员详情
- */
-export async function getAdminById(id: number): Promise<AdminDto> {
+/** 获取管理员详情 */
+export async function getAdminById(id: number): Promise<AdminVo> {
   const admin = await db
     .select()
     .from(sysAdmin)
@@ -113,7 +97,6 @@ export async function getAdminById(id: number): Promise<AdminDto> {
     throw new NotFoundError('Admin', id)
   }
 
-  // 获取角色
   const roles = await db
     .select({
       id: sysRole.id,
@@ -124,17 +107,13 @@ export async function getAdminById(id: number): Promise<AdminDto> {
     .where(eq(sysAdminRole.adminId, id))
 
   return {
-    ...toAdminDto(admin),
+    ...toAdminVo(admin),
     roles,
   }
 }
 
-/**
- * 创建管理员
- * @description 使用事务：同时插入 sys_admin 和 sys_admin_role
- */
-export async function createAdmin(input: CreateAdminInput): Promise<AdminDto> {
-  // 检查用户名是否已存在
+/** 创建管理员 */
+export async function createAdmin(input: CreateAdminInput): Promise<AdminVo> {
   const existing = await db
     .select({ id: sysAdmin.id })
     .from(sysAdmin)
@@ -146,13 +125,10 @@ export async function createAdmin(input: CreateAdminInput): Promise<AdminDto> {
     throw new ConflictError(`用户名 ${input.username} 已存在`)
   }
 
-  // 加密密码
   const hashedPassword = await hashPassword(input.password)
 
   try {
-    // 使用事务创建管理员和角色关联
     const result = await db.transaction(async (tx) => {
-      // 插入管理员
       const [insertResult] = await tx.insert(sysAdmin).values({
         username: input.username,
         password: hashedPassword,
@@ -163,7 +139,6 @@ export async function createAdmin(input: CreateAdminInput): Promise<AdminDto> {
 
       const adminId = insertResult.insertId
 
-      // 插入角色关联
       if (input.roleIds?.length) {
         await tx.insert(sysAdminRole).values(
           input.roleIds.map((roleId) => ({
@@ -178,16 +153,12 @@ export async function createAdmin(input: CreateAdminInput): Promise<AdminDto> {
 
     return getAdminById(result)
   } catch (err) {
-    // 捕获并转换数据库错误（如唯一性冲突、外键约束等）
     throw handleDatabaseError(err)
   }
 }
 
-/**
- * 更新管理员
- */
-export async function updateAdmin(id: number, input: UpdateAdminInput): Promise<AdminDto> {
-  // 检查管理员是否存在
+/** 更新管理员 */
+export async function updateAdmin(id: number, input: UpdateAdminInput): Promise<AdminVo> {
   const existing = await db
     .select({ id: sysAdmin.id })
     .from(sysAdmin)
@@ -199,7 +170,6 @@ export async function updateAdmin(id: number, input: UpdateAdminInput): Promise<
     throw new NotFoundError('Admin', id)
   }
 
-  // 更新管理员
   await db
     .update(sysAdmin)
     .set({
@@ -212,22 +182,16 @@ export async function updateAdmin(id: number, input: UpdateAdminInput): Promise<
   return getAdminById(id)
 }
 
-/**
- * 删除管理员
- * @description 使用事务：同时删除 sys_admin 和 sys_admin_role
- */
+/** 删除管理员 */
 export async function deleteAdmin(id: number, currentAdminId: number): Promise<void> {
-  // 检查是否删除超级管理员
   if (id === SUPER_ADMIN_ID) {
     throw new BusinessError('不能删除超级管理员账号', ErrorCode.CANNOT_DELETE_SUPER_ADMIN)
   }
 
-  // 检查是否删除自己
   if (id === currentAdminId) {
     throw new BusinessError('不能删除自己的账号', ErrorCode.CANNOT_DELETE_SELF)
   }
 
-  // 检查管理员是否存在
   const existing = await db
     .select({ id: sysAdmin.id })
     .from(sysAdmin)
@@ -239,7 +203,6 @@ export async function deleteAdmin(id: number, currentAdminId: number): Promise<v
     throw new NotFoundError('Admin', id)
   }
 
-  // 使用事务删除管理员和角色关联
   await db.transaction(async (tx) => {
     await tx.delete(sysAdminRole).where(eq(sysAdminRole.adminId, id))
     await tx.delete(sysAdmin).where(eq(sysAdmin.id, id))
@@ -248,9 +211,7 @@ export async function deleteAdmin(id: number, currentAdminId: number): Promise<v
   invalidatePermissionCache(id)
 }
 
-/**
- * 重置密码
- */
+/** 重置密码 */
 export async function resetPassword(id: number, newPassword: string): Promise<void> {
   const existing = await db
     .select({ id: sysAdmin.id })
@@ -268,12 +229,8 @@ export async function resetPassword(id: number, newPassword: string): Promise<vo
   await db.update(sysAdmin).set({ password: hashedPassword }).where(eq(sysAdmin.id, id))
 }
 
-/**
- * 更新管理员角色
- * @description 使用事务：先删除旧关联，再插入新关联
- */
+/** 更新管理员角色 */
 export async function updateAdminRoles(id: number, roleIds: number[]): Promise<void> {
-  // 检查是否修改超级管理员的角色
   if (id === SUPER_ADMIN_ID) {
     throw new BusinessError('不能修改超级管理员的角色', ErrorCode.CANNOT_MODIFY_SUPER_ADMIN_ROLES)
   }
