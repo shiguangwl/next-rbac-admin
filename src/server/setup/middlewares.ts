@@ -35,8 +35,8 @@ export function setupMiddlewares(app: OpenAPIHono<Env>): void {
   // 3. 请求日志中间件
   app.use('*', requestLoggerMiddleware)
 
-  // 4. 速率限制中间件
-  app.use('/api/*', apiRateLimit)
+  // 4. 速率限制中间件(可选)
+  // app.use('/api/*', apiRateLimit)
 
   // 5. JWT 认证中间件（排除公开路径）
   app.use('/api/*', async (c, next) => {

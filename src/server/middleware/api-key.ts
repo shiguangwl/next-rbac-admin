@@ -29,13 +29,6 @@ export async function verifyApiKey(c: Context): Promise<void> {
     // 从系统配置中获取推送密钥
     const config = await getConfigByKey('stock.push_api_key')
 
-    logger.info('API Key validation', {
-      configFound: !!config,
-      configStatus: config?.status,
-      configValue: config?.configValue ? `${config.configValue.substring(0, 4)}...` : 'null',
-      providedKey: `${apiKey.substring(0, 4)}...`,
-    })
-
     if (!config || config.status !== 1) {
       logger.error('Stock push API key not configured or disabled')
       throw new InternalServerError('推送密钥未配置或已禁用')

@@ -122,7 +122,7 @@ export function rateLimit(options: RateLimitOptions) {
  */
 export const apiRateLimit = rateLimit({
   windowMs: 60 * 1000, // 1 分钟
-  max: 100,
+  max: 10000,
   message: '请求过于频繁，请稍后再试',
 })
 
