@@ -3,7 +3,7 @@
  * @description 定义 Hono 应用的上下文类型，包括认证信息和权限数据
  */
 
-import type { AdminPayload } from '@/lib/jwt'
+import type { AdminPayload } from '@/lib/auth'
 
 /**
  * Hono Bindings 类型

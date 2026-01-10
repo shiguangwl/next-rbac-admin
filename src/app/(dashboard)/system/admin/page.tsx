@@ -11,7 +11,7 @@ import { PermissionGuard } from '@/components/permission-guard'
 import { EditIcon, PlusIcon, RefreshIcon, SearchIcon, TrashIcon } from '@/components/ui/icon'
 import { Pagination } from '@/components/ui/pagination'
 import { useAdmins, useDeleteAdmin, useResetPassword } from '@/hooks/queries/use-admins'
-import { SUPER_ADMIN_ID } from '@/lib/constants'
+import { SUPER_ADMIN_ID } from '@/lib/utils'
 import { AdminFormDialog } from './admin-form-dialog'
 
 type Admin = {

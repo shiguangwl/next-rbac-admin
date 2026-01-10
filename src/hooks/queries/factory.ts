@@ -15,7 +15,7 @@ export interface ResourceConfig<
   TDetail,
   TCreateInput,
   TUpdateInput,
-  TQuery extends Record<string, any> = Record<string, never>
+  TQuery extends Record<string, any> = Record<string, never>,
 > {
   /** 资源名称（如 'admins', 'roles'） */
   resourceName: string
@@ -75,7 +75,7 @@ export function createResourceHooks<
   TDetail,
   TCreateInput,
   TUpdateInput,
-  TQuery extends Record<string, any> = Record<string, never>
+  TQuery extends Record<string, any> = Record<string, never>,
 >(config: ResourceConfig<TList, TDetail, TCreateInput, TUpdateInput, TQuery>) {
   const {
     resourceName,
@@ -97,13 +97,13 @@ export function createResourceHooks<
       queryKey: queryKeys.list(params),
       queryFn: async () => {
         const client = getResourceClient<CRUDClient<TCreateInput, TUpdateInput>>(resourceName)
-        
+
         // 构建查询参数
         const query: Record<string, string> = {
           page: String(params.page || 1),
           pageSize: String(params.pageSize || defaultPageSize),
         }
-        
+
         // 添加其他查询参数
         Object.keys(params).forEach((key) => {
           if (key !== 'page' && key !== 'pageSize' && params[key] !== undefined) {
@@ -199,4 +199,3 @@ export function createResourceHooks<
     useDelete,
   }
 }
-

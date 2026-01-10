@@ -12,14 +12,14 @@ export interface ErrorMonitor {
    * @param error - 错误对象
    * @param context - 上下文信息（如 requestId、userId 等）
    */
-  captureError(error: Error, context?: Record<string, unknown>): void;
+  captureError(error: Error, context?: Record<string, unknown>): void
 
   /**
    * 捕获消息
    * @param message - 消息内容
    * @param level - 消息级别
    */
-  captureMessage(message: string, level: "info" | "warn" | "error"): void;
+  captureMessage(message: string, level: 'info' | 'warn' | 'error'): void
 }
 
 /**
@@ -27,16 +27,16 @@ export interface ErrorMonitor {
  */
 export class ConsoleMonitor implements ErrorMonitor {
   captureError(error: Error, context?: Record<string, unknown>): void {
-    console.error("[ErrorMonitor]", error, context);
+    console.error('[ErrorMonitor]', error, context)
   }
 
-  captureMessage(message: string, level: "info" | "warn" | "error"): void {
-    console[level]("[ErrorMonitor]", message);
+  captureMessage(message: string, level: 'info' | 'warn' | 'error'): void {
+    console[level]('[ErrorMonitor]', message)
   }
 }
 
 /** 当前错误监控实例 */
-let errorMonitor: ErrorMonitor | null = null;
+let errorMonitor: ErrorMonitor | null = null
 
 /**
  * 设置错误监控实例
@@ -46,7 +46,7 @@ let errorMonitor: ErrorMonitor | null = null;
  * ```ts
  * // 生产环境集成 Sentry
  * import * as Sentry from '@sentry/node'
- * import { setErrorMonitor } from '@/lib/error-monitor'
+ * import { setErrorMonitor } from '@/lib/errors'
  *
  * class SentryMonitor implements ErrorMonitor {
  *   captureError(error: Error, context?: Record<string, unknown>): void {
@@ -63,12 +63,12 @@ let errorMonitor: ErrorMonitor | null = null;
  * ```
  */
 export function setErrorMonitor(monitor: ErrorMonitor): void {
-  errorMonitor = monitor;
+  errorMonitor = monitor
 }
 
 /**
  * 获取错误监控实例
  */
 export function getErrorMonitor(): ErrorMonitor | null {
-  return errorMonitor;
+  return errorMonitor
 }

@@ -3,7 +3,13 @@
  * @description 使用工厂函数消除重复代码
  */
 
-import type { Admin, AdminQuery, CreateAdminInput, PaginatedAdmin, UpdateAdminInput } from '@/server/routes/admins/dtos'
+import type {
+  Admin,
+  AdminQuery,
+  CreateAdminInput,
+  PaginatedAdmin,
+  UpdateAdminInput,
+} from '@/server/routes/admins/dtos'
 import { createResourceHooks } from './factory'
 
 /**
@@ -87,4 +93,3 @@ export function useUpdateAdminRoles() {
     },
   })
 }
-

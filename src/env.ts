@@ -1,5 +1,5 @@
-import { createEnv } from "@t3-oss/env-nextjs";
-import { z } from "zod";
+import { createEnv } from '@t3-oss/env-nextjs'
+import { z } from 'zod'
 
 export const env = createEnv({
   /**
@@ -8,53 +8,36 @@ export const env = createEnv({
   server: {
     // 数据库配置
     DATABASE_URL: z.string().url(),
-    DATABASE_MAX_CONNECTIONS: z.coerce
-      .number()
-      .int()
-      .positive()
-      .optional()
-      .default(10),
-    DATABASE_IDLE_TIMEOUT: z.coerce
-      .number()
-      .int()
-      .positive()
-      .optional()
-      .default(20),
-    DATABASE_CONNECT_TIMEOUT: z.coerce
-      .number()
-      .int()
-      .positive()
-      .optional()
-      .default(10),
+    DATABASE_MAX_CONNECTIONS: z.coerce.number().int().positive().optional().default(10),
+    DATABASE_IDLE_TIMEOUT: z.coerce.number().int().positive().optional().default(20),
+    DATABASE_CONNECT_TIMEOUT: z.coerce.number().int().positive().optional().default(10),
     AUTO_DB_MIGRATE: z
-      .enum(["true", "false"])
+      .enum(['true', 'false'])
       .optional()
-      .default("false")
-      .transform((v) => v === "true"),
+      .default('false')
+      .transform((v) => v === 'true'),
     AUTO_DB_SEED: z
-      .enum(["true", "false"])
+      .enum(['true', 'false'])
       .optional()
-      .default("false")
-      .transform((v) => v === "true"),
-    SEED_ADMIN_USERNAME: z.string().optional().default("admin"),
+      .default('false')
+      .transform((v) => v === 'true'),
+    SEED_ADMIN_USERNAME: z.string().optional().default('admin'),
     SEED_ADMIN_PASSWORD: z.string().optional(),
-    SEED_ADMIN_NICKNAME: z.string().optional().default("超级管理员"),
+    SEED_ADMIN_NICKNAME: z.string().optional().default('超级管理员'),
 
     // JWT 配置
-    JWT_SECRET: z.string().min(32, "JWT_SECRET must be at least 32 characters"),
+    JWT_SECRET: z.string().min(32, 'JWT_SECRET must be at least 32 characters'),
     JWT_EXPIRES_IN: z
       .string()
       .regex(
         /^\d+(\.\d+)?\s*(ms|milliseconds?|s|secs?|seconds?|m|mins?|minutes?|h|hrs?|hours?|d|days?|w|weeks?|y|yrs?|years?)$/i,
-        "JWT_EXPIRES_IN must be a valid time span (e.g., 60, 1h, 7d, 2 days)"
+        'JWT_EXPIRES_IN must be a valid time span (e.g., 60, 1h, 7d, 2 days)'
       )
       .optional()
-      .default("7d"),
+      .default('7d'),
 
     // 运行环境
-    NODE_ENV: z
-      .enum(["development", "production", "test"])
-      .default("development"),
+    NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   },
 
   /**
@@ -64,7 +47,7 @@ export const env = createEnv({
     NEXT_PUBLIC_APP_URL: z
       .string()
       .url()
-      .transform((v) => v.replace(/\/$/, "")), // 自动移除末尾斜杠
+      .transform((v) => v.replace(/\/$/, '')), // 自动移除末尾斜杠
   },
 
   /**
@@ -92,4 +75,4 @@ export const env = createEnv({
    * 跳过验证（仅用于构建时无环境变量的场景）
    */
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
-});
+})

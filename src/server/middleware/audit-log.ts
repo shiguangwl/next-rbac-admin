@@ -4,7 +4,7 @@
  */
 
 import { createMiddleware } from 'hono/factory'
-import { logger } from '@/lib/logger'
+import { logger } from '@/lib/logging'
 import type { Env } from '@/server/context'
 
 /**

@@ -3,7 +3,13 @@
  * @description 使用工厂函数消除重复代码
  */
 
-import type { CreateRoleInput, PaginatedRole, Role, RoleQuery, UpdateRoleInput } from '@/server/routes/roles/dtos'
+import type {
+  CreateRoleInput,
+  PaginatedRole,
+  Role,
+  RoleQuery,
+  UpdateRoleInput,
+} from '@/server/routes/roles/dtos'
 import { createResourceHooks } from './factory'
 
 /**
@@ -84,4 +90,3 @@ export function useUpdateRoleMenus() {
     },
   })
 }
-

@@ -17,9 +17,9 @@ const CommonFormatter = {
    */
   formatPercent(value) {
     if (value === null || value === undefined) {
-      return "-";
+      return '-'
     }
-    return (value * 100).toFixed(2) + "%";
+    return (value * 100).toFixed(2) + '%'
   },
 
   /**
@@ -29,9 +29,9 @@ const CommonFormatter = {
    */
   formatBooleanPercent(value) {
     if (value === null || value === undefined) {
-      return "-";
+      return '-'
     }
-    return value ? "100%" : "0%";
+    return value ? '100%' : '0%'
   },
 
   /**
@@ -40,11 +40,11 @@ const CommonFormatter = {
    * @returns {string}
    */
   formatTime(timeStr) {
-    if (!timeStr) return "-";
-    if (timeStr.includes("T")) {
-      return timeStr.replace("T", " ").substring(0, 19);
+    if (!timeStr) return '-'
+    if (timeStr.includes('T')) {
+      return timeStr.replace('T', ' ').substring(0, 19)
     }
-    return timeStr.substring(0, 19);
+    return timeStr.substring(0, 19)
   },
 
   /**
@@ -53,14 +53,14 @@ const CommonFormatter = {
    * @returns {string}
    */
   formatBuySellSignal(signal) {
-    if (!signal) return "-";
+    if (!signal) return '-'
     const signalMap = {
-      BUY: "买",
-      SELL: "卖",
-    };
-    return signalMap[signal] || signal;
+      BUY: '买',
+      SELL: '卖',
+    }
+    return signalMap[signal] || signal
   },
-};
+}
 
 /**
  * 通用样式类生成工具
@@ -72,8 +72,8 @@ const CommonStyleClass = {
    * @returns {string}
    */
   getPercentClass(value) {
-    if (value === null || value === undefined) return "";
-    return value >= 0.5 ? "percent-high" : "percent-low";
+    if (value === null || value === undefined) return ''
+    return value >= 0.5 ? 'percent-high' : 'percent-low'
   },
 
   /**
@@ -82,8 +82,8 @@ const CommonStyleClass = {
    * @returns {string}
    */
   getBooleanClass(value) {
-    if (value === null || value === undefined) return "";
-    return value ? "boolean-true" : "boolean-false";
+    if (value === null || value === undefined) return ''
+    return value ? 'boolean-true' : 'boolean-false'
   },
 
   /**
@@ -92,8 +92,8 @@ const CommonStyleClass = {
    * @returns {string}
    */
   getSignalClass(signal) {
-    if (!signal) return "";
-    return signal === "BUY" ? "signal-buy" : "signal-sell";
+    if (!signal) return ''
+    return signal === 'BUY' ? 'signal-buy' : 'signal-sell'
   },
 
   /**
@@ -102,7 +102,7 @@ const CommonStyleClass = {
    * @returns {string}
    */
   getScoreClass(score) {
-    if (score === null || score === undefined) return "";
-    return score >= 3 ? "score-high" : "score-low";
+    if (score === null || score === undefined) return ''
+    return score >= 3 ? 'score-high' : 'score-low'
   },
-};
+}

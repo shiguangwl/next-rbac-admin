@@ -3,8 +3,8 @@
  * @description 将数据库错误转换为友好的业务错误
  */
 
-import type { AppError } from './errors'
-import { ConflictError, InternalServerError, ValidationError } from './errors'
+import type { AppError } from './types'
+import { ConflictError, InternalServerError, ValidationError } from './types'
 
 /**
  * MySQL 错误接口
@@ -79,4 +79,3 @@ export function handleDatabaseError(err: unknown): AppError {
   // 其他未知数据库错误
   return new InternalServerError('数据库操作失败', err)
 }
-

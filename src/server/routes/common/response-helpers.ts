@@ -3,9 +3,8 @@
  * @description 消除 responses 定义中的重复代码
  */
 
-import type { RouteConfig } from '@hono/zod-openapi'
-import type { z } from '@hono/zod-openapi'
-import { ErrorSchema, SuccessSchema, createDataResponseSchema } from './dtos'
+import type { RouteConfig, z } from '@hono/zod-openapi'
+import { createDataResponseSchema, ErrorSchema, SuccessSchema } from './dtos'
 
 /**
  * 响应配置类型
@@ -212,4 +211,3 @@ export class ResponsesBuilder {
 export function responses(): ResponsesBuilder {
   return new ResponsesBuilder()
 }
-

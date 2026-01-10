@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev | pnpm pino-pretty --colorize --translateTime 'HH:MM:ss.l' --singleLine --ignore pid,hostname",
+    "dev:verbose": "next dev | pnpm pino-pretty --colorize --translateTime 'HH:MM:ss.l' --ignore pid,hostname",
     "build": "next build",
     "start": "next start",
     "lint": "biome check .",

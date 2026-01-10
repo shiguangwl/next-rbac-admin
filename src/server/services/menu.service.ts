@@ -3,66 +3,51 @@
  * @description 菜单权限 CRUD 及树形结构构建业务逻辑
  */
 
-import { db } from "@/db";
-import { sysMenu, sysRoleMenu } from "@/db/schema";
-import { ErrorCode } from "@/lib/error-codes";
-import { BusinessError, ConflictError, NotFoundError } from "@/lib/errors";
-import { and, asc, count, eq } from "drizzle-orm";
+import { and, asc, count, eq } from 'drizzle-orm'
+import { db } from '@/db'
+import { sysMenu, sysRoleMenu } from '@/db/schema'
+import { BusinessError, ConflictError, ErrorCode, NotFoundError } from '@/lib/errors'
 import type {
   CreateMenuInput,
   MenuDto,
   MenuQueryOptions,
   MenuTreeNode,
   UpdateMenuInput,
-} from "./types";
-import { buildMenuTree, toMenuDto } from "./utils";
+} from './types'
+import { buildMenuTree, toMenuDto } from './utils'
 
 // 重新导出类型和函数供外部使用
-export { buildMenuTree };
-export type {
-  CreateMenuInput,
-  MenuDto,
-  MenuQueryOptions,
-  MenuTreeNode,
-  UpdateMenuInput,
-};
+export { buildMenuTree }
+export type { CreateMenuInput, MenuDto, MenuQueryOptions, MenuTreeNode, UpdateMenuInput }
 
 /**
  * 获取菜单列表（扁平）
  */
-export async function getMenuList(
-  options: MenuQueryOptions = {}
-): Promise<MenuDto[]> {
-  const { menuType, status } = options;
+export async function getMenuList(options: MenuQueryOptions = {}): Promise<MenuDto[]> {
+  const { menuType, status } = options
 
-  const conditions = [];
+  const conditions = []
   if (menuType) {
-    conditions.push(eq(sysMenu.menuType, menuType));
+    conditions.push(eq(sysMenu.menuType, menuType))
   }
   if (status !== undefined) {
-    conditions.push(eq(sysMenu.status, status));
+    conditions.push(eq(sysMenu.status, status))
   }
 
-  const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+  const whereClause = conditions.length > 0 ? and(...conditions) : undefined
 
-  const menus = await db
-    .select()
-    .from(sysMenu)
-    .where(whereClause)
-    .orderBy(asc(sysMenu.sort));
+  const menus = await db.select().from(sysMenu).where(whereClause).orderBy(asc(sysMenu.sort))
 
-  return menus.map(toMenuDto);
+  return menus.map(toMenuDto)
 }
 
 /**
  * 获取菜单树
  * @description 从数据库获取扁平列表，在内存中构建树形结构
  */
-export async function getMenuTree(
-  options: MenuQueryOptions = {}
-): Promise<MenuTreeNode[]> {
-  const menus = await getMenuList(options);
-  return buildMenuTree(menus);
+export async function getMenuTree(options: MenuQueryOptions = {}): Promise<MenuTreeNode[]> {
+  const menus = await getMenuList(options)
+  return buildMenuTree(menus)
 }
 
 /**
@@ -74,13 +59,13 @@ export async function getMenuById(id: number): Promise<MenuDto> {
     .from(sysMenu)
     .where(eq(sysMenu.id, id))
     .limit(1)
-    .then((rows) => rows[0]);
+    .then((rows) => rows[0])
 
   if (!menu) {
-    throw new NotFoundError("Menu", id);
+    throw new NotFoundError('Menu', id)
   }
 
-  return toMenuDto(menu);
+  return toMenuDto(menu)
 }
 
 /**
@@ -94,10 +79,10 @@ export async function createMenu(input: CreateMenuInput): Promise<MenuDto> {
       .from(sysMenu)
       .where(eq(sysMenu.permission, input.permission))
       .limit(1)
-      .then((rows) => rows[0]);
+      .then((rows) => rows[0])
 
     if (existing) {
-      throw new ConflictError(`权限标识 ${input.permission} 已存在`);
+      throw new ConflictError(`权限标识 ${input.permission} 已存在`)
     }
   }
 
@@ -108,10 +93,10 @@ export async function createMenu(input: CreateMenuInput): Promise<MenuDto> {
       .from(sysMenu)
       .where(eq(sysMenu.id, input.parentId))
       .limit(1)
-      .then((rows) => rows[0]);
+      .then((rows) => rows[0])
 
     if (!parent) {
-      throw new NotFoundError("Parent Menu", input.parentId);
+      throw new NotFoundError('Parent Menu', input.parentId)
     }
   }
 
@@ -129,27 +114,24 @@ export async function createMenu(input: CreateMenuInput): Promise<MenuDto> {
     isExternal: input.isExternal ?? 0,
     isCache: input.isCache ?? 1,
     remark: input.remark,
-  });
+  })
 
-  return getMenuById(Number(insertResult.insertId));
+  return getMenuById(Number(insertResult.insertId))
 }
 
 /**
  * 更新菜单
  */
-export async function updateMenu(
-  id: number,
-  input: UpdateMenuInput
-): Promise<MenuDto> {
+export async function updateMenu(id: number, input: UpdateMenuInput): Promise<MenuDto> {
   const existing = await db
     .select({ id: sysMenu.id })
     .from(sysMenu)
     .where(eq(sysMenu.id, id))
     .limit(1)
-    .then((rows) => rows[0]);
+    .then((rows) => rows[0])
 
   if (!existing) {
-    throw new NotFoundError("Menu", id);
+    throw new NotFoundError('Menu', id)
   }
 
   // 如果更新权限标识，检查是否重复
@@ -159,20 +141,17 @@ export async function updateMenu(
       .from(sysMenu)
       .where(eq(sysMenu.permission, input.permission))
       .limit(1)
-      .then((rows) => rows[0]);
+      .then((rows) => rows[0])
 
     if (other && other.id !== id) {
-      throw new ConflictError(`权限标识 ${input.permission} 已存在`);
+      throw new ConflictError(`权限标识 ${input.permission} 已存在`)
     }
   }
 
   // 如果更新父级，检查有效性
   if (input.parentId !== undefined && input.parentId !== 0) {
     if (input.parentId === id) {
-      throw new BusinessError(
-        "不能将菜单设置为自己的子菜单",
-        ErrorCode.INVALID_PARENT
-      );
+      throw new BusinessError('不能将菜单设置为自己的子菜单', ErrorCode.INVALID_PARENT)
     }
 
     const parent = await db
@@ -180,10 +159,10 @@ export async function updateMenu(
       .from(sysMenu)
       .where(eq(sysMenu.id, input.parentId))
       .limit(1)
-      .then((rows) => rows[0]);
+      .then((rows) => rows[0])
 
     if (!parent) {
-      throw new NotFoundError("Parent Menu", input.parentId);
+      throw new NotFoundError('Parent Menu', input.parentId)
     }
   }
 
@@ -204,9 +183,9 @@ export async function updateMenu(
       isCache: input.isCache,
       remark: input.remark,
     })
-    .where(eq(sysMenu.id, id));
+    .where(eq(sysMenu.id, id))
 
-  return getMenuById(id);
+  return getMenuById(id)
 }
 
 /**
@@ -219,27 +198,27 @@ export async function deleteMenu(id: number): Promise<void> {
     .from(sysMenu)
     .where(eq(sysMenu.id, id))
     .limit(1)
-    .then((rows) => rows[0]);
+    .then((rows) => rows[0])
 
   if (!existing) {
-    throw new NotFoundError("Menu", id);
+    throw new NotFoundError('Menu', id)
   }
 
   const childCount = await db
     .select({ count: count() })
     .from(sysMenu)
     .where(eq(sysMenu.parentId, id))
-    .then((rows) => rows[0]?.count ?? 0);
+    .then((rows) => rows[0]?.count ?? 0)
 
   if (childCount > 0) {
     throw new BusinessError(
       `该菜单下有 ${childCount} 个子菜单，请先删除子菜单`,
       ErrorCode.HAS_CHILDREN
-    );
+    )
   }
 
   await db.transaction(async (tx) => {
-    await tx.delete(sysRoleMenu).where(eq(sysRoleMenu.menuId, id));
-    await tx.delete(sysMenu).where(eq(sysMenu.id, id));
-  });
+    await tx.delete(sysRoleMenu).where(eq(sysRoleMenu.menuId, id))
+    await tx.delete(sysMenu).where(eq(sysMenu.id, id))
+  })
 }

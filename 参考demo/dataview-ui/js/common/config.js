@@ -7,7 +7,6 @@
  * - 线上环境：通过 Nginx 或网关转发到 /api
  */
 const BASE_API_URL =
-  window.location.hostname === "127.0.0.1" ||
-  window.location.hostname === "localhost"
-    ? "http://localhost:8000"
-    : "/api";
+  window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost'
+    ? 'http://localhost:8000'
+    : '/api'
