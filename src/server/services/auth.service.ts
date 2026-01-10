@@ -1,16 +1,17 @@
-import { and, eq, inArray, isNotNull } from 'drizzle-orm'
-import { db } from '@/db'
-import { sysAdmin, sysAdminRole, sysMenu, sysRoleMenu } from '@/db/schema'
-import { SUPER_ADMIN_ID } from '@/lib/constants'
-import { BusinessError, UnauthorizedError } from '@/lib/errors'
-import { type AdminPayload, signToken } from '@/lib/jwt'
-import { verifyPassword } from '@/lib/password'
-import type { LoginInput, LoginResult, MenuTreeNode } from './types'
-import { buildMenuTree, toAdminDto, toMenuTreeNode } from './utils'
+import { db } from "@/db";
+import { sysAdmin, sysAdminRole, sysMenu, sysRoleMenu } from "@/db/schema";
+import { SUPER_ADMIN_ID } from "@/lib/constants";
+import { ErrorCode } from "@/lib/error-codes";
+import { BusinessError, UnauthorizedError } from "@/lib/errors";
+import { type AdminPayload, signToken } from "@/lib/jwt";
+import { verifyPassword } from "@/lib/password";
+import { and, eq, inArray, isNotNull } from "drizzle-orm";
+import type { LoginInput, LoginResult, MenuTreeNode } from "./types";
+import { buildMenuTree, toAdminDto, toMenuTreeNode } from "./utils";
 
 // 重新导出类型供外部使用
-export type { LoginInput, LoginResult, MenuTreeNode }
-export type { AdminDto } from './types'
+export type { AdminDto } from "./types";
+export type { LoginInput, LoginResult, MenuTreeNode };
 
 /**
  * 管理员登录
@@ -23,21 +24,21 @@ export async function login(input: LoginInput): Promise<LoginResult> {
     .from(sysAdmin)
     .where(eq(sysAdmin.username, input.username))
     .limit(1)
-    .then((rows) => rows[0])
+    .then((rows) => rows[0]);
 
   if (!admin) {
-    throw new UnauthorizedError('用户名或密码错误')
+    throw new UnauthorizedError("用户名或密码错误");
   }
 
   // 2. 验证密码
-  const isValid = await verifyPassword(input.password, admin.password)
+  const isValid = await verifyPassword(input.password, admin.password);
   if (!isValid) {
-    throw new UnauthorizedError('用户名或密码错误')
+    throw new UnauthorizedError("用户名或密码错误");
   }
 
   // 3. 检查账号状态
   if (admin.status === 0) {
-    throw new BusinessError('账号已禁用', 'ACCOUNT_DISABLED')
+    throw new BusinessError("账号已禁用", ErrorCode.ACCOUNT_DISABLED);
   }
 
   // 5. 更新登录信息
@@ -47,18 +48,18 @@ export async function login(input: LoginInput): Promise<LoginResult> {
       loginIp: input.ip || null,
       loginTime: new Date(),
     })
-    .where(eq(sysAdmin.id, admin.id))
+    .where(eq(sysAdmin.id, admin.id));
 
   // 6. 生成 JWT Token
   const payload: AdminPayload = {
     adminId: admin.id,
     username: admin.username,
-  }
-  const token = signToken(payload)
+  };
+  const token = signToken(payload);
 
   // 7. 获取权限和菜单
-  const permissions = await getAdminPermissions(admin.id)
-  const menus = await getAdminMenuTree(admin.id)
+  const permissions = await getAdminPermissions(admin.id);
+  const menus = await getAdminMenuTree(admin.id);
 
   // 8. 更新管理员信息（包含最新登录时间）
   const updatedAdmin = await db
@@ -66,14 +67,14 @@ export async function login(input: LoginInput): Promise<LoginResult> {
     .from(sysAdmin)
     .where(eq(sysAdmin.id, admin.id))
     .limit(1)
-    .then((rows) => rows[0])
+    .then((rows) => rows[0]);
 
   return {
     token,
     admin: toAdminDto(updatedAdmin!),
     permissions,
     menus,
-  }
+  };
 }
 
 /**
@@ -83,9 +84,9 @@ export async function getAdminRoleIds(adminId: number): Promise<number[]> {
   const adminRoles = await db
     .select({ roleId: sysAdminRole.roleId })
     .from(sysAdminRole)
-    .where(eq(sysAdminRole.adminId, adminId))
+    .where(eq(sysAdminRole.adminId, adminId));
 
-  return adminRoles.map((ar) => ar.roleId)
+  return adminRoles.map((ar) => ar.roleId);
 }
 
 /**
@@ -97,52 +98,58 @@ export async function getAdminPermissions(adminId: number): Promise<string[]> {
     const menus = await db
       .select({ permission: sysMenu.permission })
       .from(sysMenu)
-      .where(and(isNotNull(sysMenu.permission), eq(sysMenu.status, 1)))
+      .where(and(isNotNull(sysMenu.permission), eq(sysMenu.status, 1)));
 
-    const permissions = new Set<string>()
+    const permissions = new Set<string>();
     for (const menu of menus) {
       if (menu.permission) {
-        permissions.add(menu.permission)
+        permissions.add(menu.permission);
       }
     }
 
-    return ['*', ...Array.from(permissions)]
+    return ["*", ...Array.from(permissions)];
   }
 
   // 1. 获取管理员的角色 ID
-  const roleIds = await getAdminRoleIds(adminId)
+  const roleIds = await getAdminRoleIds(adminId);
 
   if (roleIds.length === 0) {
-    return []
+    return [];
   }
 
   // 2. 查询角色关联的菜单 ID
   const roleMenus = await db
     .select({ menuId: sysRoleMenu.menuId })
     .from(sysRoleMenu)
-    .where(inArray(sysRoleMenu.roleId, roleIds))
+    .where(inArray(sysRoleMenu.roleId, roleIds));
 
   if (roleMenus.length === 0) {
-    return []
+    return [];
   }
 
-  const menuIds = roleMenus.map((rm) => rm.menuId)
+  const menuIds = roleMenus.map((rm) => rm.menuId);
 
   // 3. 查询菜单的权限标识（只取有权限标识的记录）
   const menus = await db
     .select({ permission: sysMenu.permission })
     .from(sysMenu)
-    .where(and(inArray(sysMenu.id, menuIds), isNotNull(sysMenu.permission), eq(sysMenu.status, 1)))
+    .where(
+      and(
+        inArray(sysMenu.id, menuIds),
+        isNotNull(sysMenu.permission),
+        eq(sysMenu.status, 1)
+      )
+    );
 
   // 4. 去重返回
-  const permissions = new Set<string>()
+  const permissions = new Set<string>();
   for (const menu of menus) {
     if (menu.permission) {
-      permissions.add(menu.permission)
+      permissions.add(menu.permission);
     }
   }
 
-  return Array.from(permissions)
+  return Array.from(permissions);
 }
 
 /**
@@ -150,37 +157,43 @@ export async function getAdminPermissions(adminId: number): Promise<string[]> {
  * @description 查询管理员所有角色关联的菜单，构建树形结构
  * 只返回 menuType 为 D 或 M 的菜单（不包含按钮）
  */
-export async function getAdminMenuTree(adminId: number): Promise<MenuTreeNode[]> {
+export async function getAdminMenuTree(
+  adminId: number
+): Promise<MenuTreeNode[]> {
   if (adminId === SUPER_ADMIN_ID) {
     const menus = await db
       .select()
       .from(sysMenu)
       .where(
-        and(inArray(sysMenu.menuType, ['D', 'M']), eq(sysMenu.status, 1), eq(sysMenu.visible, 1))
-      )
+        and(
+          inArray(sysMenu.menuType, ["D", "M"]),
+          eq(sysMenu.status, 1),
+          eq(sysMenu.visible, 1)
+        )
+      );
 
-    const menuNodes = menus.map(toMenuTreeNode)
-    return buildMenuTree(menuNodes)
+    const menuNodes = menus.map(toMenuTreeNode);
+    return buildMenuTree(menuNodes);
   }
 
   // 1. 获取管理员的角色 ID
-  const roleIds = await getAdminRoleIds(adminId)
+  const roleIds = await getAdminRoleIds(adminId);
 
   if (roleIds.length === 0) {
-    return []
+    return [];
   }
 
   // 2. 查询角色关联的菜单 ID
   const roleMenus = await db
     .select({ menuId: sysRoleMenu.menuId })
     .from(sysRoleMenu)
-    .where(inArray(sysRoleMenu.roleId, roleIds))
+    .where(inArray(sysRoleMenu.roleId, roleIds));
 
   if (roleMenus.length === 0) {
-    return []
+    return [];
   }
 
-  const menuIds = [...new Set(roleMenus.map((rm) => rm.menuId))]
+  const menuIds = [...new Set(roleMenus.map((rm) => rm.menuId))];
 
   // 3. 查询菜单详情（只取目录和菜单，不包含按钮）
   const menus = await db
@@ -189,13 +202,13 @@ export async function getAdminMenuTree(adminId: number): Promise<MenuTreeNode[]>
     .where(
       and(
         inArray(sysMenu.id, menuIds),
-        inArray(sysMenu.menuType, ['D', 'M']),
+        inArray(sysMenu.menuType, ["D", "M"]),
         eq(sysMenu.status, 1),
         eq(sysMenu.visible, 1)
       )
-    )
+    );
 
   // 4. 转换为树节点并构建树
-  const menuNodes = menus.map(toMenuTreeNode)
-  return buildMenuTree(menuNodes)
+  const menuNodes = menus.map(toMenuTreeNode);
+  return buildMenuTree(menuNodes);
 }

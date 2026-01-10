@@ -1,97 +1,99 @@
 /**
  * 错误处理映射
- * @description 将 Service 层错误映射到 HTTP 状态码
+ * @description 将 Service 层错误映射到 HTTP 状态码，集成日志和监控
+ * @requirements 7.3, 7.4
  */
 
-import { env } from '@/env'
-import {
-  AppError,
-  ConflictError,
-  ForbiddenError,
-  NotFoundError,
-  UnauthorizedError,
-  ValidationError,
-} from './errors'
+import { env } from "@/env";
+import { logger } from "@/lib/logger";
+import { getErrorMonitor } from "./error-monitor";
+import { AppError } from "./errors";
 
 export interface ErrorResponse {
-  status: number
-  code: string
-  message: string
-  details?: unknown
+  status: number;
+  code: string;
+  message: string;
+  details?: unknown;
+  requestId?: string;
 }
 
 /**
- * 将错误映射为 HTTP 响应
+ * 增强的错误映射器
+ * @description 集成日志、监控、环境保护
+ * @param err - 错误对象
+ * @param requestId - 请求追踪ID（可选）
  */
-export function mapErrorToResponse(err: unknown): ErrorResponse {
-  const shouldExposeDetails = env.NODE_ENV !== 'production'
+export function mapErrorToResponse(
+  err: unknown,
+  requestId?: string
+): ErrorResponse {
+  const logMeta = { requestId, error: err };
 
-  // 未授权错误 -> 401
-  if (err instanceof UnauthorizedError) {
-    return {
-      status: 401,
-      code: err.code,
-      message: err.message,
-    }
-  }
-
-  // 禁止访问错误 -> 403
-  if (err instanceof ForbiddenError) {
-    return {
-      status: 403,
-      code: err.code,
-      message: err.message,
-    }
-  }
-
-  // 资源未找到错误 -> 404
-  if (err instanceof NotFoundError) {
-    return {
-      status: 404,
-      code: err.code,
-      message: err.message,
-    }
-  }
-
-  // 资源冲突错误 -> 409
-  if (err instanceof ConflictError) {
-    return {
-      status: 409,
-      code: err.code,
-      message: err.message,
-    }
-  }
-
-  // 验证错误 -> 400
-  if (err instanceof ValidationError) {
-    return {
-      status: 400,
-      code: err.code,
-      message: err.message,
-      details: shouldExposeDetails ? err.details : undefined,
-    }
-  }
-
-  // 其他应用错误 -> 400
+  // ========== 处理自定义应用错误 ==========
   if (err instanceof AppError) {
+    // 记录错误日志
+    if (!err.isOperational) {
+      // 编程错误（500）：记录完整堆栈，用于调试
+      logger.error(err.message, {
+        ...logMeta,
+        code: err.code,
+        httpStatus: err.httpStatus,
+        stack: err.stack,
+        cause: err.cause,
+      });
+    } else {
+      // 操作性错误（4xx）：记录为警告
+      logger.warn(err.message, {
+        ...logMeta,
+        code: err.code,
+        httpStatus: err.httpStatus,
+      });
+    }
+
+    // 发送到监控系统（仅非操作性错误）
+    const monitor = getErrorMonitor();
+    if (monitor && !err.isOperational) {
+      monitor.captureError(err, {
+        requestId,
+        code: err.code,
+        httpStatus: err.httpStatus,
+      });
+    }
+
     return {
-      status: 400,
+      status: err.httpStatus,
       code: err.code,
       message: err.message,
-      details: shouldExposeDetails ? err.details : undefined,
-    }
+      // 生产环境隐藏详情
+      details: env.NODE_ENV === "production" ? undefined : err.details,
+      requestId,
+    };
   }
 
-  // 未知错误 -> 500
+  // ========== 处理未知错误 ==========
+  logger.error("Unhandled error", {
+    ...logMeta,
+    stack: err instanceof Error ? err.stack : undefined,
+  });
+
+  // 发送到监控系统
+  const monitor = getErrorMonitor();
+  if (monitor && err instanceof Error) {
+    monitor.captureError(err, { requestId });
+  }
+
+  // 生产环境隐藏错误详情
   const message =
-    env.NODE_ENV === 'production'
-      ? 'Internal Server Error'
+    env.NODE_ENV === "production"
+      ? "服务器内部错误"
       : err instanceof Error
-        ? err.message
-        : 'Internal Server Error'
+      ? err.message
+      : "Internal Server Error";
+
   return {
     status: 500,
-    code: 'INTERNAL_ERROR',
+    code: "INTERNAL_ERROR",
     message,
-  }
+    requestId,
+  };
 }

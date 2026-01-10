@@ -15,6 +15,7 @@ export const ErrorSchema = z
     code: z.string().openapi({ description: '错误代码', example: 'NOT_FOUND' }),
     message: z.string().openapi({ description: '错误消息', example: '资源不存在' }),
     details: z.any().optional().openapi({ description: '错误详情' }),
+    requestId: z.string().optional().openapi({ description: '请求 ID' }),
   })
   .openapi('Error')
 
